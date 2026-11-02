@@ -1,0 +1,85 @@
+{
+  "id": "d1-l1-c02",
+  "day": 1,
+  "kind": "C",
+  "level": "A",
+  "required": true,
+  "section": "lecture-theory",
+  "lecture": 1,
+  "chapter": 2,
+  "title": "Закрепление 2 · Duration",
+  "order": 10002,
+  "minutes": 25,
+  "prompt": "## Закрепление после главы 2 · Класс `Duration`\n\n> **Формат:** одна составная задача на 15–25 минут. Решение не публиковать до попытки.\n\nСоздай класс `Duration`, хранящий продолжительность в целых секундах. Отрицательные значения разрешены.\n\nНужно самостоятельно определить и реализовать:\n\n1. Конструктор и константный метод чтения секунд.\n2. `+=`, который изменяет левый объект и поддерживает цепочки вызовов.\n3. `+`, который создаёт новый результат и не изменяет исходные объекты. По возможности повторно используй `+=`.\n4. Унарный `-`.\n5. `==` и `!=` с единым правилом сравнения.\n6. Префиксный и постфиксный `++`, каждый увеличивает продолжительность на одну секунду, но отличается возвращаемым результатом.\n\nПроверочные сценарии:\n\n- `Duration a(59), b(61);` — сумма должна представлять 120 секунд, а `a` и `b` оставаться прежними.\n- Для отдельного объекта со значением 7 сначала вызови префиксный `++`, затем постфиксный, сохрани результаты обоих выражений и объясни отличие.\n- Убедись, что выражение `(a += b) += Duration(3)` изменяет именно `a`.\n- Проверь арифметику с отрицательной продолжительностью и неизменяемость `const`-операндов.\n\n**Критерии:** осмысленный выбор «метод или свободная функция»; корректное количество параметров; `const`; возврат `Duration` и `Duration&`; отсутствие лишних побочных эффектов; правильная семантика префиксного и постфиксного оператора; переиспользование уже работающей операции.\n",
+  "tags": [
+    "Лекция № 1",
+    "Перегрузка операторов"
+  ],
+  "starter": "// Самостоятельное закрепление лекции № 1.\n// Напишите класс с нуля и добавьте нужные заголовки.\n",
+  "prefix": "",
+  "suffix": "\n#include \"test_adapter.hpp\"\n",
+  "checks": "\nstatic_assert(std::is_member_function_pointer_v<decltype(mastery_check::duration_read)>);\nstatic_assert(std::is_invocable_v<decltype(mastery_check::duration_read),const Duration&>);\nstatic_assert(std::is_integral_v<std::remove_cv_t<std::remove_reference_t<std::invoke_result_t<decltype(mastery_check::duration_read),const Duration&>>>>);\nstatic_assert(std::is_same_v<decltype(std::declval<const Duration&>()+std::declval<const Duration&>()),Duration>);\nstatic_assert(std::is_same_v<decltype(std::declval<Duration&>()+=std::declval<const Duration&>()),Duration&>);\nstatic_assert(std::is_same_v<decltype(-std::declval<const Duration&>()),Duration>);\nstatic_assert(std::is_same_v<decltype(++std::declval<Duration&>()),Duration&>);\nstatic_assert(std::is_same_v<decltype(std::declval<Duration&>()++),Duration>);\nstatic_assert(std::is_same_v<decltype(std::declval<const Duration&>()==std::declval<const Duration&>()),bool>);\nstatic_assert(std::is_same_v<decltype(std::declval<const Duration&>()!=std::declval<const Duration&>()),bool>);\n",
+  "tests": [
+    {
+      "name": "Секунды и const-чтение",
+      "code": "const Duration zero(0),negative(-7),positive(61); CHECK(std::invoke(mastery_check::duration_read,zero)==0); CHECK(std::invoke(mastery_check::duration_read,negative)==-7); CHECK(std::invoke(mastery_check::duration_read,positive)==61);",
+      "category": "boundary"
+    },
+    {
+      "name": "59 + 61, исходные операнды неизменны",
+      "code": "const Duration a(59),b(61); const Duration c=a+b; CHECK(std::invoke(mastery_check::duration_read,c)==120); CHECK(std::invoke(mastery_check::duration_read,a)==59 && std::invoke(mastery_check::duration_read,b)==61);",
+      "category": "functional"
+    },
+    {
+      "name": "Цепочка += меняет именно a",
+      "code": "Duration a(59); const Duration b(61); CHECK(&((a+=b)+=Duration(3))==&a); CHECK(std::invoke(mastery_check::duration_read,a)==123 && std::invoke(mastery_check::duration_read,b)==61);",
+      "category": "types"
+    },
+    {
+      "name": "Сложение отрицательных длительностей",
+      "code": "CHECK(std::invoke(mastery_check::duration_read,Duration(-15)+Duration(7))==-8); CHECK(std::invoke(mastery_check::duration_read,Duration(-15)+Duration(-7))==-22); CHECK(std::invoke(mastery_check::duration_read,Duration(7)+Duration(-7))==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Унарный минус не меняет операнд",
+      "code": "const Duration a(-12); CHECK(std::invoke(mastery_check::duration_read,-a)==12); CHECK(std::invoke(mastery_check::duration_read,a)==-12); CHECK(std::invoke(mastery_check::duration_read,-Duration(0))==0);",
+      "category": "functional"
+    },
+    {
+      "name": "== и != согласованы",
+      "code": "const Duration a(17),b(17),c(-17); CHECK(a==b && !(a!=b)); CHECK(a!=c && !(a==c)); CHECK(a==a);",
+      "category": "functional"
+    },
+    {
+      "name": "Префиксный ++: новое значение и ссылка",
+      "code": "Duration value(7); Duration& result=++value; CHECK(&result==&value); CHECK(std::invoke(mastery_check::duration_read,value)==8 && std::invoke(mastery_check::duration_read,result)==8);",
+      "category": "types"
+    },
+    {
+      "name": "Постфиксный ++: независимое старое значение",
+      "code": "Duration value(8); Duration before=value++; CHECK(std::invoke(mastery_check::duration_read,before)==8 && std::invoke(mastery_check::duration_read,value)==9); ++value; CHECK(std::invoke(mastery_check::duration_read,before)==8);",
+      "category": "functional"
+    },
+    {
+      "name": "Сценарий из условия: сначала ++, затем ++(int)",
+      "code": "Duration value(7); Duration first=++value; Duration second=value++; CHECK(std::invoke(mastery_check::duration_read,first)==8); CHECK(std::invoke(mastery_check::duration_read,second)==8); CHECK(std::invoke(mastery_check::duration_read,value)==9);",
+      "category": "functional"
+    },
+    {
+      "name": "Самосложение и переход через ноль",
+      "code": "Duration value(-1); CHECK(&(value+=value)==&value); CHECK(std::invoke(mastery_check::duration_read,value)==-2); ++value; value++; CHECK(std::invoke(mastery_check::duration_read,value)==0);",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "filePath": "student/day-01/d1-l1-c02/solution.hpp",
+  "hints": [
+    "Разделите неизменяющую арифметику и изменение левого операнда.",
+    "Префиксный ++ возвращает новый текущий объект, постфиксный — независимое старое значение.",
+    "Проверьте сценарий 7 → префиксное увеличение → постфиксное увеличение: последний объект и сохранённые результаты должны иметь независимые состояния."
+  ],
+  "starterFiles": {
+    "test_adapter.hpp": "#pragma once\n// Замените seconds на выбранное вами имя метода чтения секунд.\nnamespace mastery_check {\ninline constexpr auto duration_read = &Duration::seconds;\n}\n"
+  },
+  "protocol": "В test_adapter.hpp привяжите указатели к своим методам чтения и изменения. Имена points/add/seconds — только настройки адаптера: можно выбрать другие имена. Сигнатуры и реализацию вы пишете самостоятельно. Проверки вызывают сами методы, включая их const-корректность и тип результата."
+}

@@ -1,0 +1,87 @@
+{
+  "id": "d1-l1-c04",
+  "day": 1,
+  "kind": "C",
+  "level": "A",
+  "required": true,
+  "section": "lecture-theory",
+  "lecture": 1,
+  "chapter": 4,
+  "title": "Закрепление 4 · ClockTime",
+  "order": 10004,
+  "minutes": 30,
+  "prompt": "## Закрепление после главы 4 · Форматируемое время `ClockTime`\n\n> **Формат:** одна самостоятельная задача на 20–30 минут. Не показывать реализацию `operator>>` до попытки.\n\nСоздай класс `ClockTime`, представляющий время суток: часы от 0 до 23 и минуты от 0 до 59. Объект не должен существовать в некорректном состоянии.\n\nТребования:\n\n1. Конструктор принимает часы и минуты и проверяет диапазоны. Для некорректных аргументов используй подходящее исключение из `<stdexcept>`.\n2. Реализуй `operator<<`, который печатает время в строгом формате `HH:MM`, например `07:05` и `23:59`.\n3. Реализуй `operator>>`, читающий тот же формат. Отклоняй неправильные разделители, недопустимые часы и минуты, а также неполные данные.\n4. При неудачном чтении установи состояние ошибки входного потока и сохрани **прежнее значение** `ClockTime`.\n5. Поддержи цепочки `out << first << \" | \" << second` и `in >> first >> second`.\n6. Проверь вывод через `std::ostringstream`, а ввод через `std::istringstream`.\n7. При выборе форматирования объясни, какие манипуляторы могут изменять состояние потока и нужно ли восстанавливать его свойства после собственного оператора.\n\nОбязательные случаи проверки:\n\n- `07:05` — правильное время.\n- `23:59` — правильное время.\n- `24:00` — недопустимые часы.\n- `12:60` — недопустимые минуты.\n- `12;30` — неправильный разделитель.\n- `12:` — незавершённое значение.\n- При каждой ошибке уже существующий объект остаётся неизменным.\n\n**Критерии:** корректная сигнатура обоих операторов; работа с `const`; точный формат с ведущими нулями; устойчивость к ошибкам; корректное состояние потока; отсутствие частичного изменения объекта; тестирование через строковые потоки.\n",
+  "tags": [
+    "Лекция № 1",
+    "Потоки"
+  ],
+  "starter": "// Самостоятельное закрепление лекции № 1.\n// Напишите класс с нуля и добавьте нужные заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "\nstatic_assert(std::is_same_v<decltype(std::declval<std::ostream&>()<<std::declval<const ClockTime&>()),std::ostream&>);\nstatic_assert(std::is_same_v<decltype(std::declval<std::istream&>()>>std::declval<ClockTime&>()),std::istream&>);\n",
+  "tests": [
+    {
+      "name": "Точный вывод: 07:05 и 23:59",
+      "code": "std::ostringstream out; const ClockTime a(7,5),b(23,59); CHECK(&(out<<a)==&out); out<<\" | \"<<b; CHECK(out.str()==\"07:05 | 23:59\");",
+      "category": "io"
+    },
+    {
+      "name": "Ведущие нули и крайние значения",
+      "code": "for(const auto& input:{std::pair<int,int>{0,0},{0,9},{9,0},{12,0}}){std::ostringstream out; out<<ClockTime(input.first,input.second); const std::string s=out.str(); CHECK(s.size()==5 && s[2]==':');} std::ostringstream out; out<<ClockTime(0,0); CHECK(out.str()==\"00:00\");",
+      "category": "boundary"
+    },
+    {
+      "name": "Недопустимый конструктор не создаёт объект",
+      "code": "for(const auto& p:{std::pair<int,int>{24,0},{-1,0},{12,60},{12,-1}}){bool caught=false; try{ClockTime value(p.first,p.second);(void)value;}catch(const std::invalid_argument&){caught=true;}catch(const std::out_of_range&){caught=true;}CHECK(caught);}",
+      "category": "negative"
+    },
+    {
+      "name": "Правильное чтение и возврат исходного потока",
+      "code": "std::istringstream in(\"07:05\"); ClockTime value(1,2); CHECK(&(in>>value)==&in && !in.fail()); std::ostringstream out; out<<value; CHECK(out.str()==\"07:05\");",
+      "category": "io"
+    },
+    {
+      "name": "Последовательное чтение двух объектов",
+      "code": "std::istringstream in(\" 07:05 23:59\"); ClockTime a(1,1),b(2,2); in>>a>>b; CHECK(!in.fail()); std::ostringstream out; out<<a<<\" | \"<<b; CHECK(out.str()==\"07:05 | 23:59\");",
+      "category": "io"
+    },
+    {
+      "name": "24:00 и 12:60 отвергаются с откатом",
+      "code": "for(const char* input:{\"24:00\",\"12:60\"}){ClockTime value(9,45); std::istringstream in(input); in>>value; CHECK(in.fail()); std::ostringstream out; out<<value; CHECK(out.str()==\"09:45\");}",
+      "category": "negative"
+    },
+    {
+      "name": "Неправильный разделитель и незавершённое значение",
+      "code": "for(const char* input:{\"12;30\",\"12:\",\"12\",\"\",\":30\",\"xx:10\"}){ClockTime value(9,45); std::istringstream in(input); in>>value; CHECK(in.fail()); std::ostringstream out; out<<value; CHECK(out.str()==\"09:45\");}",
+      "category": "negative"
+    },
+    {
+      "name": "Строгая ширина HH:MM",
+      "code": "for(const char* input:{\"7:05\",\"07:5\",\"-1:30\",\"12:-1\"}){ClockTime value(9,45); std::istringstream in(input); in>>value; CHECK(in.fail()); std::ostringstream out; out<<value; CHECK(out.str()==\"09:45\");}",
+      "category": "negative"
+    },
+    {
+      "name": "Частичный разбор не меняет часы",
+      "code": "ClockTime value(9,45); std::istringstream in(\"17:wrong\"); in>>value; CHECK(in.fail()); std::ostringstream out; out<<value; CHECK(out.str()==\"09:45\");",
+      "category": "exception"
+    },
+    {
+      "name": "Состояние потокового форматирования сохраняется",
+      "code": "std::ostringstream out; out.fill('*'); out.precision(3); const auto flags=out.flags(); out<<ClockTime(7,5); CHECK(out.str()==\"07:05\" && out.fill()=='*' && out.precision()==3 && out.flags()==flags); out<<\" \"<<std::setw(3)<<2; CHECK(out.str()==\"07:05 **2\");",
+      "category": "io"
+    },
+    {
+      "name": "Ошибка второго чтения сохраняет оба корректных состояния",
+      "code": "ClockTime a(1,2),b(3,4); std::istringstream in(\"08:09 24:00\"); in>>a>>b; CHECK(in.fail()); std::ostringstream out; out<<a<<\" | \"<<b; CHECK(out.str()==\"08:09 | 03:04\");",
+      "category": "exception"
+    }
+  ],
+  "memory": false,
+  "filePath": "student/day-01/d1-l1-c04/solution.hpp",
+  "hints": [
+    "Сначала разберите всё время во временные значения.",
+    "Ошибка обычного извлечения выражается через failbit; сам поток нужно вернуть по ссылке.",
+    "Фиксируйте новое состояние только после проверки часов, минут и разделителя. Проверьте маску потока, fill и flags: форматирование собственного объекта не должно неожиданно менять следующий вывод."
+  ],
+  "protocol": "Проверяющий протокол: HH:MM означает ровно две цифры часов, двоеточие и две цифры минут. Начальные пробелы разрешены; последовательное чтение проверяется с пробелом между объектами. Некорректный конструктор должен бросать std::invalid_argument или std::out_of_range. После вывода сохраняются fill, flags и precision исходного потока. В notes.md объясните решение по форматированию."
+}
