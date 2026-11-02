@@ -1,0 +1,74 @@
+{
+  "id": "d01-v2-p01",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "P",
+  "kind": "P",
+  "level": "A",
+  "number": 1,
+  "title": "P01 · Трассировка 1",
+  "prompt": "Запишите точный вывод и своими словами объясните причины. Затем заполните проверяемую трассировку. Оценка причин опирается на значения и причинные утверждения, а не на поиск слов в тексте.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 6,
+  "order": 201,
+  "tags": [
+    "StereoLab",
+    "Трассировка"
+  ],
+  "code": "#include <iostream>\nvoid f(int x) { x += 3; }\nvoid g(int& x) { x += 3; }\nint main() {\n    int a = 4;\n    f(a);\n    g(a);\n    std::cout << a;\n}\n",
+  "runner": "prediction",
+  "traceFields": [
+    {
+      "id": "after_f",
+      "label": "a после f(a)"
+    },
+    {
+      "id": "after_g",
+      "label": "a после g(a)"
+    },
+    {
+      "id": "changed_by_f",
+      "label": "Что изменяет f?",
+      "options": [
+        {
+          "value": "copy",
+          "label": "Локальную копию параметра"
+        },
+        {
+          "value": "original",
+          "label": "Исходный a"
+        }
+      ]
+    }
+  ],
+  "expectedOutput": "7",
+  "traceAnswer": {
+    "after_f": "4",
+    "after_g": "7",
+    "changed_by_f": "copy"
+  },
+  "explanation": "f получает отдельный int, поэтому увеличение параметра не меняет a. После f(a) значение a равно 4. g получает ссылку и увеличивает исходный a до 7.",
+  "variants": [
+    {
+      "code": "#include <iostream>\nvoid f(int x) { x += 3; }\nvoid g(int& x) { x += 3; }\nint main() {\n    int a = 9;\n    f(a);\n    g(a);\n    std::cout << a;\n}\n",
+      "expectedOutput": "12",
+      "traceAnswer": {
+        "after_f": "9",
+        "after_g": "12",
+        "changed_by_f": "copy"
+      },
+      "explanation": "Примените те же правила копирования, ссылок и порядка операций к новым значениям. f получает отдельный int, поэтому увеличение параметра не меняет a. После f(a) значение a равно 4. g получает ссылку и увеличивает исходный a до 7."
+    }
+  ],
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Проверьте граничный сценарий отдельно. Для ссылочного результата сравните адреса, для потока — состояние и прежнее значение объекта."
+  ],
+  "filePath": "student/day-01/d01-v2-p01/solution.hpp",
+  "starterFiles": {
+    "answer.json": "{\"output\": \"\", \"explanation\": \"\", \"trace\": {}, \"variant\": 0}"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "id": "d01-v2-p02",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "P",
+  "kind": "P",
+  "level": "A",
+  "number": 2,
+  "title": "P02 · Трассировка 2",
+  "prompt": "Запишите точный вывод и своими словами объясните причины. Затем заполните проверяемую трассировку. Оценка причин опирается на значения и причинные утверждения, а не на поиск слов в тексте.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 6,
+  "order": 202,
+  "tags": [
+    "StereoLab",
+    "Трассировка"
+  ],
+  "code": "#include <iostream>\nstruct Box {\n    int v;\n    explicit Box(int x) : v(x) {}\n};\nint main() {\n    Box a(4);\n    Box b = a;\n    b.v = 9;\n    a = b;\n    std::cout << a.v << ':' << b.v;\n}\n",
+  "runner": "prediction",
+  "traceFields": [
+    {
+      "id": "after_copy",
+      "label": "b.v сразу после создания b"
+    },
+    {
+      "id": "original_after_edit",
+      "label": "a.v после b.v = 9"
+    },
+    {
+      "id": "operation",
+      "label": "Что означает a = b?",
+      "options": [
+        {
+          "value": "assignment",
+          "label": "Присваивание существующему объекту"
+        },
+        {
+          "value": "construction",
+          "label": "Создание нового объекта"
+        }
+      ]
+    }
+  ],
+  "expectedOutput": "9:9",
+  "traceAnswer": {
+    "after_copy": "4",
+    "original_after_edit": "4",
+    "operation": "assignment"
+  },
+  "explanation": "Box b = a создаёт новый объект с копией 4. Изменение b.v до 9 не затрагивает a. Присваивание a = b обновляет существующий a, после чего оба значения равны 9.",
+  "variants": [
+    {
+      "code": "#include <iostream>\nstruct Box {\n    int v;\n    explicit Box(int x) : v(x) {}\n};\nint main() {\n    Box a(2);\n    Box b = a;\n    b.v = 6;\n    a = b;\n    std::cout << a.v << ':' << b.v;\n}\n",
+      "expectedOutput": "6:6",
+      "traceAnswer": {
+        "after_copy": "2",
+        "original_after_edit": "2",
+        "operation": "assignment"
+      },
+      "explanation": "Примените те же правила копирования, ссылок и порядка операций к новым значениям. Box b = a создаёт новый объект с копией 4. Изменение b.v до 9 не затрагивает a. Присваивание a = b обновляет существующий a, после чего оба значения равны 9."
+    }
+  ],
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Проверьте граничный сценарий отдельно. Для ссылочного результата сравните адреса, для потока — состояние и прежнее значение объекта."
+  ],
+  "filePath": "student/day-01/d01-v2-p02/solution.hpp",
+  "starterFiles": {
+    "answer.json": "{\"output\": \"\", \"explanation\": \"\", \"trace\": {}, \"variant\": 0}"
+  }
+}

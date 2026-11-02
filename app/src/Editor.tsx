@@ -28,11 +28,13 @@ export function Editor({
   onChange,
   theme,
   filename,
+  readOnly = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   theme: string;
   filename: string;
+  readOnly?: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null),
     view = useRef<EditorView | null>(null),
@@ -46,6 +48,8 @@ export function Editor({
         doc: value,
         extensions: [
           lineNumbers(),
+          EditorState.readOnly.of(readOnly),
+          EditorView.editable.of(!readOnly),
           highlightActiveLineGutter(),
           history(),
           drawSelection(),
@@ -83,7 +87,7 @@ export function Editor({
     };
     // File and theme changes reconstruct the view; ordinary edits preserve history.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, filename]);
+  }, [theme, filename, readOnly]);
   useEffect(() => {
     const v = view.current;
     if (v && v.state.doc.toString() !== value)

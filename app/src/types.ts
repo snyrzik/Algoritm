@@ -16,7 +16,20 @@ export interface Task {
   memory?: boolean;
   starter?: string;
   category?: string;
-  section?: "lecture-theory";
+  difficulty?: string;
+  section?: "lecture-theory" | "stereolab";
+  version?: number;
+  number?: number;
+  group?: "Q" | "S" | "P" | "D" | "A" | "B" | "C";
+  maxPoints?: number;
+  runner?: "choice" | "prediction" | "cpp" | "console";
+  code?: string;
+  variant?: number;
+  traceFields?: {id:string;label:string;options?:{value:string;label:string}[]}[];
+  diagnosisChoices?: {id:string;label:string}[];
+  dependencies?: string[];
+  fixtures?: string[];
+  archived?: boolean;
   lecture?: number;
   chapter?: number;
   protocol?: string;
@@ -57,6 +70,15 @@ export interface Result {
   hintsUsed?: number;
   codeHash?: string;
   answer?: number[];
+  pointsEarned?: number;
+  maxPoints?: number;
+  criticalFailures?: string[];
+  signaturePassed?: boolean;
+  diagnosisCorrect?: boolean;
+  explanation?: string;
+  rules?: string[];
+  variant?: number;
+  feedback?: {expectedOutput:string;explanation:string;trace:{label:string;correct:boolean}[]};
 }
 export interface Attempt extends Result {
   id: number;
@@ -107,4 +129,9 @@ export const statusNames: Record<string, string> = {
   UNVERIFIED: "Память не проверена",
   REVIEW_REQUIRED: "Нужен разбор",
   EXPIRED: "Время истекло",
+  DEPENDENCY_ERROR: "Нужны ваши компоненты",
+  ANALYSIS_REQUIRED: "Сначала разбор",
+  DIAGNOSIS_RECORDED: "Разбор зафиксирован",
+  REPAIR_REQUIRED: "Нужно исправление",
+  STATIC_ERROR: "Нарушен контракт",
 };

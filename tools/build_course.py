@@ -9,7 +9,9 @@ from backend.catalog import ROOT, DAY_NAMES, student_files
 
 def generate():
     from tools.content import questions, syntax, practice, debugging  # noqa: F401
+    day01_v2=(ROOT/'days/day-01-operators/practice-v2/manifest.json').exists()
     for task in TASKS:
+        if day01_v2 and task['day']==1: continue
         day = ROOT / 'days' / f"day-{task['day']:02}-{DAY_NAMES[task['day']-1]}"
         group = {'Q':'quiz', 'S':'syntax', 'P':'prediction', 'D':'debugging', 'C':'practice'}[task['kind']]
         folder = day / group
@@ -49,6 +51,7 @@ int main(int argc, char** argv) {
             (tests_dir / f"{task['id']}.cpp").write_text(harness, encoding='utf-8')
         student_files(task)
     for i,name in enumerate(DAY_NAMES,1):
+        if day01_v2 and i==1: continue
         day = ROOT/'days'/f'day-{i:02}-{name}'
         tasks = [t for t in TASKS if t['day']==i]
         counts = ', '.join(f'{k}: {sum(t["kind"]==k for t in tasks)}' for k in ('Q','S','P','D','C'))
@@ -56,6 +59,7 @@ int main(int argc, char** argv) {
         (day/'README.md').write_text(f'# День {i}. {TITLES[i-1]}\n\n4–6 часов основной работы; сложные задачи могут потребовать продолжения.\n\n{counts}\n\nТемы: '+', '.join(TOPICS[i-1])+f'\n\nВсе задания обязательны, кроме явно обозначенного расширения. Незакрытые задания остаются долгами.\n\n| ID | Блок / уровень | Задание | Ориентир |\n|---|---|---|---|\n{rows}\n',encoding='utf-8')
     metadata = [dict(id=i+1, title=t, subtitle=['Классы, арифметика и потоки', 'Владение ресурсом и безопасность', 'От вывода типа к специализации', 'Архитектура, полиморфизм и типы', 'Собственный контейнер TSequence<T>'][i], topics=TOPICS[i], duration='4–6 часов') for i,t in enumerate(TITLES)]
     (ROOT/'days'/'course.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2),encoding='utf-8')
-    print(f'Course ready: {len(TASKS)} exercises. Existing student files preserved.')
+    from backend.catalog import catalog
+    print(f'Course ready: {len(catalog())} active exercises. Existing student files preserved.')
 
 if __name__ == '__main__': generate()

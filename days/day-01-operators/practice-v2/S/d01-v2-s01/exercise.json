@@ -1,0 +1,47 @@
+{
+  "id": "d01-v2-s01",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "S",
+  "kind": "S",
+  "level": "A",
+  "number": 1,
+  "title": "S01 · Сначала создаём",
+  "prompt": "Напишите Score с закрытым int value_, явным конструктором из int и методом value, читающим число для const-объекта. Самостоятельно выберите полные сигнатуры. Конструктор без аргументов не требуется.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 5,
+  "order": 101,
+  "tags": [
+    "StereoLab",
+    "Синтаксис"
+  ],
+  "tests": [
+    {
+      "name": "Поведение по контракту",
+      "code": "const Score a(7),b(-3); CHECK(a.value()==7 && b.value()==-3);",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    }
+  ],
+  "checks": "static_assert(!std::is_convertible_v<int,Score>); static_assert(std::is_same_v<decltype(std::declval<const Score&>().value()),int>);",
+  "prefix": "",
+  "suffix": "",
+  "publicChecks": [
+    "Компиляция и типы",
+    "Поведение и граничные случаи"
+  ],
+  "starter": "// StereoLab · День 1, новая практика.\n// Напишите решение самостоятельно. Добавьте нужные заголовки.\n",
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nconst Score value(3); (void)value.value();"
+  ],
+  "filePath": "student/day-01/d01-v2-s01/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

@@ -26,13 +26,15 @@ def fixture(body, tests=None, memory=False):
 
 class ContentTests(unittest.TestCase):
     def test_counts_and_unique_ids(self):
-        items=catalog(); self.assertEqual(len(items),292); self.assertEqual(len({t['id'] for t in items}),292)
-        for day,minimums in {1:[15,18,5,6,8],2:[15,18,5,8,8],3:[15,20,5,8,9],4:[18,20,5,8,8],5:[30,20,5,10,3]}.items():
+        items=catalog(); self.assertEqual(len(items),288); self.assertEqual(len({t['id'] for t in items}),288)
+        for day,minimums in {1:[16,14,6,6,6],2:[15,18,5,8,8],3:[15,20,5,8,9],4:[18,20,5,8,8],5:[30,20,5,10,3]}.items():
             for kind,count in zip('QSPDC',minimums): self.assertGreaterEqual(sum(t['day']==day and t['kind']==kind for t in items),count)
     def test_questions_have_valid_answers_and_explanations(self):
         for t in catalog():
             self.assertGreater(len(t['prompt']),20,t['id'])
             if t['kind'] in ('Q','P'):
+                if t.get('runner')=='prediction':
+                    self.assertTrue(t['expectedOutput']);self.assertTrue(t['traceAnswer']);continue
                 self.assertTrue(t['answer']); self.assertEqual(len(t['options']),len(t['optionExplanations']))
                 self.assertTrue(all(type(i) is int and 0<=i<len(t['options']) for i in t['answer']))
                 self.assertGreater(len(t['explanation']),30)
@@ -43,9 +45,12 @@ class ContentTests(unittest.TestCase):
     def test_every_cpp_task_has_real_harness(self):
         for t in catalog():
             if t['kind'] in ('S','D','C'):
+                if t.get('runner')=='console':
+                    from backend.day01_v2.console import cases
+                    self.assertGreaterEqual(len(cases()),10);continue
                 self.assertTrue(t['tests'],t['id'])
                 day=next(p for p in Path(t['_path']).parents if p.name.startswith('day-'))
-                harness=day/'tests'/f"{t['id']}.cpp"
+                harness=day/('practice-v2/tests' if t.get('version')==2 else 'tests')/f"{t['id']}.cpp"
                 self.assertTrue(harness.is_file(),t['id'])
                 self.assertIn('candidate.hpp',harness.read_text(encoding='utf-8'))
                 if t['kind']=='C':self.assertGreaterEqual(len(t['tests']),3,t['id'])
@@ -123,7 +128,7 @@ class ApiTests(unittest.TestCase):
         r=c.getresponse();status=r.status;data=json.loads(r.read());c.close();return status,data
     def test_local_session_and_catalog(self):
         status,data=self.request('/api/session');self.assertEqual(status,200);self.assertEqual(data['token'],server.TOKEN)
-        status,data=self.request('/api/course');self.assertEqual(len(data['tasks']),292);self.assertEqual(len(data['days']),5)
+        status,data=self.request('/api/course');self.assertEqual(len(data['tasks']),288);self.assertEqual(len(data['days']),5)
     def test_cross_origin_and_missing_token_rejected(self):
         status,_=self.request('/api/answer/d1-q01',{'answer':[1]},token=False);self.assertEqual(status,403)
         status,_=self.request('/api/answer/d1-q01',{'answer':[1]},origin='http://evil.example');self.assertEqual(status,403)

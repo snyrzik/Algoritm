@@ -1,0 +1,74 @@
+{
+  "id": "d01-v2-p04",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "P",
+  "kind": "P",
+  "level": "A",
+  "number": 4,
+  "title": "P04 · Трассировка 4",
+  "prompt": "Запишите точный вывод и своими словами объясните причины. Затем заполните проверяемую трассировку. Оценка причин опирается на значения и причинные утверждения, а не на поиск слов в тексте.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 6,
+  "order": 204,
+  "tags": [
+    "StereoLab",
+    "Трассировка"
+  ],
+  "code": "#include <iostream>\nstruct Num {\n    int x;\n    explicit Num(int v) : x(v) {}\n    Num& operator+=(const Num& other) { x += other.x; return *this; }\n};\nint main() {\n    Num a(1), b(2), c(4);\n    (a += b) += c;\n    std::cout << a.x << ' ' << b.x;\n}\n",
+  "runner": "prediction",
+  "traceFields": [
+    {
+      "id": "after_first",
+      "label": "a после первого +="
+    },
+    {
+      "id": "after_second",
+      "label": "a после второго +="
+    },
+    {
+      "id": "returned_object",
+      "label": "Куда ссылается результат первого +=?",
+      "options": [
+        {
+          "value": "original",
+          "label": "На исходный a"
+        },
+        {
+          "value": "copy",
+          "label": "На отдельную копию"
+        }
+      ]
+    }
+  ],
+  "expectedOutput": "7 2",
+  "traceAnswer": {
+    "after_first": "3",
+    "after_second": "7",
+    "returned_object": "original"
+  },
+  "explanation": "Первое += увеличивает a с 1 до 3 и возвращает ссылку на a. Второе += действует на том же a и получает 7. b остаётся 2.",
+  "variants": [
+    {
+      "code": "#include <iostream>\nstruct Num {\n    int x;\n    explicit Num(int v) : x(v) {}\n    Num& operator+=(const Num& other) { x += other.x; return *this; }\n};\nint main() {\n    Num a(3), b(5), c(-2);\n    (a += b) += c;\n    std::cout << a.x << ' ' << b.x;\n}\n",
+      "expectedOutput": "6 5",
+      "traceAnswer": {
+        "after_first": "8",
+        "after_second": "6",
+        "returned_object": "original"
+      },
+      "explanation": "Примените те же правила копирования, ссылок и порядка операций к новым значениям. Первое += увеличивает a с 1 до 3 и возвращает ссылку на a. Второе += действует на том же a и получает 7. b остаётся 2."
+    }
+  ],
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Проверьте граничный сценарий отдельно. Для ссылочного результата сравните адреса, для потока — состояние и прежнее значение объекта."
+  ],
+  "filePath": "student/day-01/d01-v2-p04/solution.hpp",
+  "starterFiles": {
+    "answer.json": "{\"output\": \"\", \"explanation\": \"\", \"trace\": {}, \"variant\": 0}"
+  }
+}

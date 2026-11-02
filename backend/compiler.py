@@ -12,24 +12,32 @@ from .catalog import ROOT, DATA
 OUTPUT_LIMIT = 48 * 1024
 _DOCTOR_LOCK = threading.Lock()
 
-def run_process(args, cwd, env=None, timeout=30):
+def run_process(args, cwd, env=None, timeout=30, stdin_text=None, separate_stderr=False):
     started = time.monotonic()
     options = {'creationflags': subprocess.CREATE_NO_WINDOW} if os.name == 'nt' else {'start_new_session': True}
     try:
-        proc = subprocess.Popen([str(a) for a in args], cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **options)
+        proc = subprocess.Popen([str(a) for a in args], cwd=cwd, env=env, stdin=subprocess.PIPE if stdin_text is not None else subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE if separate_stderr else subprocess.STDOUT, **options)
     except OSError as exc:
         return {'code': -1, 'output': str(exc), 'timeout': False, 'truncated': False, 'duration': 0}
     captured = bytearray()
+    errors = bytearray()
     overflow = threading.Event()
-    def read():
+    def read(stream, target):
         while True:
-            chunk = proc.stdout.read(1024)
+            chunk = stream.read(1024)
             if not chunk: break
-            room = max(0, OUTPUT_LIMIT - len(captured))
-            captured.extend(chunk[:room])
+            room = max(0, OUTPUT_LIMIT - len(captured) - len(errors))
+            target.extend(chunk[:room])
             if len(chunk) > room: overflow.set()
-    reader = threading.Thread(target=read, daemon=True)
+    reader = threading.Thread(target=read, args=(proc.stdout,captured), daemon=True)
     reader.start()
+    error_reader = threading.Thread(target=read,args=(proc.stderr,errors),daemon=True) if separate_stderr else None
+    if error_reader:error_reader.start()
+    if stdin_text is not None:
+        def write_input():
+            try:proc.stdin.write(stdin_text.encode('utf-8'));proc.stdin.close()
+            except (OSError,ValueError):pass
+        threading.Thread(target=write_input,daemon=True).start()
     expired = False
     while proc.poll() is None:
         expired = time.monotonic() - started > timeout
@@ -43,14 +51,18 @@ def run_process(args, cwd, env=None, timeout=30):
         time.sleep(.025)
     proc.wait(timeout=5)
     reader.join(timeout=2)
+    if error_reader:error_reader.join(timeout=2)
     proc.stdout.close()
+    if proc.stderr:proc.stderr.close()
     try:
         output = captured.decode('utf-8')
     except UnicodeDecodeError:
         output = captured.decode('oem' if os.name=='nt' else 'utf-8', errors='replace')
     if expired: output += '\nПревышен лимит времени.'
     if overflow.is_set(): output += '\nПревышен лимит вывода.'
-    return {'code': proc.returncode if not expired and not overflow.is_set() else -1, 'output': output, 'timeout': expired, 'truncated': overflow.is_set(), 'duration': round(time.monotonic() - started, 3)}
+    result={'code': proc.returncode if not expired and not overflow.is_set() else -1, 'output': output, 'timeout': expired, 'truncated': overflow.is_set(), 'duration': round(time.monotonic() - started, 3)}
+    if separate_stderr:result['stderr']=errors.decode('utf-8',errors='replace')
+    return result
 
 @functools.lru_cache(maxsize=1)
 def toolchain():
@@ -93,11 +105,11 @@ def compile_cpp(sources, output, includes=(), sanitize=False, timeout=40):
         args = [tc['exe'], *flags, *[f'-I{p}' for p in includes], *sources, '-o', output]
     return run_process(args, Path(output).parent, tc['env'], timeout)
 
-def execute(exe, args=(), timeout=8):
+def execute(exe, args=(), timeout=8, stdin_text=None, separate_stderr=False):
     env = toolchain()['env'].copy()
     env['ASAN_OPTIONS'] = 'alloc_dealloc_mismatch=1:halt_on_error=1' + (':detect_leaks=1' if os.name != 'nt' else '')
     env['UBSAN_OPTIONS'] = 'halt_on_error=1:print_stacktrace=1'
-    return run_process([exe, *args], Path(exe).parent, env, timeout)
+    return run_process([exe, *args], Path(exe).parent, env, timeout, stdin_text, separate_stderr)
 
 def doctor():
     with _DOCTOR_LOCK:

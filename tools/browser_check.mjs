@@ -104,7 +104,7 @@ try {
   await visit("day/1");
   assert.equal(
     await page.$eval("h1", (n) => n.textContent),
-    "Перегрузка операторов",
+    "StereoLab",
   );
   await page.screenshot({
     path: path.join(output, "day-1-dark.png"),
@@ -126,7 +126,7 @@ try {
     fullPage: true,
   });
   await page.click('[aria-label="Сменить тему"]');
-  await visit("task/d1-q01");
+  await visit("task/d01-v2-q01");
   assert.equal(await page.$(".answer-review"), null);
   await page.click(".option");
   await click("Проверить ответ");
@@ -197,7 +197,7 @@ try {
   await visit("review");
   assert.ok(
     (await page.$eval("main", (e) => e.textContent)).includes(
-      "Свободная функция",
+      "Инициализация против присваивания",
     ),
   );
   await visit("report");

@@ -1,0 +1,100 @@
+{
+  "id": "d01-v2-d04",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "D",
+  "kind": "D",
+  "level": "A",
+  "number": 4,
+  "title": "D04 · Code review 4",
+  "prompt": "Position выводится в любой ostream в формате (x,y); поддержите цепочку вывода.\n\nСначала объясните характер проблемы в отдельном поле и отметьте затронутые правила. После фиксации разбора исправьте код. Строка с дефектом заранее не отмечается.",
+  "maxPoints": 3,
+  "required": true,
+  "minutes": 12,
+  "order": 304,
+  "tags": [
+    "StereoLab",
+    "Code review"
+  ],
+  "tests": [
+    {
+      "name": "Поток и цепочка",
+      "code": "const Position p{1,2};std::ostringstream out;CHECK(&(out<<p)==&out);out<<char(33);CHECK(out.str()==\"(1,2)!\");",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    },
+    {
+      "name": "Другие значения",
+      "code": "std::ostringstream out;out<<Position{-3,0};CHECK(out.str()==\"(-3,0)\");",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    }
+  ],
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<std::ostream&>()<<std::declval<const Position&>()),std::ostream&>);",
+  "starter": "#include <iostream>\nstruct Position { int x, y; };\nstd::ostream operator<<(std::ostream& out, const Position& p) {\n    out << '(' << p.x << ',' << p.y << ')';\n    return out;\n}\n",
+  "diagnosisChoices": [
+    {
+      "id": "lifetime",
+      "label": "Время жизни объекта и возвращаемого результата"
+    },
+    {
+      "id": "identity",
+      "label": "Ссылочная семантика и изменение исходного объекта"
+    },
+    {
+      "id": "const",
+      "label": "Доступ через константный объект"
+    },
+    {
+      "id": "bounds",
+      "label": "Проверка допустимых индексов"
+    },
+    {
+      "id": "stream_type",
+      "label": "Тип и возвращаемый объект потока"
+    },
+    {
+      "id": "transaction",
+      "label": "Сохранение прежнего состояния при неудаче"
+    },
+    {
+      "id": "initialization",
+      "label": "Инициализация данных до чтения"
+    },
+    {
+      "id": "numeric",
+      "label": "Числовой контракт и погрешность"
+    },
+    {
+      "id": "comparison",
+      "label": "Согласованность операторов сравнения"
+    },
+    {
+      "id": "ownership",
+      "label": "Владение динамическим ресурсом"
+    }
+  ],
+  "diagnosisAnswer": [
+    "stream_type"
+  ],
+  "unsafeStarter": false,
+  "publicChecks": [
+    "Диагностика по правилу языка",
+    "Корректность исправления",
+    "Подтверждённое поведение и границы"
+  ],
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nout << value << \" done\";"
+  ],
+  "diagnosisExplanation": "Position выводится в любой ostream в формате (x,y); поддержите цепочку вывода.",
+  "filePath": "student/day-01/d01-v2-d04/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

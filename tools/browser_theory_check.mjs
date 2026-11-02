@@ -117,7 +117,7 @@ try {
     ),
   );
   const course = await (await fetch(base + "/api/course")).json();
-  assert.equal(course.tasks.filter((t) => t.day === 1).length, 52);
+  assert.equal(course.tasks.filter((t) => t.day === 1).length, 48);
   await click("Читать лекцию");
   await page.waitForSelector(".theory-article");
   assert.ok(
@@ -286,9 +286,9 @@ try {
   await click("Открыть практику A/B/C");
   await page.waitForFunction(() => location.hash === "#/day/1/practice");
   await page.waitForFunction(() =>
-    document.querySelector(".tabs .active")?.textContent.includes("Практика"),
+    document.querySelectorAll(".v2-task-row").length === 3,
   );
-  assert.equal(await page.$$eval(".task-row", (rows) => rows.length), 8);
+  assert.equal(await page.$$eval(".v2-task-row", (rows) => rows.length), 3);
   const progress = await (await fetch(base + "/api/progress")).json();
   assert.ok(!progress.attempts.some((a) => a.status === "PASS"));
   assert.deepEqual(errors, []);

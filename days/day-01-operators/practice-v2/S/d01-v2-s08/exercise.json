@@ -1,0 +1,47 @@
+{
+  "id": "d01-v2-s08",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "S",
+  "kind": "S",
+  "level": "A",
+  "number": 8,
+  "title": "S08 · Индекс и присваивание",
+  "prompt": "Вставьте изменяемую индексацию Triple. obj[i] = value меняет массив. Параметр — std::size_t; i>=3 бросает out_of_range, оставляя массив прежним.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 5,
+  "order": 108,
+  "tags": [
+    "StereoLab",
+    "Синтаксис"
+  ],
+  "tests": [
+    {
+      "name": "Поведение по контракту",
+      "code": "Triple t; t[1]=9; CHECK(t[1]==9 && t[0]==1); expect_throw<std::out_of_range>([&]{t[3]=0;}); CHECK(t[1]==9);",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    }
+  ],
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<Triple&>()[0]),int&>);",
+  "prefix": "#include <cstddef>\n#include <stdexcept>\nclass Triple { int data_[3]={1,2,3}; public:\n",
+  "suffix": "\n};\n",
+  "publicChecks": [
+    "Компиляция и типы",
+    "Поведение и граничные случаи"
+  ],
+  "starter": "// StereoLab · День 1, новая практика.\n// Напишите решение самостоятельно. Добавьте нужные заголовки.\n",
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nvalue[1] = 9;"
+  ],
+  "filePath": "student/day-01/d01-v2-s08/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

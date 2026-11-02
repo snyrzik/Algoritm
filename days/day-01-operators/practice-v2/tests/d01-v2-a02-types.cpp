@@ -1,0 +1,19 @@
+#include "candidate.hpp"
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <cmath>
+#include <cstddef>
+#include <stdexcept>
+#include <type_traits>
+#include <limits>
+#include <utility>
+#include <string>
+#include "support.hpp"
+inline void require_contract(bool ok,const char* contract){if(!ok)throw std::runtime_error(contract);}
+inline bool close_value(double a,double b,double eps=1e-9){return std::abs(a-b)<=eps;}
+static_assert(std::is_same_v<decltype(std::declval<const ChannelMix&>()(std::declval<const StereoSample&>())),StereoSample>);
+static_assert(std::is_same_v<decltype(std::declval<const ChannelMix&>()*std::declval<const ChannelMix&>()),ChannelMix>);
+static_assert(std::is_same_v<decltype(std::declval<const ChannelMix&>()==std::declval<const ChannelMix&>()),bool>);
+static_assert(std::is_same_v<decltype(std::declval<std::ostream&>()<<std::declval<const ChannelMix&>()),std::ostream&>);
+int main(){return 0;}

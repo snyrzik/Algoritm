@@ -1,0 +1,47 @@
+{
+  "id": "d01-v2-s06",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "S",
+  "kind": "S",
+  "level": "A",
+  "number": 6,
+  "title": "S06 · Равенство",
+  "prompt": "Вставьте в Score константный метод сравнения по целому значению. Правый аргумент передаётся без копирования, результат имеет логический смысл.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 5,
+  "order": 106,
+  "tags": [
+    "StereoLab",
+    "Синтаксис"
+  ],
+  "tests": [
+    {
+      "name": "Поведение по контракту",
+      "code": "const Score a(2),b(2),c(3); CHECK(a==b); CHECK(!(a==c));",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    }
+  ],
+  "checks": "using Signature=bool(Score::*)(const Score&)const; static_assert(std::is_same_v<decltype(static_cast<Signature>(&Score::operator==)),Signature>);",
+  "prefix": "class Score { int value_; public: explicit Score(int n):value_(n){} int value()const{return value_;} void add(int n){value_+=n;}\n",
+  "suffix": "\n};\n",
+  "publicChecks": [
+    "Компиляция и типы",
+    "Поведение и граничные случаи"
+  ],
+  "starter": "// StereoLab · День 1, новая практика.\n// Напишите решение самостоятельно. Добавьте нужные заголовки.\n",
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nconst Score a(1), b(2); bool same = (a == b);"
+  ],
+  "filePath": "student/day-01/d01-v2-s06/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

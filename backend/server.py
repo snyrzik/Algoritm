@@ -5,6 +5,8 @@ import random
 import secrets
 import threading
 import time
+import io
+import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -81,6 +83,22 @@ class Handler(BaseHTTPRequestHandler):
             path=urlparse(self.path).path
             parts=path.strip('/').split('/')
             if path=='/api/session': return self.send_json({'token':TOKEN})
+            if path=='/api/day01/summary':
+                from .day01_v2.scoring import summary
+                return self.send_json(summary())
+            if path=='/api/archive/day-1':
+                archived=[t for t in catalog(include_archived=True) if t.get('archived') and t['day']==1]
+                ids={t['id'] for t in archived}
+                migration=DATA/'student/archive/day-01-v1/migration.json'
+                return self.send_json({'tasks':[public_task(t) for t in archived],'attempts':[a for a in storage.history() if a['task'] in ids],'backup':json.loads(migration.read_text(encoding='utf-8')) if migration.exists() else None})
+            if path=='/api/archive/day-1/solutions.zip':
+                folder=(DATA/'student/archive/day-01-v1').resolve()
+                output=io.BytesIO()
+                with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
+                    if folder.exists():
+                        for file in folder.rglob('*'):
+                            if file.is_file() and file.resolve().is_relative_to(folder):archive.write(file,file.relative_to(folder).as_posix())
+                payload=output.getvalue();self.send_response(200);self.send_header('Content-Type','application/zip');self.send_header('Content-Disposition','attachment; filename="day-01-v1-solutions.zip"');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
             if path=='/api/theory/day-1/lecture-1':
                 from .theory import lecture
                 return self.send_json(lecture())
@@ -92,17 +110,26 @@ class Handler(BaseHTTPRequestHandler):
                 task=get_task(parts[2])
                 if not task: return self.send_json({'error':'Задание не найдено'},404)
                 with task_lock(task['id']): files=student_files(task)
+                if task.get('runner')=='prediction':
+                    from .day01_v2.scoring import with_variant
+                    from urllib.parse import parse_qs
+                    try:saved=json.loads(files.get('answer.json','{}')).get('variant',0)
+                    except (ValueError,TypeError):saved=0
+                    requested=parse_qs(urlparse(self.path).query).get('variant',[saved])[0]
+                    task=with_variant(task,int(requested))
                 # Opening a timed syntax item starts its clock before editing.
                 timer_error=None
                 try: check_exam(task)
                 except ValueError as exc: timer_error=str(exc)
-                return self.send_json({'task':public_task(task),'files':files,'revision':revision(files),'history':storage.history(task['id']),'context':{'before':task.get('prefix',''),'after':task.get('suffix','')},'testNames':[{'name':t['name'],'category':t['category']} for t in task.get('tests',[])],'timerError':timer_error,'syntaxDeadline':syntax_deadline(task)})
+                names=[{'name':name,'category':'contract'} for name in task.get('publicChecks',[])] if task.get('version')==2 else [{'name':t['name'],'category':t['category']} for t in task.get('tests',[])]
+                return self.send_json({'task':public_task(task),'files':files,'revision':revision(files),'history':storage.history(task['id']),'context':{'before':task.get('prefix',''),'after':task.get('suffix','')},'testNames':names,'timerError':timer_error,'syntaxDeadline':syntax_deadline(task)})
             if len(parts)==3 and parts[:2]==['api','snapshot']:
                 value=storage.snapshot(int(parts[2]))
                 return self.send_json(value or {'error':'Попытка не найдена'},200 if value else 404)
             if len(parts)==3 and parts[:2]==['api','review']:
                 task=get_task(parts[2])
                 if not task or not any(a['mode']=='answer' for a in storage.history(parts[2])): return self.send_json({'error':'Разбор доступен после ответа'},403)
+                if task.get('runner')=='prediction':return self.send_json(next(a['feedback'] for a in storage.history(task['id']) if a['mode']=='answer'))
                 exam=exam_state()
                 if exam and exam['timed'] and not exam['finished'] and task['day']==5: return self.send_json({'deferred':True,'message':'Разбор откроется после завершения экзамена.'})
                 return self.send_json({k:task[k] for k in ('answer','explanation','optionExplanations')})
@@ -173,8 +200,18 @@ class Handler(BaseHTTPRequestHandler):
                 if action=='answer':
                     if task['kind'] not in ('Q','P'): raise ValueError('Это задание проверяется компилятором')
                     check_exam(task)
+                    if task.get('runner')=='prediction':
+                        from .day01_v2.scoring import prediction
+                        result=prediction(task,body)
+                        return self.send_json(storage.record(task['id'],'answer',result,body))
                     result=grade_answer(task,body.get('answer'))
+                    if task.get('version')==2:result.update(pointsEarned=1 if result['status']=='PASS' else 0,maxPoints=1)
                     return self.send_json(storage.record(task['id'],'answer',result,{'answer':body['answer']}))
+                if action=='diagnosis':
+                    if task.get('version')!=2 or task['kind']!='D':raise ValueError('Диагностика относится к новому Code review Дня 1')
+                    from .day01_v2.scoring import diagnosis
+                    result=diagnosis(task,body)
+                    return self.send_json(storage.record(task['id'],'diagnosis',result,body))
                 if action=='run':
                     if task['kind'] not in ('S','D','C'): raise ValueError('Для этого задания выберите ответ')
                     check_exam(task)
@@ -195,6 +232,9 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     import argparse
     parser=argparse.ArgumentParser(); parser.add_argument('--port',type=int,default=8765); args=parser.parse_args()
+    if (ROOT/'days/day-01-operators/practice-v2/manifest.json').exists():
+        from tools.build_day01_v2 import archive_legacy
+        archive_legacy()
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler)
     server.daemon_threads=True
     print(f'C++ Mastery: http://127.0.0.1:{args.port}/#/day/1',flush=True)

@@ -1,0 +1,48 @@
+{
+  "id": "d01-v2-s13",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "S",
+  "kind": "S",
+  "level": "A",
+  "number": 13,
+  "title": "S13 · Вне класса",
+  "prompt": "Напишите Counter с закрытым int value_, конструктором из int и value() const. Объявите reset(int) внутри класса, а определение вынесите за класс с квалификацией Counter::reset. reset меняет значение и не возвращает результат.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 5,
+  "order": 113,
+  "tags": [
+    "StereoLab",
+    "Синтаксис"
+  ],
+  "tests": [
+    {
+      "name": "Поведение по контракту",
+      "code": "Counter c(7); c.reset(-2); CHECK(c.value()==-2); c.reset(0); CHECK(c.value()==0);",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    }
+  ],
+  "checks": "using Signature=void(Counter::*)(int); static_assert(std::is_same_v<decltype(static_cast<Signature>(&Counter::reset)),Signature>);",
+  "prefix": "",
+  "suffix": "",
+  "publicChecks": [
+    "Компиляция и типы",
+    "Поведение и граничные случаи"
+  ],
+  "starter": "// StereoLab · День 1, новая практика.\n// Напишите решение самостоятельно. Добавьте нужные заголовки.\n",
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nvalue.reset(0);"
+  ],
+  "outsideDefinition": "Counter::reset",
+  "filePath": "student/day-01/d01-v2-s13/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

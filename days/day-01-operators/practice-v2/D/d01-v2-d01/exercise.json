@@ -1,0 +1,100 @@
+{
+  "id": "d01-v2-d01",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "D",
+  "kind": "D",
+  "level": "A",
+  "number": 1,
+  "title": "D01 · Code review 1",
+  "prompt": "Сложение двух const Score создаёт независимое значение суммы; операнды сохраняются.\n\nСначала объясните характер проблемы в отдельном поле и отметьте затронутые правила. После фиксации разбора исправьте код. Строка с дефектом заранее не отмечается.",
+  "maxPoints": 3,
+  "required": true,
+  "minutes": 12,
+  "order": 301,
+  "tags": [
+    "StereoLab",
+    "Code review"
+  ],
+  "tests": [
+    {
+      "name": "Новый результат и сохранение const-операндов",
+      "code": "const Score a(2),b(5);const Score c=a+b;CHECK(c.n==7 && a.n==2 && b.n==5);",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    },
+    {
+      "name": "Независимость результата",
+      "code": "Score a(2),b(5);Score c=a+b;c.n=99;CHECK(a.n==2 && b.n==5);",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    }
+  ],
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<const Score&>()+std::declval<const Score&>()),Score>);",
+  "starter": "struct Score {\n    int n;\n    explicit Score(int x) : n(x) {}\n    Score& operator+(const Score& other) const {\n        Score result(n + other.n);\n        return result;\n    }\n};\n",
+  "diagnosisChoices": [
+    {
+      "id": "lifetime",
+      "label": "Время жизни объекта и возвращаемого результата"
+    },
+    {
+      "id": "identity",
+      "label": "Ссылочная семантика и изменение исходного объекта"
+    },
+    {
+      "id": "const",
+      "label": "Доступ через константный объект"
+    },
+    {
+      "id": "bounds",
+      "label": "Проверка допустимых индексов"
+    },
+    {
+      "id": "stream_type",
+      "label": "Тип и возвращаемый объект потока"
+    },
+    {
+      "id": "transaction",
+      "label": "Сохранение прежнего состояния при неудаче"
+    },
+    {
+      "id": "initialization",
+      "label": "Инициализация данных до чтения"
+    },
+    {
+      "id": "numeric",
+      "label": "Числовой контракт и погрешность"
+    },
+    {
+      "id": "comparison",
+      "label": "Согласованность операторов сравнения"
+    },
+    {
+      "id": "ownership",
+      "label": "Владение динамическим ресурсом"
+    }
+  ],
+  "diagnosisAnswer": [
+    "lifetime"
+  ],
+  "unsafeStarter": true,
+  "publicChecks": [
+    "Диагностика по правилу языка",
+    "Корректность исправления",
+    "Подтверждённое поведение и границы"
+  ],
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nauto result = a + b; // Сравните время жизни result и локальных объектов."
+  ],
+  "diagnosisExplanation": "Сложение двух const Score создаёт независимое значение суммы; операнды сохраняются.",
+  "filePath": "student/day-01/d01-v2-d01/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

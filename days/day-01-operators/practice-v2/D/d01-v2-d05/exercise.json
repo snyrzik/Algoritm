@@ -1,0 +1,108 @@
+{
+  "id": "d01-v2-d05",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "D",
+  "kind": "D",
+  "level": "A",
+  "number": 5,
+  "title": "D05 · Code review 5",
+  "prompt": "Duo читается в формате a,b с пробелами. При любой неудаче ставится failbit и сохраняются оба прежних значения. Верните переданный поток.\n\nСначала объясните характер проблемы в отдельном поле и отметьте затронутые правила. После фиксации разбора исправьте код. Строка с дефектом заранее не отмечается.",
+  "maxPoints": 3,
+  "required": true,
+  "minutes": 12,
+  "order": 305,
+  "tags": [
+    "StereoLab",
+    "Code review"
+  ],
+  "tests": [
+    {
+      "name": "Правильный ввод с пробелами",
+      "code": "Duo d{7,8};std::istringstream in(\" 3 , 4 \");CHECK(&(in>>d)==&in && !in.fail() && d.first==3 && d.second==4);",
+      "category": "functional",
+      "critical": false,
+      "weight": 1
+    },
+    {
+      "name": "Неверный разделитель: откат",
+      "code": "Duo d{7,8};std::istringstream in(\"3;4\");in>>d;CHECK(in.fail() && d.first==7 && d.second==8);",
+      "category": "negative",
+      "critical": true,
+      "weight": 1
+    },
+    {
+      "name": "Неполное значение и bad: откат",
+      "code": "for(const char* s:{\"3,\",\"bad\"}){Duo d{7,8};std::istringstream in(s);in>>d;CHECK(in.fail() && d.first==7 && d.second==8);}",
+      "category": "negative",
+      "critical": true,
+      "weight": 1
+    }
+  ],
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<std::istream&>()>>std::declval<Duo&>()),std::istream&>);",
+  "starter": "#include <istream>\nstruct Duo {\n    int first, second;\n};\nstd::istream& operator>>(std::istream& in, Duo& d) {\n    char comma;\n    in >> d.first >> comma >> d.second;\n    if (comma != ',') in.setstate(std::ios::failbit);\n    return in;\n}\n",
+  "diagnosisChoices": [
+    {
+      "id": "lifetime",
+      "label": "Время жизни объекта и возвращаемого результата"
+    },
+    {
+      "id": "identity",
+      "label": "Ссылочная семантика и изменение исходного объекта"
+    },
+    {
+      "id": "const",
+      "label": "Доступ через константный объект"
+    },
+    {
+      "id": "bounds",
+      "label": "Проверка допустимых индексов"
+    },
+    {
+      "id": "stream_type",
+      "label": "Тип и возвращаемый объект потока"
+    },
+    {
+      "id": "transaction",
+      "label": "Сохранение прежнего состояния при неудаче"
+    },
+    {
+      "id": "initialization",
+      "label": "Инициализация данных до чтения"
+    },
+    {
+      "id": "numeric",
+      "label": "Числовой контракт и погрешность"
+    },
+    {
+      "id": "comparison",
+      "label": "Согласованность операторов сравнения"
+    },
+    {
+      "id": "ownership",
+      "label": "Владение динамическим ресурсом"
+    }
+  ],
+  "diagnosisAnswer": [
+    "transaction",
+    "initialization"
+  ],
+  "unsafeStarter": true,
+  "publicChecks": [
+    "Диагностика по правилу языка",
+    "Корректность исправления",
+    "Подтверждённое поведение и границы"
+  ],
+  "runner": "cpp",
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Небольшой фрагмент для собственного теста (это не реализация):\nauto before = value; in >> value; // Сравните состояния при fail()."
+  ],
+  "diagnosisExplanation": "Duo читается в формате a,b с пробелами. При любой неудаче ставится failbit и сохраняются оба прежних значения. Верните переданный поток.",
+  "filePath": "student/day-01/d01-v2-d05/solution.hpp",
+  "staticChecks": [
+    "day1_no_resources"
+  ]
+}

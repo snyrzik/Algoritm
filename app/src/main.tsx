@@ -59,11 +59,18 @@ import {
   statusNames,
 } from "./types";
 import "./styles.css";
+import "./day01/practice.css";
 import { Day01TheoryEntry } from "./theory/Day01TheoryEntry";
 const Theory = lazy(() => import("./theory/Theory"));
 const TheoryMarkdown = lazy(() =>
   import("./theory/Markdown").then((module) => ({ default: module.Markdown })),
 );
+const Day01Practice = lazy(() => import("./day01/Practice"));
+const Day01Archive = lazy(() => import("./day01/Practice").then(module=>({default:module.Day01Archive})));
+const Day01ScorePanel = lazy(() => import("./day01/Practice").then(module=>({default:module.ScorePanel})));
+const Prediction = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Prediction})));
+const Diagnosis = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Diagnosis})));
+const stagePaths:Record<string,string>={Q:'quiz',S:'syntax',P:'prediction',D:'debugging',A:'A',B:'B',C:'C'};
 const Editor = lazy(() =>
   import("./Editor").then((module) => ({ default: module.Editor })),
 );
@@ -75,7 +82,7 @@ type Page =
   | "review"
   | "report"
   | "settings"
-  | "theory";
+  | "theory" | "archive";
 function route() {
   const p = location.hash.replace(/^#\/?/, "").split("/");
   return {
@@ -87,6 +94,7 @@ function route() {
 }
 function pct(tasks: Task[], latest: Record<string, Attempt>) {
   const r = tasks.filter((t) => t.required);
+  if(r.length&&r.every(t=>t.version===2&&t.day===1))return Math.round(r.reduce((sum,t)=>sum+(latest[t.id]?.pointsEarned||0),0)/r.reduce((sum,t)=>sum+(t.maxPoints||0),0)*100);
   return r.length
     ? Math.round(
         (r.filter((t) => latest[t.id]?.status === "PASS").length / r.length) *
@@ -159,7 +167,7 @@ function App() {
     changeGeneration = useRef(0);
   const latest: Record<string, Attempt> = {};
   for (const a of attempts)
-    if (a.mode !== "compile" && !latest[a.task]) latest[a.task] = a;
+    if (!['compile','diagnosis'].includes(a.mode) && !latest[a.task]) latest[a.task] = a;
   const completed = tasks.filter(
       (t) => t.required && latest[t.id]?.status === "PASS",
     ).length,
@@ -303,6 +311,7 @@ function App() {
           : "Все изменения сохранены",
       );
       setFilename(
+        data.task.runner === "console" ? "main.cpp" :
         data.task.kind === "Q" || data.task.kind === "P"
           ? "notes.md"
           : "solution.hpp",
@@ -362,10 +371,10 @@ function App() {
     window.addEventListener("focus", focus);
     return () => window.removeEventListener("focus", focus);
   }, [locationState, busy]);
-  function edit(value: string) {
+  function edit(value: string, name: string = filename) {
     const item = editing.current;
     if (!item) return;
-    item.files = { ...item.files, [filename]: value };
+    item.files = { ...item.files, [name]: value };
     item.dirty = true;
     setFiles(item.files);
     setDirty(true);
@@ -465,6 +474,8 @@ function App() {
   }
   function nextTask() {
     if (!detail) return;
+    if(detail.task.archived){go('archive/1');return;}
+    if(detail.task.version===2){const list=tasks.filter(t=>t.group===detail.task.group&&t.version===2);const i=list.findIndex(t=>t.id===detail.task.id);go(i+1<list.length?'task/'+list[i+1].id:'day/1/'+stagePaths[detail.task.group!]);return;}
     if (detail.task.section === "lecture-theory") {
       go(
         `theory/1/${detail.task.chapter! < 4 ? "chapter-" + (detail.task.chapter! + 1) : "summary"}`,
@@ -629,6 +640,7 @@ function App() {
   }
   function Dashboard({ home = false }: { home?: boolean }) {
     const dt = home ? tasks : tasks.filter((t) => t.day === currentDay);
+    if(!home&&currentDay===1&&dt.some(t=>t.version===2))return <Suspense fallback={<div className="loading-state">Открываем StereoLab…</div>}><Day01Practice tasks={dt} attempts={attempts} go={go} section={locationState.section} dayCards={dayCards()} theory={<Day01TheoryEntry attempts={attempts} go={go}/>}/></Suspense>;
     if (currentDay === 5 && exam && !exam.finished)
       dt.sort((a, b) =>
         a.kind === "S" && b.kind === "S"
@@ -934,6 +946,7 @@ function App() {
       <>
         <div className="result-summary">
           <Badge status={result.status} />
+          {result.maxPoints!==undefined&&<strong className="v2-result-points">{result.pointsEarned||0} / {result.maxPoints} баллов</strong>}
           <span>{result.message}</span>
         </div>
         {consoleTab === "compile" ? (
@@ -1026,19 +1039,20 @@ function App() {
     const quiz = t.kind === "Q" || t.kind === "P";
     return (
       <>
+        {t.archived&&<div className="v2-archive-banner"><p>Архивная практика v1. Решения и история сохранены; эти результаты не учитываются в StereoLab.</p><button onClick={()=>go('archive/1')}>К архиву</button></div>}
         <div className="exercise-heading">
           <button
             className="back-link"
             onClick={() =>
               go(
-                t.section === "lecture-theory"
+                t.archived ? 'archive/1' : t.version===2 ? 'day/1/'+stagePaths[t.group!] : t.section === "lecture-theory"
                   ? `theory/1/chapter-${t.chapter}`
                   : "day/" + t.day,
               )
             }
           >
             <ArrowLeft size={15} />
-            {t.section === "lecture-theory"
+            {t.version===2 ? 'StereoLab · '+t.group : t.section === "lecture-theory"
               ? `Лекция № 1 · Глава ${t.chapter}`
               : `День 0${t.day}`}
           </button>
@@ -1072,7 +1086,8 @@ function App() {
             )}
           </div>
         </div>
-        {quiz ? (
+        {t.version===2&&t.kind==='D'&&<Suspense fallback={<p className="muted">Открывается разбор…</p>}><Diagnosis task={t} files={files} history={hs} edit={edit} persist={persist} refresh={refresh}/></Suspense>}
+        {t.version===2&&t.kind==='P'?<Suspense fallback={<p>Открывается трассировка…</p>}><Prediction task={t} files={files} edit={edit} persist={persist} onResult={setResult} refresh={refresh}/></Suspense>:quiz ? (
           <div className="quiz-layout">
             <section className="quiz-card">
               <div className="eyebrow">
@@ -1226,8 +1241,8 @@ function App() {
                 {sideTab === "condition" ? (
                   <>
                     <div className="eyebrow">КОНТРАКТ ЗАДАНИЯ</div>
-                    {t.section === "lecture-theory" ? (
-                      <div className="lecture-task-condition">
+                    {t.section === "lecture-theory" || t.version===2 ? (
+                      <div className={t.version===2?'rich-task-condition':'lecture-task-condition'}>
                         <Suspense fallback={<p>Открывается условие…</p>}>
                           <TheoryMarkdown source={t.prompt} />
                         </Suspense>
@@ -1389,6 +1404,7 @@ function App() {
                   fallback={<div className="empty">Загружается редактор…</div>}
                 >
                   <Editor
+                    readOnly={t.version===2&&t.kind==='D'&&!hs.some(a=>a.mode==='diagnosis')}
                     value={files[filename] || ""}
                     onChange={edit}
                     theme={theme}
@@ -1433,13 +1449,13 @@ function App() {
                   )}
                 </span>
                 <div>
-                  <button disabled={busy} onClick={() => run("compile")}>
+                  <button disabled={busy || (t.version===2&&t.kind==='D'&&!hs.some(a=>a.mode==='diagnosis'))} onClick={() => run("compile")}>
                     <Braces size={15} />
                     Скомпилировать
                   </button>
                   <button
                     className="primary"
-                    disabled={busy}
+                    disabled={busy || (t.version===2&&t.kind==='D'&&!hs.some(a=>a.mode==='diagnosis'))}
                     onClick={() => run("test")}
                   >
                     {busy ? (
@@ -1492,7 +1508,7 @@ function App() {
             Все попытки сохраняются локально
           </span>
           <button onClick={nextTask}>
-            {t.section === "lecture-theory"
+            {t.archived?'К архиву':t.version===2?'Следующее задание / сводка':t.section === "lecture-theory"
               ? t.chapter === 4
                 ? "К итогам лекции"
                 : "К следующей главе"
@@ -1652,6 +1668,7 @@ function App() {
             Экспорт истории
           </button>
         </div>
+        {tasks.some(t=>t.version===2)&&<Suspense fallback={<p className="muted">Результаты StereoLab…</p>}><Day01ScorePanel attempts={attempts} go={go}/></Suspense>}
         <div className="report-banner">
           <GraduationCap size={28} />
           <div>
@@ -2028,6 +2045,8 @@ function App() {
               <RefreshCw className="spin" />
               <p>Подготавливаем рабочее пространство…</p>
             </div>
+          ) : locationState.page === "archive" ? (
+            <Suspense fallback={<div className="loading-state">Открываем архив…</div>}><Day01Archive go={go}/></Suspense>
           ) : locationState.page === "theory" ? (
             locationState.key === "1" ? (
               <Suspense

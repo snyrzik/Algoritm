@@ -29,11 +29,13 @@ class TheoryContentTests(unittest.TestCase):
         protected=json.loads((ROOT/'tests/day01_theory_legacy.sha256.json').read_text(encoding='utf-8'))
         self.assertEqual(len(protected),763)
         for name,digest in protected.items():
+            if name=='days/day-01-operators/README.md':name='days/day-01-operators/archive/v1/README.md'
             self.assertEqual(hashlib.sha256((ROOT/name).read_bytes().replace(b'\r\n',b'\n')).hexdigest(),digest,name)
     def test_new_checks_do_not_replace_or_renumber_existing_tasks(self):
         old=catalog(); all_tasks=catalog(include_theory=True)
-        self.assertEqual(len(old),292); self.assertEqual(len(all_tasks),296)
-        self.assertEqual(sum(t['day']==1 for t in old),52)
+        self.assertEqual(len(old),288); self.assertEqual(len(all_tasks),292)
+        self.assertEqual(sum(t['day']==1 for t in old),48)
+        self.assertEqual(len(catalog(include_theory=True,include_archived=True)),344)
         extra=[t for t in all_tasks if t['id'] not in {old_task['id'] for old_task in old}]
         self.assertEqual([t['id'] for t in extra],CHECK_IDS)
         self.assertEqual(sum(len(t['tests']) for t in extra),40)
@@ -63,7 +65,7 @@ class TheoryApiTests(unittest.TestCase):
     def test_theory_route_is_only_for_day_one_lecture_one(self):
         status,data=self.request('/api/theory/day-1/lecture-1');self.assertEqual(status,200);self.assertEqual(len(data['checks']),4)
         self.assertEqual(self.request('/api/theory/day-2/lecture-1')[0],404)
-        _,course=self.request('/api/course');self.assertEqual(len(course['tasks']),292)
+        _,course=self.request('/api/course');self.assertEqual(len(course['tasks']),288)
     def test_new_check_uses_same_editor_api_and_adapter_allowlist(self):
         _,detail=self.request('/api/task/d1-l1-c01')
         self.assertEqual(detail['task']['section'],'lecture-theory');self.assertIn('test_adapter.hpp',detail['files'])

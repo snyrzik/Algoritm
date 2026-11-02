@@ -1,0 +1,74 @@
+{
+  "id": "d01-v2-p06",
+  "day": 1,
+  "version": 2,
+  "section": "stereolab",
+  "group": "P",
+  "kind": "P",
+  "level": "A",
+  "number": 6,
+  "title": "P06 · Трассировка 6",
+  "prompt": "Запишите точный вывод и своими словами объясните причины. Затем заполните проверяемую трассировку. Оценка причин опирается на значения и причинные утверждения, а не на поиск слов в тексте.",
+  "maxPoints": 2,
+  "required": true,
+  "minutes": 6,
+  "order": 206,
+  "tags": [
+    "StereoLab",
+    "Трассировка"
+  ],
+  "code": "#include <iostream>\n#include <sstream>\nint main() {\n    std::istringstream in(\"12 x 8\");\n    int a = 0;\n    int b = 99;\n    in >> a >> b;\n    std::cout << a << ' ' << in.fail();\n}\n",
+  "runner": "prediction",
+  "traceFields": [
+    {
+      "id": "successful_reads",
+      "label": "Число успешных извлечений"
+    },
+    {
+      "id": "failed_read",
+      "label": "Номер неудачного извлечения"
+    },
+    {
+      "id": "failure_kind",
+      "label": "Как сообщается ошибка при стандартной маске?",
+      "options": [
+        {
+          "value": "state",
+          "label": "Битами состояния потока"
+        },
+        {
+          "value": "exception",
+          "label": "Обязательным исключением runtime_error"
+        }
+      ]
+    }
+  ],
+  "expectedOutput": "12 1",
+  "traceAnswer": {
+    "successful_reads": "1",
+    "failed_read": "2",
+    "failure_kind": "state"
+  },
+  "explanation": "Первое извлечение успешно записывает 12 в a. Второе пытается прочитать int из x и устанавливает failbit. Выводятся только a и fail(), значение b в ответ не входит.",
+  "variants": [
+    {
+      "code": "#include <iostream>\n#include <sstream>\nint main() {\n    std::istringstream in(\"15 bad 3\");\n    int a = 0;\n    int b = 99;\n    in >> a >> b;\n    std::cout << a << ' ' << in.fail();\n}\n",
+      "expectedOutput": "15 1",
+      "traceAnswer": {
+        "successful_reads": "1",
+        "failed_read": "2",
+        "failure_kind": "state"
+      },
+      "explanation": "Примените те же правила копирования, ссылок и порядка операций к новым значениям. Первое извлечение успешно записывает 12 в a. Второе пытается прочитать int из x и устанавливает failbit. Выводятся только a и fail(), значение b в ответ не входит."
+    }
+  ],
+  "hints": [
+    "Сопоставьте контракт с поведением конкретного объекта до и после операции.",
+    "Разделите тип результата, константность и факт изменения исходного объекта.",
+    "Проверьте граничный сценарий отдельно. Для ссылочного результата сравните адреса, для потока — состояние и прежнее значение объекта."
+  ],
+  "filePath": "student/day-01/d01-v2-p06/solution.hpp",
+  "starterFiles": {
+    "answer.json": "{\"output\": \"\", \"explanation\": \"\", \"trace\": {}, \"variant\": 0}"
+  }
+}
