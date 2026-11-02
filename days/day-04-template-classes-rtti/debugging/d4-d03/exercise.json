@@ -1,0 +1,32 @@
+{
+  "id": "d4-d03",
+  "day": 4,
+  "kind": "D",
+  "title": "Зависимая база",
+  "prompt": "Derived<T> наследует Base<T> и возвращает protected value_ через get() const.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Шаблоны классов"
+  ],
+  "required": true,
+  "starter": "template<class T>struct Base{protected:T value_{};};\ntemplate<class T>struct Derived:Base{T get()const{return value_;}};\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Наследование",
+      "code": "CHECK(Derived<int>{}.get()==0); CHECK((std::is_base_of_v<Base<int>,Derived<int>>));",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 276,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-04/d4-d03/solution.hpp"
+}

@@ -1,0 +1,37 @@
+{
+  "id": "d3-d05",
+  "day": 3,
+  "kind": "D",
+  "title": "Сравнение адресов",
+  "prompt": "maximum(const char*,const char*) возвращает лексикографический максимум (при равенстве первый), nullptr → invalid_argument.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Template deduction"
+  ],
+  "required": true,
+  "starter": "const char* maximum(const char* a,const char* b){return a>b?a:b;}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Порядок содержимого",
+      "code": "char a[][8]={\"z\",\"aa\"}; CHECK(maximum(a[0],a[1])==a[0]); CHECK(maximum(a[1],a[0])==a[0]);",
+      "category": "functional"
+    },
+    {
+      "name": "nullptr",
+      "code": "expect_throw<std::invalid_argument>([]{maximum(nullptr,\"x\");});",
+      "category": "negative"
+    }
+  ],
+  "memory": false,
+  "order": 270,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-03/d3-d05/solution.hpp"
+}

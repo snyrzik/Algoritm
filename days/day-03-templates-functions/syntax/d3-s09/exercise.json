@@ -1,0 +1,32 @@
+{
+  "id": "d3-s09",
+  "day": 3,
+  "kind": "S",
+  "title": "Тип индекса",
+  "prompt": "Напишите шаблон index_of_min(const T*,std::size_t), результат size_t. Пустой массив или nullptr → invalid_argument; при равных минимумах первый индекс.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Template deduction"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "static_assert(std::is_same_v<decltype(index_of_min(static_cast<const int*>(nullptr),0)),std::size_t>);",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "int a[]={3,1,1}; CHECK(index_of_min(a,3)==1); expect_throw<std::invalid_argument>([&]{index_of_min(a,0);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 163,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-03/d3-s09/solution.hpp"
+}

@@ -1,0 +1,93 @@
+{
+  "id": "d2-c06",
+  "day": 2,
+  "kind": "C",
+  "title": "B3 · erase",
+  "prompt": "Создайте CMyString на собственном динамическом массиве new char[], без std::string или готовых контейнеров в реализации хранения. Обязательны: пустой конструктор, explicit-конструктор из const char*, правило трёх, size() const -> std::size_t, c_str() const -> const char*, две версии [] (char& и const char&), ==, != по содержимому. nullptr в конструкторе → invalid_argument. Индексы [0,size()) доступны; остальные → out_of_range. Пустая строка имеет валидный c_str() с нулём. Копии независимы, самоприсваивание допустимо, присваивание возвращает CMyString&. При неудаче копирования исходное состояние сохраняется. Все размеры включают место для нуля; переполнение → length_error. Добавьте void erase(std::size_t position,std::size_t count). Допустим position<=size и count<=size-position, иначе out_of_range без изменения строки. count=0 допустим, в том числе erase(size(),0). Нельзя перевыделять память: адрес c_str() сохраняется. Сдвиг сохраняет завершающий ноль.",
+  "level": "B",
+  "minutes": 35,
+  "tags": [
+    "C-строки",
+    "Exception safety"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Пустая строка",
+      "code": "const CMyString s; CHECK(s.size()==0 && s.c_str()!=nullptr && s.c_str()[0]==0);",
+      "category": "boundary"
+    },
+    {
+      "name": "Буфер и ноль",
+      "code": "char raw[]=\"hello\"; const CMyString s(raw); raw[0]=char(88); CHECK(s.size()==5 && std::strcmp(s.c_str(),\"hello\")==0 && s.c_str()[s.size()]==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Глубокая копия",
+      "code": "CMyString a(\"cat\"); CMyString b(a); b[0]=char(98); CHECK(std::strcmp(a.c_str(),\"cat\")==0 && std::strcmp(b.c_str(),\"bat\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Присваивание и самоприсваивание",
+      "code": "CMyString a(\"a\"),b(\"bb\"),c(\"ccc\"); CHECK(&(a=b=c)==&a); b[0]=char(88); CHECK(std::strcmp(a.c_str(),\"ccc\")==0); a=a; CHECK(std::strcmp(a.c_str(),\"ccc\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Независимое время жизни",
+      "code": "CMyString outside; {CMyString inside(\"alive\"); outside=inside;} CHECK(std::strcmp(outside.c_str(),\"alive\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Неверные аргументы",
+      "code": "expect_throw<std::invalid_argument>([]{CMyString s(nullptr);}); CMyString a(\"a\"); const auto& b=a; expect_throw<std::out_of_range>([&]{(void)a[1];}); expect_throw<std::out_of_range>([&]{(void)b[9];});",
+      "category": "negative"
+    },
+    {
+      "name": "Сравнения",
+      "code": "CHECK(CMyString(\"same\")==CMyString(\"same\")); CHECK(CMyString(\"a\")!=CMyString(\"aa\")); CHECK(CMyString()==CMyString(\"\"));",
+      "category": "functional"
+    },
+    {
+      "name": "Повторные циклы владения",
+      "code": "for(int i=0;i<100;++i){CMyString a(\"resource\"); CMyString b(a); CMyString c; c=b; CHECK(c==a);}",
+      "category": "memory"
+    },
+    {
+      "name": "Отказ выделения при присваивании",
+      "code": "CMyString a(\"old\"),b(\"replacement\"); mastery_memory::fail_after=0; bool caught=false; try{a=b;}catch(const std::bad_alloc&){caught=true;} mastery_memory::fail_after=-1; if(caught){CHECK(std::strcmp(a.c_str(),\"old\")==0);}else{CHECK(std::strcmp(a.c_str(),\"replacement\")==0);}",
+      "category": "exception"
+    },
+    {
+      "name": "Удаление середины без аллокации",
+      "code": "CMyString s(\"abcdef\"); const char* address=s.c_str(); mastery_memory::fail_after=0; s.erase(2,2); mastery_memory::fail_after=-1; CHECK(s==CMyString(\"abef\") && s.c_str()==address);",
+      "category": "functional"
+    },
+    {
+      "name": "Удаление конца и всей строки",
+      "code": "CMyString s(\"abcdef\"); s.erase(4,2); CHECK(s==CMyString(\"abcd\")); s.erase(0,4); CHECK(s.size()==0 && s.c_str()[0]==0);",
+      "category": "boundary"
+    },
+    {
+      "name": "Нулевой диапазон",
+      "code": "CMyString s(\"abc\"); s.erase(3,0); CHECK(s==CMyString(\"abc\")); CMyString e; e.erase(0,0); CHECK(e.size()==0);",
+      "category": "boundary"
+    },
+    {
+      "name": "Неверный диапазон",
+      "code": "CMyString s(\"abc\"); expect_throw<std::out_of_range>([&]{s.erase(2,2);}); expect_throw<std::out_of_range>([&]{s.erase(4,0);}); expect_throw<std::out_of_range>([&]{s.erase(1,std::numeric_limits<std::size_t>::max());}); CHECK(s==CMyString(\"abc\"));",
+      "category": "negative"
+    }
+  ],
+  "memory": true,
+  "order": 228,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-02/d2-c06/solution.hpp"
+}

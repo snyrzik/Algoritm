@@ -1,0 +1,42 @@
+{
+  "id": "d3-c04",
+  "day": 3,
+  "kind": "C",
+  "title": "A4 · minimum_of_three<T>",
+  "prompt": "Напишите template<class T> T minimum_of_three(T a,T b,T c). Используйте только < и копирование; верните минимальное значение.",
+  "level": "A",
+  "minutes": 35,
+  "tags": [
+    "Template deduction"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Позиции минимума",
+      "code": "CHECK(minimum_of_three(1,3,4)==1); CHECK(minimum_of_three(3,1,4)==1); CHECK(minimum_of_three(3,4,1)==1);",
+      "category": "functional"
+    },
+    {
+      "name": "Повторы и отрицательные",
+      "code": "CHECK(minimum_of_three(-3,-3,1)==-3); CHECK(minimum_of_three(4,4,4)==4); CHECK(minimum_of_three(2.5,1.5,9.0)==1.5);",
+      "category": "boundary"
+    },
+    {
+      "name": "Пользовательский тип",
+      "code": "struct X{int n; bool operator<(const X& r)const{return n<r.n;}}; CHECK(minimum_of_three(X{2},X{1},X{3}).n==1);",
+      "category": "types"
+    }
+  ],
+  "memory": false,
+  "order": 234,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-03/d3-c04/solution.hpp"
+}

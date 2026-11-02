@@ -1,0 +1,38 @@
+{
+  "id": "d2-d04",
+  "day": 2,
+  "kind": "D",
+  "title": "Порядок замены",
+  "prompt": "replace_copy(char*&,const char*) заменяет владеющий new[]-буфер независимой копией. Источник может быть target+1, nullptr запрещён. При ошибке старый буфер сохраняется.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "#include <cstring>\nvoid replace_copy(char*& p,const char* s){delete[] p;p=new char[std::strlen(s)+1];std::strcpy(p,s);}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Самоалиасинг",
+      "code": "char* p=new char[5]{char(116),char(101),char(115),char(116),0}; replace_copy(p,p+1); CHECK(std::strcmp(p,\"est\")==0); delete[] p;",
+      "category": "functional"
+    },
+    {
+      "name": "Отказ выделения",
+      "code": "char* p=new char[4]{char(111),char(108),char(100),0}; mastery_memory::fail_after=0; bool caught=false; try{replace_copy(p,\"new text\");}catch(const std::bad_alloc&){caught=true;} mastery_memory::fail_after=-1; CHECK(caught && std::strcmp(p,\"old\")==0); delete[] p;",
+      "category": "exception"
+    }
+  ],
+  "memory": true,
+  "unsafeStarter": true,
+  "order": 261,
+  "hints": [
+    "Нарисуйте, какой объект владеет каждым буфером и когда этот буфер уничтожается.",
+    "C-строка требует size + 1 байт и завершающий ноль. new[] соответствует delete[], malloc — free. Копия владельца должна иметь независимый ресурс.",
+    "Проверьте пустой объект, nullptr, самоприсваивание и аргумент, ссылающийся внутрь текущего буфера. Для перекрывающегося переноса подходит memmove; длина переноса должна учитывать ноль. Не уничтожайте источник до завершения чтения."
+  ],
+  "filePath": "student/day-02/d2-d04/solution.hpp"
+}

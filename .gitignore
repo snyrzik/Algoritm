@@ -1,0 +1,13 @@
+node_modules/
+app/dist/
+.build/
+.toolchain/
+progress/*
+!progress/.gitkeep
+__pycache__/
+*.pyc
+student/**/solution.hpp
+student/**/solution.cpp
+student/**/notes.md
+!student/**/.gitkeep
+test-results/

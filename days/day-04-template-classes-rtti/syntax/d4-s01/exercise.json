@@ -1,0 +1,32 @@
+{
+  "id": "d4-s01",
+  "day": 4,
+  "kind": "S",
+  "title": "Конструктор вне класса",
+  "prompt": "В контексте Box<T>. Определите только конструктор вне класса, инициализирующий value_ копией аргумента.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Шаблоны классов"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "#include <cstddef>\n#include <stdexcept>\ntemplate<class T> class Box { T value_; public: explicit Box(const T&); ~Box(); T get() const; void set(const T&); const T& ref() const; };\n",
+  "suffix": "\ntemplate<class T> Box<T>::~Box()=default;\ntemplate<class T> T Box<T>::get() const{return value_;}\n",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "Box<int> b(7); CHECK(b.get()==7);",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 175,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-04/d4-s01/solution.hpp"
+}

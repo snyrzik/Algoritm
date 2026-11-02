@@ -1,0 +1,38 @@
+{
+  "id": "d2-d05",
+  "day": 2,
+  "kind": "D",
+  "title": "Проверка nullptr",
+  "prompt": "text_length(const char*) возвращает strlen, nullptr → invalid_argument до чтения памяти.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "#include <cstring>\n#include <stdexcept>\nstd::size_t text_length(const char* p){auto n=std::strlen(p);if(!p)throw std::invalid_argument(\"null\");return n;}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Длина",
+      "code": "CHECK(text_length(\"abc\")==3 && text_length(\"\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "nullptr",
+      "code": "expect_throw<std::invalid_argument>([]{text_length(nullptr);});",
+      "category": "negative"
+    }
+  ],
+  "memory": true,
+  "unsafeStarter": true,
+  "order": 262,
+  "hints": [
+    "Нарисуйте, какой объект владеет каждым буфером и когда этот буфер уничтожается.",
+    "C-строка требует size + 1 байт и завершающий ноль. new[] соответствует delete[], malloc — free. Копия владельца должна иметь независимый ресурс.",
+    "Проверьте пустой объект, nullptr, самоприсваивание и аргумент, ссылающийся внутрь текущего буфера. Для перекрывающегося переноса подходит memmove; длина переноса должна учитывать ноль. Не уничтожайте источник до завершения чтения."
+  ],
+  "filePath": "student/day-02/d2-d05/solution.hpp"
+}

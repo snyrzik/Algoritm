@@ -1,0 +1,37 @@
+{
+  "id": "d2-d06",
+  "day": 2,
+  "kind": "D",
+  "title": "Арифметика size_t",
+  "prompt": "checked_sum(a,b) возвращает a+b+1 типа size_t. Переполнение → length_error до выполнения сложения.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "#include <cstddef>\nstd::size_t checked_sum(std::size_t a,std::size_t b){return a+b+1;}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Обычный размер",
+      "code": "CHECK(checked_sum(2,3)==6);",
+      "category": "functional"
+    },
+    {
+      "name": "Границы size_t",
+      "code": "const auto m=std::numeric_limits<std::size_t>::max(); expect_throw<std::length_error>([&]{checked_sum(m,0);}); expect_throw<std::length_error>([&]{checked_sum(m-1,1);});",
+      "category": "negative"
+    }
+  ],
+  "memory": false,
+  "order": 263,
+  "hints": [
+    "Нарисуйте, какой объект владеет каждым буфером и когда этот буфер уничтожается.",
+    "C-строка требует size + 1 байт и завершающий ноль. new[] соответствует delete[], malloc — free. Копия владельца должна иметь независимый ресурс.",
+    "Проверьте пустой объект, nullptr, самоприсваивание и аргумент, ссылающийся внутрь текущего буфера. Для перекрывающегося переноса подходит memmove; длина переноса должна учитывать ноль. Не уничтожайте источник до завершения чтения."
+  ],
+  "filePath": "student/day-02/d2-d06/solution.hpp"
+}

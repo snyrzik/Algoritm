@@ -1,0 +1,38 @@
+{
+  "id": "d2-d07",
+  "day": 2,
+  "kind": "D",
+  "title": "Сдвиг с нулём",
+  "prompt": "erase_prefix(char*,size_t) удаляет первые count символов C-строки на месте. nullptr → invalid_argument; count>strlen → out_of_range без изменения.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "#include <cstring>\nvoid erase_prefix(char* s,std::size_t n){std::memmove(s,s+n,std::strlen(s)-n);}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Правильный ноль",
+      "code": "char s[]=\"abcdef\"; erase_prefix(s,2); CHECK(std::strcmp(s,\"cdef\")==0); erase_prefix(s,4); CHECK(s[0]==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Ошибки",
+      "code": "char s[]=\"ab\"; expect_throw<std::out_of_range>([&]{erase_prefix(s,3);}); CHECK(std::strcmp(s,\"ab\")==0); expect_throw<std::invalid_argument>([]{erase_prefix(nullptr,0);});",
+      "category": "negative"
+    }
+  ],
+  "memory": true,
+  "unsafeStarter": true,
+  "order": 264,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-02/d2-d07/solution.hpp"
+}

@@ -1,0 +1,32 @@
+{
+  "id": "d2-s18",
+  "day": 2,
+  "kind": "S",
+  "title": "Перекрывающийся сдвиг",
+  "prompt": "Напишите void remove_first(char* text): убрать первый символ через memmove, включая ноль. Пустая строка сохраняется; nullptr → invalid_argument.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "char a[]=\"abc\"; remove_first(a); CHECK(std::strcmp(a,\"bc\")==0); char b[]=\"\"; remove_first(b); CHECK(b[0]==0); expect_throw<std::invalid_argument>([]{remove_first(nullptr);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 154,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-02/d2-s18/solution.hpp"
+}

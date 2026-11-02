@@ -1,0 +1,32 @@
+{
+  "id": "d4-s05",
+  "day": 4,
+  "kind": "S",
+  "title": "const-ссылка вне класса",
+  "prompt": "В контексте Box<T>. Определите ref вне класса. Верните ссылку без права изменения на value_.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Шаблоны классов"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "#include <cstddef>\n#include <stdexcept>\ntemplate<class T> class Box { T value_; public: explicit Box(const T&); ~Box(); T get() const; void set(const T&); const T& ref() const; };\n",
+  "suffix": "\ntemplate<class T> Box<T>::Box(const T& v):value_(v){}\ntemplate<class T> Box<T>::~Box()=default;\n",
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<const Box<int>&>().ref()),const int&>);",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "const Box<int> b(2); CHECK(b.ref()==2);",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 179,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-04/d4-s05/solution.hpp"
+}

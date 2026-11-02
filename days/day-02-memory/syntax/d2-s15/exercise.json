@@ -1,0 +1,32 @@
+{
+  "id": "d2-s15",
+  "day": 2,
+  "kind": "S",
+  "title": "Границы",
+  "prompt": "Напишите std::size_t checked_index(std::size_t size,std::size_t index): вернуть index при index<size, иначе out_of_range.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "CHECK(checked_index(3,2)==2); expect_throw<std::out_of_range>([]{checked_index(0,0);}); expect_throw<std::out_of_range>([]{checked_index(3,3);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 151,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-02/d2-s15/solution.hpp"
+}

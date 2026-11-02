@@ -1,0 +1,109 @@
+{
+  "id": "d4-c08",
+  "day": 4,
+  "kind": "C",
+  "title": "C · Stack Architecture Challenge",
+  "prompt": "Реализуйте AbstractStack<T> с виртуальными методами стека и деструктором. Обе реализации ниже должны публично наследовать интерфейс и использовать override.\n\nРеализуйте template<class T,int Size=256> class TFixedStack на собственном массиве фиксированной вместимости, Size>0 (static_assert). Элементы T должны быть default-constructible, копируемы и присваиваемы. Не менее трёх методов определите вне класса. Интерфейс стека: bool Push(const T&), bool Pop(T&), bool Get(T&) const, std::size_t Count() const, bool Empty() const, bool Full() const. Pop/Get пустого стека возвращают false, не меняя выходной аргумент; Get не удаляет. Push полного стека возвращает false без изменений. LIFO. Исключения T передаются вызывающему коду. Если копирование T бросает, сохраняются состояние и число элементов (сильная гарантия для Push/Pop/Get; выходной аргумент может быть изменён бросающим присваиванием самого T).\n\nРеализуйте template<class T> class DynamicStack как односвязный список с вложенным узлом и владением через new/delete. Full() всегда false. Реализуйте глубокое копирование с сохранением порядка, копирующее присваивание и деструктор. Не используйте STL-контейнеры. Интерфейс стека: bool Push(const T&), bool Pop(T&), bool Get(T&) const, std::size_t Count() const, bool Empty() const, bool Full() const. Pop/Get пустого стека возвращают false, не меняя выходной аргумент; Get не удаляет. Push полного стека возвращает false без изменений. LIFO. Исключения T передаются вызывающему коду. Если копирование T бросает, сохраняются состояние и число элементов (сильная гарантия для Push/Pop/Get; выходной аргумент может быть изменён бросающим присваиванием самого T).\n\nДобавьте template<class T> bool round_trip(AbstractStack<T>& stack,const T& a,const T& b,T& first,T& second): предусловие — стек пустой с местом хотя бы для двух элементов. Push(a), Push(b), затем Pop(first), Pop(second); true только при успехе всех операций. Нельзя определять конкретный тип через RTTI. В notes.md объясните полиморфное уничтожение.",
+  "level": "C",
+  "minutes": 80,
+  "tags": [
+    "Наследование",
+    "Dynamic memory",
+    "Проектирование"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Пустое состояние",
+      "code": "TFixedStack<int,3> s; int v=91; CHECK(s.Empty() && s.Count()==0 && !s.Get(v) && !s.Pop(v) && v==91);",
+      "category": "boundary"
+    },
+    {
+      "name": "LIFO и Get",
+      "code": "TFixedStack<int,3> s; CHECK(s.Push(4)); CHECK(s.Push(7)); const auto& c=s; int v=0; CHECK(c.Get(v) && v==7 && s.Count()==2); CHECK(s.Pop(v) && v==7); CHECK(s.Pop(v) && v==4); CHECK(s.Empty());",
+      "category": "functional"
+    },
+    {
+      "name": "Повторное использование",
+      "code": "TFixedStack<int,3> s; int out=0; for(int i=0;i<20;++i){CHECK(s.Push(i)); CHECK(s.Pop(out) && out==i);} CHECK(s.Count()==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Полный стек",
+      "code": "TFixedStack<int,2> s; CHECK(s.Push(1) && s.Push(2) && s.Full()); CHECK(!s.Push(3) && s.Count()==2); int out=0; CHECK(s.Pop(out) && out==2 && !s.Full());",
+      "category": "boundary"
+    },
+    {
+      "name": "Копирование и тип string",
+      "code": "TFixedStack<std::string,3> a; a.Push(\"a\"); auto b=a; b.Push(\"b\"); std::string out; CHECK(a.Get(out) && out==\"a\"); CHECK(b.Pop(out) && out==\"b\");",
+      "category": "types"
+    },
+    {
+      "name": "Исключение при Push",
+      "code": "TFixedStack<Tracked,3> s; Tracked v(7); Tracked::copies_before_throw=0; bool caught=false; try{s.Push(v);}catch(const std::runtime_error&){caught=true;} Tracked::copies_before_throw=-1; CHECK(caught && s.Count()==0);",
+      "category": "exception"
+    },
+    {
+      "name": "Пустое состояние",
+      "code": "DynamicStack<int> s; int v=91; CHECK(s.Empty() && s.Count()==0 && !s.Get(v) && !s.Pop(v) && v==91);",
+      "category": "boundary"
+    },
+    {
+      "name": "LIFO и Get",
+      "code": "DynamicStack<int> s; CHECK(s.Push(4)); CHECK(s.Push(7)); const auto& c=s; int v=0; CHECK(c.Get(v) && v==7 && s.Count()==2); CHECK(s.Pop(v) && v==7); CHECK(s.Pop(v) && v==4); CHECK(s.Empty());",
+      "category": "functional"
+    },
+    {
+      "name": "Повторное использование",
+      "code": "DynamicStack<int> s; int out=0; for(int i=0;i<20;++i){CHECK(s.Push(i)); CHECK(s.Pop(out) && out==i);} CHECK(s.Count()==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Глубокое копирование и порядок",
+      "code": "DynamicStack<int> a; a.Push(1); a.Push(2); DynamicStack<int> b(a); int out=0; CHECK(b.Pop(out) && out==2); CHECK(a.Count()==2); DynamicStack<int> c; c=b; c=c; CHECK(c.Pop(out) && out==1);",
+      "category": "functional"
+    },
+    {
+      "name": "Жизнь пользовательских объектов",
+      "code": "const int before=Tracked::alive; {DynamicStack<Tracked> s; Tracked v(4); s.Push(v); s.Push(v); DynamicStack<Tracked> copy(s); CHECK(copy.Count()==2);} CHECK(Tracked::alive==before);",
+      "category": "memory"
+    },
+    {
+      "name": "Исключение при вставке",
+      "code": "DynamicStack<Tracked> s; Tracked v(4); Tracked::copies_before_throw=0; bool caught=false; try{s.Push(v);}catch(const std::runtime_error&){caught=true;} Tracked::copies_before_throw=-1; CHECK(caught && s.Count()==0);",
+      "category": "exception"
+    },
+    {
+      "name": "Неудачное копирование цепочки",
+      "code": "DynamicStack<Tracked> s; Tracked a(1),b(2); s.Push(a); s.Push(b); const int live=Tracked::alive; Tracked::copies_before_throw=1; bool caught=false; try{DynamicStack<Tracked> copy(s);}catch(const std::runtime_error&){caught=true;} Tracked::copies_before_throw=-1; CHECK(caught && Tracked::alive==live && s.Count()==2);",
+      "category": "exception"
+    },
+    {
+      "name": "Общий алгоритм",
+      "code": "TFixedStack<int,4> a; DynamicStack<int> b; int first=0,second=0; CHECK(round_trip<int>(a,4,9,first,second) && first==9 && second==4); CHECK(round_trip<int>(b,4,9,first,second) && first==9 && second==4);",
+      "category": "functional"
+    },
+    {
+      "name": "Уничтожение через интерфейс",
+      "code": "AbstractStack<Tracked>* s=new DynamicStack<Tracked>(); const int base=Tracked::alive; {Tracked t(3); s->Push(t);} delete s; CHECK(Tracked::alive==base);",
+      "category": "memory"
+    }
+  ],
+  "memory": true,
+  "staticChecks": [
+    "no_containers",
+    "no_rtti",
+    "three_external_methods"
+  ],
+  "order": 247,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-04/d4-c08/solution.hpp"
+}

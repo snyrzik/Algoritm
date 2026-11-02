@@ -1,0 +1,56 @@
+{
+  "id": "d4-c06",
+  "day": 4,
+  "kind": "C",
+  "title": "B3 · Специализация char*",
+  "prompt": "Реализуйте первичный template<class T> class TextStack (можно только объявление) и полную специализацию TextStack<char*>. Методы: bool Push(const char*), bool Pop(), const char* Get() const, size_t Count() const, bool Empty() const. Push копирует строку в собственный new[]-буфер; nullptr → invalid_argument. Get пустого → out_of_range; указатель Get заимствован до изменения/уничтожения стека. Pop удаляет строку и возвращает false на пустом. Реализуйте глубокое копирование стека, присваивание и освобождение всех узлов/строк. Внутри — собственный связный список.",
+  "level": "B",
+  "minutes": 35,
+  "tags": [
+    "Specialization",
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Глубокая копия входного буфера",
+      "code": "TextStack<char*> s; char a[]=\"hello\"; CHECK(s.Push(a)); a[0]=char(88); CHECK(std::strcmp(s.Get(),\"hello\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "LIFO и копия стека",
+      "code": "TextStack<char*> a; a.Push(\"one\"); a.Push(\"two\"); auto b=a; CHECK(b.Pop()); CHECK(std::strcmp(b.Get(),\"one\")==0 && std::strcmp(a.Get(),\"two\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Пустой стек и nullptr",
+      "code": "TextStack<char*> s; CHECK(s.Empty() && s.Count()==0 && !s.Pop()); expect_throw<std::out_of_range>([&]{s.Get();}); expect_throw<std::invalid_argument>([&]{s.Push(nullptr);}); CHECK(s.Count()==0);",
+      "category": "negative"
+    },
+    {
+      "name": "Присваивание и самоприсваивание",
+      "code": "TextStack<char*> a,b; a.Push(\"alive\"); b=a; a.Pop(); b=b; CHECK(std::strcmp(b.Get(),\"alive\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Разрушение и пустая строка",
+      "code": "for(int i=0;i<40;++i){TextStack<char*> s; s.Push(\"\"); CHECK(s.Get()[0]==0); s.Push(\"owned\");}",
+      "category": "memory"
+    }
+  ],
+  "memory": true,
+  "staticChecks": [
+    "no_containers"
+  ],
+  "order": 245,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-04/d4-c06/solution.hpp"
+}

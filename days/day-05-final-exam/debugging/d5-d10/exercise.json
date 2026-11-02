@@ -1,0 +1,34 @@
+{
+  "id": "d5-d10",
+  "day": 5,
+  "kind": "D",
+  "title": "Review · Выбор преобразования",
+  "prompt": "check(Base&) возвращает Derived& или бросает bad_cast, без UB.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Code review",
+    "Синтаксис"
+  ],
+  "required": true,
+  "starter": "struct Base{virtual ~Base()=default;};struct Derived:Base{};\nDerived& check(Base& b){return static_cast<Derived&>(b);}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Успех и отказ",
+      "code": "Derived d; Base b; CHECK(&check(d)==&d); expect_throw<std::bad_cast>([&]{check(b);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "unsafeStarter": false,
+  "order": 291,
+  "hints": [
+    "Сравните статический тип выражения и динамический тип объекта. Как контракт сообщает неудачу?",
+    "Проверяемое понижающее dynamic_cast требует полиморфную базу. Неудачный cast указателя даёт nullptr, ссылки — bad_cast. static_cast не проверяет динамический тип.",
+    "Сначала проверьте иерархию и виртуальный деструктор. Для точного динамического типа сравнивайте typeid-объекты через ==, а не реализационно-зависимое name(). Не разыменовывайте результат преобразования до проверки."
+  ],
+  "filePath": "student/day-05/d5-d10/solution.hpp"
+}

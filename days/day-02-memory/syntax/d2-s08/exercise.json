@@ -1,0 +1,32 @@
+{
+  "id": "d2-s08",
+  "day": 2,
+  "kind": "S",
+  "title": "Доступ к C-строке",
+  "prompt": "Определите вне класса метод c_str. Возвращается const char*, метод должен работать на const Text. Контекст содержит декларацию.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "class Text { char data_[4]=\"abc\"; public: const char* c_str() const; };\n",
+  "suffix": "",
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<const Text&>().c_str()),const char*>);",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "const Text t; CHECK(std::strcmp(t.c_str(),\"abc\")==0);",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 144,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-02/d2-s08/solution.hpp"
+}

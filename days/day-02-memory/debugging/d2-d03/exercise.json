@@ -1,0 +1,38 @@
+{
+  "id": "d2-d03",
+  "day": 2,
+  "kind": "D",
+  "title": "Копии владельца",
+  "prompt": "Исправьте Text: правило трёх, независимое владение, nullptr → invalid_argument, индекс>=strlen → out_of_range. Сохраните существующие имена методов.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "#include <cstring>\nclass Text{char* data_;public:explicit Text(const char* s){data_=new char[std::strlen(s)+1];std::strcpy(data_,s);}~Text(){delete[] data_;}char& operator[](unsigned i){return data_[i];}const char* c_str()const{return data_;}};\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Копирование",
+      "code": "Text a(\"abc\"); Text b(a); b[0]=char(120); CHECK(std::strcmp(a.c_str(),\"abc\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Присваивание",
+      "code": "Text a(\"old\"),b(\"new\"); a=b; b[0]=char(88); CHECK(std::strcmp(a.c_str(),\"new\")==0); a=a; CHECK(std::strcmp(a.c_str(),\"new\")==0);",
+      "category": "functional"
+    }
+  ],
+  "memory": true,
+  "unsafeStarter": true,
+  "order": 260,
+  "hints": [
+    "Нарисуйте, какой объект владеет каждым буфером и когда этот буфер уничтожается.",
+    "C-строка требует size + 1 байт и завершающий ноль. new[] соответствует delete[], malloc — free. Копия владельца должна иметь независимый ресурс.",
+    "Проверьте пустой объект, nullptr, самоприсваивание и аргумент, ссылающийся внутрь текущего буфера. Для перекрывающегося переноса подходит memmove; длина переноса должна учитывать ноль. Не уничтожайте источник до завершения чтения."
+  ],
+  "filePath": "student/day-02/d2-d03/solution.hpp"
+}

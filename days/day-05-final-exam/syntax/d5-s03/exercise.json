@@ -1,0 +1,32 @@
+{
+  "id": "d5-s03",
+  "day": 5,
+  "kind": "S",
+  "title": "Экзамен · константный индекс",
+  "prompt": "Создайте Pair(int,int) с двумя перегрузками [], возвращающими ссылки нужной константности. Индекс вне 0..1 → out_of_range.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Синтаксис"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "static_assert(std::is_same_v<decltype(std::declval<const Pair&>()[0]),const int&>);",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "Pair p(4,8); p[1]=9; const Pair& r=p; CHECK(r[1]==9); expect_throw<std::out_of_range>([&]{(void)r[2];});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 197,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-05/d5-s03/solution.hpp"
+}

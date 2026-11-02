@@ -1,0 +1,32 @@
+{
+  "id": "d3-s17",
+  "day": 3,
+  "kind": "S",
+  "title": "Пустой массив",
+  "prompt": "Напишите count_equal(const T*,size_t,const T&) -> size_t. nullptr допустим только при size=0; в остальных случаях invalid_argument.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Template deduction"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "int a[]={1,2,1}; CHECK(count_equal(a,3,1)==2); CHECK(count_equal<int>(nullptr,0,1)==0); expect_throw<std::invalid_argument>([]{count_equal<int>(nullptr,2,1);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 171,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-03/d3-s17/solution.hpp"
+}

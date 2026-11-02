@@ -1,0 +1,37 @@
+{
+  "id": "d1-d04",
+  "day": 1,
+  "kind": "D",
+  "title": "Запись через индекс",
+  "prompt": "Cell[0] должен возвращать изменяемую ссылку, остальные индексы → out_of_range. const-перегрузка возвращает const int&.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Классы"
+  ],
+  "required": true,
+  "starter": "#include <cstddef>\nstruct Cell{int value=0; int operator[](std::size_t){return value;}};\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Присваивание",
+      "code": "Cell c; c[0]=7; const Cell& r=c; CHECK(r[0]==7);",
+      "category": "functional"
+    },
+    {
+      "name": "Границы",
+      "code": "Cell c; expect_throw<std::out_of_range>([&]{(void)c[1];});",
+      "category": "negative"
+    }
+  ],
+  "memory": false,
+  "order": 255,
+  "hints": [
+    "Отдельно выпишите допустимый диапазон для каждой операции и проверьте его крайние точки.",
+    "Индекс элемента требует index < size. Пустой диапазон может допускать position == size. Не вычитайте position из size до проверки position: size_t беззнаковый.",
+    "Проверяйте position > size, затем count > size - position. В доступе к элементу нужны две перегрузки по const; изменение через [] требует ссылки, а при сдвиге C-строки переносится также завершающий ноль."
+  ],
+  "filePath": "student/day-01/d1-d04/solution.hpp"
+}

@@ -1,0 +1,37 @@
+{
+  "name": "cpp-mastery",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node tools/start.mjs",
+    "dev": "node tools/start.mjs --dev",
+    "build": "tsc --noEmit && vite build",
+    "prepare:course": "node tools/python.mjs tools/build_course.py",
+    "check": "node tools/python.mjs tools/check.py",
+    "doctor": "node tools/python.mjs tools/check.py --doctor",
+    "test": "node tools/python.mjs -m unittest discover -s tests -v",
+    "test:contracts": "node tools/python.mjs tools/check_contracts.py",
+    "test:browser": "node tools/browser_check.mjs"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/lang-cpp": "^6.0.3",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/theme-one-dark": "^6.1.2",
+    "@codemirror/view": "^6.36.5",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "puppeteer-core": "^24.3.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.5"
+  }
+}

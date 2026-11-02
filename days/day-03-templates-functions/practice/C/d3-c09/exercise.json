@@ -1,0 +1,138 @@
+{
+  "id": "d3-c09",
+  "day": 3,
+  "kind": "C",
+  "title": "C · Generic Utilities Challenge",
+  "prompt": "Напишите три шаблона над обычными массивами: find_first(const T*,size_t,Predicate) -> size_t (индекс первого совпадения, при отсутствии — size); count_if(const T*,size_t,Predicate) -> size_t; swap_at(T*,size_t,size_t i,size_t j) -> void. Для первых двух nullptr допустим лишь при size=0. swap_at: nullptr → invalid_argument, любой индекс>=size → out_of_range, проверка предшествует изменению. Самоперестановка разрешена. Не используйте готовые алгоритмы STL. Сигнатуры оформите самостоятельно в соответствии с этими типами результатов.\n\nДополните набор maximum(T,T), minimum_of_three(T,T,T), index_of_min(const T*,size_t) с контрактами A2/A4/A5, повторёнными здесь: сравнение только <; пустой index_of_min или nullptr → invalid_argument, при равных минимумах первый индекс. Добавьте Polynomial2 по контракту ниже. Используйте Polynomial2 в find_first/count_if/swap_at по коэффициентам, не вводя искусственный порядок многочленов.\n\nРеализуйте Polynomial2(double a=0,double b=0,double c=0) для a*x*x+b*x+c. Индексы: p[0]=c, p[1]=b, p[2]=a. Две версии [] возвращают double& / const double&; неверный индекс → out_of_range. Поддержите +, -, унарные + и -, умножение на double с обеих сторон и const-operator()(double). Вывод в поток: [a,b,c] без пробелов. Сравнение == и != — точное по коэффициентам. Арифметика не изменяет операнды. Собственные приватные поля, без STL-контейнеров.",
+  "level": "C",
+  "minutes": 65,
+  "tags": [
+    "Template deduction",
+    "Проектирование"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Поиск и подсчёт",
+      "code": "int a[]={-1,2,3,4}; auto even=[](int x){return x%2==0;}; CHECK(find_first(a,4,even)==1 && count_if(a,4,even)==2); CHECK(find_first(a,4,[](int x){return x>9;})==4);",
+      "category": "functional"
+    },
+    {
+      "name": "Пустые диапазоны",
+      "code": "CHECK(find_first<int>(nullptr,0,[](int){return true;})==0); CHECK(count_if<int>(nullptr,0,[](int){return true;})==0);",
+      "category": "boundary"
+    },
+    {
+      "name": "Перестановка",
+      "code": "int a[]={1,2,3}; swap_at(a,3,0,2); CHECK(a[0]==3 && a[2]==1); swap_at(a,3,1,1); CHECK(a[1]==2);",
+      "category": "functional"
+    },
+    {
+      "name": "Ошибки сохраняют данные",
+      "code": "int a[]={1,2}; expect_throw<std::out_of_range>([&]{swap_at(a,2,0,2);}); CHECK(a[0]==1 && a[1]==2); expect_throw<std::invalid_argument>([]{swap_at<int>(nullptr,1,0,0);}); expect_throw<std::invalid_argument>([]{count_if<int>(nullptr,1,[](int){return true;});});",
+      "category": "negative"
+    },
+    {
+      "name": "std::string",
+      "code": "std::string a[]={\"x\",\"long\",\"hi\"}; CHECK(find_first(a,3,[](const std::string& s){return s.size()>2;})==1);",
+      "category": "types"
+    },
+    {
+      "name": "int, double и char",
+      "code": "CHECK(maximum(2,9)==9 && maximum(-3,-7)==-3); CHECK(maximum(2.5,2.75)==2.75); CHECK(maximum(char(97),char(122))==char(122));",
+      "category": "functional"
+    },
+    {
+      "name": "Равенство и явный тип",
+      "code": "CHECK(maximum(7,7)==7); CHECK(maximum<double>(2.5,3)==3.0); CHECK(maximum(2.5,static_cast<double>(2))==2.5);",
+      "category": "boundary"
+    },
+    {
+      "name": "Пользовательский тип только с <",
+      "code": "struct Item{int v; bool operator<(const Item& r)const{return v<r.v;}}; CHECK(maximum(Item{2},Item{8}).v==8);",
+      "category": "types"
+    },
+    {
+      "name": "Позиции минимума",
+      "code": "CHECK(minimum_of_three(1,3,4)==1); CHECK(minimum_of_three(3,1,4)==1); CHECK(minimum_of_three(3,4,1)==1);",
+      "category": "functional"
+    },
+    {
+      "name": "Повторы и отрицательные",
+      "code": "CHECK(minimum_of_three(-3,-3,1)==-3); CHECK(minimum_of_three(4,4,4)==4); CHECK(minimum_of_three(2.5,1.5,9.0)==1.5);",
+      "category": "boundary"
+    },
+    {
+      "name": "Пользовательский тип",
+      "code": "struct X{int n; bool operator<(const X& r)const{return n<r.n;}}; CHECK(minimum_of_three(X{2},X{1},X{3}).n==1);",
+      "category": "types"
+    },
+    {
+      "name": "Первый и последний минимум",
+      "code": "int a[]={1,3,4},b[]={4,3,1}; CHECK(index_of_min(a,3)==0 && index_of_min(b,3)==2);",
+      "category": "functional"
+    },
+    {
+      "name": "Первый из равных",
+      "code": "int a[]={3,1,1,2}; CHECK(index_of_min(a,4)==1); double b[]={2.5}; CHECK(index_of_min(b,1)==0);",
+      "category": "boundary"
+    },
+    {
+      "name": "Недопустимые массивы",
+      "code": "int a[]={1}; expect_throw<std::invalid_argument>([&]{index_of_min(a,0);}); expect_throw<std::invalid_argument>([]{index_of_min<int>(nullptr,1);});",
+      "category": "negative"
+    },
+    {
+      "name": "Строковый тип",
+      "code": "std::string a[]={\"z\",\"az\",\"ba\"}; CHECK(index_of_min(a,3)==1);",
+      "category": "types"
+    },
+    {
+      "name": "Порядок коэффициентов",
+      "code": "const Polynomial2 p(2,3,4); CHECK(p[0]==4 && p[1]==3 && p[2]==2);",
+      "category": "functional"
+    },
+    {
+      "name": "Вычисление значения",
+      "code": "const Polynomial2 p(2,3,4); CHECK(p(0)==4 && p(2)==18 && p(-1)==3);",
+      "category": "functional"
+    },
+    {
+      "name": "Арифметика",
+      "code": "const Polynomial2 p(2,3,4),q(1,2,3); CHECK((p+q)==Polynomial2(3,5,7)); CHECK((p-q)==Polynomial2(1,1,1)); CHECK(-p==Polynomial2(-2,-3,-4)); CHECK(+p==p);",
+      "category": "functional"
+    },
+    {
+      "name": "Умножение",
+      "code": "const Polynomial2 p(2,3,4); CHECK(2.0*p==Polynomial2(4,6,8)); CHECK(p*0==Polynomial2());",
+      "category": "functional"
+    },
+    {
+      "name": "Индексирование",
+      "code": "Polynomial2 p; p[2]=3; p[1]=2; p[0]=1; const auto& c=p; CHECK(c(2)==17); expect_throw<std::out_of_range>([&]{(void)c[3];}); expect_throw<std::out_of_range>([&]{(void)p[3];});",
+      "category": "negative"
+    },
+    {
+      "name": "Вывод и сравнение",
+      "code": "std::ostringstream o; const Polynomial2 p(2,3,4); CHECK(&(o<<p)==&o); CHECK(o.str()==\"[2,3,4]\"); CHECK(p!=Polynomial2());",
+      "category": "functional"
+    },
+    {
+      "name": "Алгоритмы над многочленами",
+      "code": "Polynomial2 a[]={Polynomial2(1,0,0),Polynomial2(0,2,1)}; CHECK(find_first(a,2,[](const Polynomial2& p){return p[2]==0;})==1); swap_at(a,2,0,1); CHECK(a[0](2)==5);",
+      "category": "types"
+    }
+  ],
+  "memory": false,
+  "order": 239,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-03/d3-c09/solution.hpp"
+}

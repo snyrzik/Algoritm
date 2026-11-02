@@ -1,0 +1,72 @@
+{
+  "id": "d1-c05",
+  "day": 1,
+  "kind": "C",
+  "title": "B2 · Потоковый вывод Vector3",
+  "prompt": "Реализуйте Vector3 с приватными координатами double и конструктором Vector3(double x=0,double y=0,double z=0). Операции: бинарные + и -, унарные + и -, умножение на double с обеих сторон, == и != (точное сравнение координат), две версии [] с индексом std::size_t. Изменяемая версия возвращает double&, константная — const double&. Индексы вне 0..2 бросают std::out_of_range. Арифметика не меняет операнды. Вывод строго (x,y,z) с обычным форматированием потока, без пробелов и перевода строки. Готовые контейнеры не использовать. Определения размещайте в solution.hpp или в solution.cpp с объявлениями в заголовке. Отдельно проверьте вывод через cout и ostringstream. Состояние форматирования потока (precision, fixed) должно применяться обычным образом.",
+  "level": "B",
+  "minutes": 35,
+  "tags": [
+    "Потоки"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Нулевой и обычный конструкторы",
+      "code": "const Vector3 z; CHECK(z[0]==0 && z[1]==0 && z[2]==0); const Vector3 v(1,2,3); CHECK(v[0]==1 && v[2]==3);",
+      "category": "boundary"
+    },
+    {
+      "name": "Сложение и сохранение операндов",
+      "code": "const Vector3 a(1,2,3),b(4,5,6); const auto c=a+b; CHECK(c==Vector3(5,7,9)); CHECK(a==Vector3(1,2,3) && b==Vector3(4,5,6));",
+      "category": "functional"
+    },
+    {
+      "name": "Вычитание и унарные операции",
+      "code": "const Vector3 a(1,-2,3); CHECK(-a==Vector3(-1,2,-3)); CHECK(+a==a); CHECK(a-a==Vector3());",
+      "category": "functional"
+    },
+    {
+      "name": "Скаляр с обеих сторон",
+      "code": "const Vector3 v(2,-4,6); CHECK(v*0.5==Vector3(1,-2,3)); CHECK(-2.0*v==Vector3(-4,8,-12)); CHECK(0.0*v==Vector3());",
+      "category": "functional"
+    },
+    {
+      "name": "Изменяемая и константная индексация",
+      "code": "Vector3 v; v[1]=9; const Vector3& c=v; CHECK(c[1]==9); CHECK(&v[1]==&c[1]);",
+      "category": "functional"
+    },
+    {
+      "name": "Индексы за границами",
+      "code": "Vector3 v; const Vector3& c=v; expect_throw<std::out_of_range>([&]{(void)v[3];}); expect_throw<std::out_of_range>([&]{(void)c[std::numeric_limits<std::size_t>::max()];});",
+      "category": "negative"
+    },
+    {
+      "name": "Сравнения",
+      "code": "CHECK(Vector3(1,2,3)!=Vector3(1,2,4)); CHECK(!(Vector3(1,2,3)!=Vector3(1,2,3)));",
+      "category": "functional"
+    },
+    {
+      "name": "Формат и цепочка вывода",
+      "code": "std::ostringstream out; const Vector3 a(1,2,3),b(-1,0,4); CHECK(&(out<<a)==&out); out<<\" | \"<<b; CHECK(out.str()==\"(1,2,3) | (-1,0,4)\");",
+      "category": "io"
+    },
+    {
+      "name": "Форматирование и cout",
+      "code": "const Vector3 a(1.25,2,3); std::ostringstream o; o.setf(std::ios::fixed); o.precision(2); o<<a; CHECK(o.str()==\"(1.25,2.00,3.00)\"); std::cout<<a;",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 219,
+  "hints": [
+    "Проверьте направление операндов, возвращаемый поток и момент изменения объекта.",
+    "Свободный operator<< принимает ostream& слева и const-ссылку на объект справа. Возврат того же потока по ссылке обеспечивает цепочку. failbit и исключение потока — разные механизмы.",
+    "Сначала прочитайте и проверьте все значения и разделители во временное состояние. Только после полного успеха измените объект. Не выводите через cout внутри оператора, если ему передан другой поток."
+  ],
+  "filePath": "student/day-01/d1-c05/solution.hpp"
+}

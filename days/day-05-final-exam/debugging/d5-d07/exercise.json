@@ -1,0 +1,39 @@
+{
+  "id": "d5-d07",
+  "day": 5,
+  "kind": "D",
+  "title": "Review · Транзакция",
+  "prompt": "replace_copy(char*&,const char*) поддерживает алиасинг, nullptr → invalid_argument, сохраняет старый ресурс при bad_alloc.\n\nВ notes.md найдите и объясните причины проблем; исправьте код и пройдите тесты. Не предполагается заранее известное число дефектов. Если фрагмент корректен, объясните почему и сохраните его.",
+  "level": "A",
+  "minutes": 12,
+  "tags": [
+    "Code review",
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "#include <cstring>\nvoid replace_copy(char*& p,const char* s){delete[] p;p=new char[std::strlen(s)+1];std::strcpy(p,s);}\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Алиасинг",
+      "code": "char* p=new char[4]{char(97),char(98),char(99),0}; replace_copy(p,p); CHECK(std::strcmp(p,\"abc\")==0); delete[] p;",
+      "category": "functional"
+    },
+    {
+      "name": "Отказ",
+      "code": "char* p=new char[2]{char(97),0}; mastery_memory::fail_after=0; bool caught=false; try{replace_copy(p,\"bbb\");}catch(const std::bad_alloc&){caught=true;} mastery_memory::fail_after=-1; CHECK(caught && p[0]==char(97)); delete[] p;",
+      "category": "exception"
+    }
+  ],
+  "memory": true,
+  "unsafeStarter": true,
+  "order": 288,
+  "hints": [
+    "Найдите первую операцию, которая может бросить. Что уже изменено к этому моменту?",
+    "Сильная гарантия требует сохранения старого состояния при неудаче. Копирование T и выделение памяти могут бросать; освобождение старого ресурса должно происходить после успешной подготовки.",
+    "Разделите работу на проверку аргументов, подготовку отдельного нового состояния и финальную фиксацию. При подготовке учитывайте, что аргумент может указывать внутрь текущего объекта. Временный ресурс должен освобождаться при любом пути выхода."
+  ],
+  "filePath": "student/day-05/d5-d07/solution.hpp"
+}

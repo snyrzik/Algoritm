@@ -1,0 +1,73 @@
+{
+  "id": "d3-c03",
+  "day": 3,
+  "kind": "C",
+  "title": "A3 · swap_values<T>",
+  "prompt": "Напишите шаблон void swap_values(T& a,T& b), обменивающий оригиналы копированием без std::swap. Поддержите самоперестановку. Создайте также Polynomial2 с контрактом ниже для проверки пользовательского типа.\n\nРеализуйте Polynomial2(double a=0,double b=0,double c=0) для a*x*x+b*x+c. Индексы: p[0]=c, p[1]=b, p[2]=a. Две версии [] возвращают double& / const double&; неверный индекс → out_of_range. Поддержите +, -, унарные + и -, умножение на double с обеих сторон и const-operator()(double). Вывод в поток: [a,b,c] без пробелов. Сравнение == и != — точное по коэффициентам. Арифметика не изменяет операнды. Собственные приватные поля, без STL-контейнеров.",
+  "level": "A",
+  "minutes": 35,
+  "tags": [
+    "References",
+    "Template deduction"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Скалярные типы",
+      "code": "int a=2,b=9; swap_values(a,b); CHECK(a==9 && b==2); double x=1.5,y=9.5; swap_values(x,y); CHECK(x==9.5 && y==1.5);",
+      "category": "functional"
+    },
+    {
+      "name": "Самоперестановка",
+      "code": "int a=7; swap_values(a,a); CHECK(a==7);",
+      "category": "boundary"
+    },
+    {
+      "name": "Пользовательский тип",
+      "code": "Polynomial2 a(1,2,3),b(4,5,6); swap_values(a,b); CHECK(a==Polynomial2(4,5,6) && b==Polynomial2(1,2,3));",
+      "category": "types"
+    },
+    {
+      "name": "Порядок коэффициентов",
+      "code": "const Polynomial2 p(2,3,4); CHECK(p[0]==4 && p[1]==3 && p[2]==2);",
+      "category": "functional"
+    },
+    {
+      "name": "Вычисление значения",
+      "code": "const Polynomial2 p(2,3,4); CHECK(p(0)==4 && p(2)==18 && p(-1)==3);",
+      "category": "functional"
+    },
+    {
+      "name": "Арифметика",
+      "code": "const Polynomial2 p(2,3,4),q(1,2,3); CHECK((p+q)==Polynomial2(3,5,7)); CHECK((p-q)==Polynomial2(1,1,1)); CHECK(-p==Polynomial2(-2,-3,-4)); CHECK(+p==p);",
+      "category": "functional"
+    },
+    {
+      "name": "Умножение",
+      "code": "const Polynomial2 p(2,3,4); CHECK(2.0*p==Polynomial2(4,6,8)); CHECK(p*0==Polynomial2());",
+      "category": "functional"
+    },
+    {
+      "name": "Индексирование",
+      "code": "Polynomial2 p; p[2]=3; p[1]=2; p[0]=1; const auto& c=p; CHECK(c(2)==17); expect_throw<std::out_of_range>([&]{(void)c[3];}); expect_throw<std::out_of_range>([&]{(void)p[3];});",
+      "category": "negative"
+    },
+    {
+      "name": "Вывод и сравнение",
+      "code": "std::ostringstream o; const Polynomial2 p(2,3,4); CHECK(&(o<<p)==&o); CHECK(o.str()==\"[2,3,4]\"); CHECK(p!=Polynomial2());",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 233,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-03/d3-c03/solution.hpp"
+}

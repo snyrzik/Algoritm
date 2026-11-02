@@ -1,0 +1,32 @@
+{
+  "id": "d2-s16",
+  "day": 2,
+  "kind": "S",
+  "title": "Переполнение",
+  "prompt": "Напишите std::size_t buffer_size(std::size_t a,std::size_t b): вернуть a+b+1, либо length_error до переполнения. Единица резервирует завершающий ноль.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Dynamic memory"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "CHECK(buffer_size(0,0)==1 && buffer_size(3,4)==8); const auto m=std::numeric_limits<std::size_t>::max(); expect_throw<std::length_error>([&]{buffer_size(m,0);}); expect_throw<std::length_error>([&]{buffer_size(m-1,1);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 152,
+  "hints": [
+    "Нарисуйте, какой объект владеет каждым буфером и когда этот буфер уничтожается.",
+    "C-строка требует size + 1 байт и завершающий ноль. new[] соответствует delete[], malloc — free. Копия владельца должна иметь независимый ресурс.",
+    "Проверьте пустой объект, nullptr, самоприсваивание и аргумент, ссылающийся внутрь текущего буфера. Для перекрывающегося переноса подходит memmove; длина переноса должна учитывать ноль. Не уничтожайте источник до завершения чтения."
+  ],
+  "filePath": "student/day-02/d2-s16/solution.hpp"
+}

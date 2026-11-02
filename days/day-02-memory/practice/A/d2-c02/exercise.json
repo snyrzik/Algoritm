@@ -1,0 +1,54 @@
+{
+  "id": "d2-c02",
+  "day": 2,
+  "kind": "C",
+  "title": "A2 · BadText Repair",
+  "prompt": "Исправьте данный BadText, самостоятельно определив дефекты. Добавьте правило трёх, c_str() const, char& operator[](size_t) с проверкой границ. nullptr → invalid_argument. Строка должна владеть независимым буфером. Объясните причины дефектов в notes.md. Исходный небезопасный код не запускается без ASan.",
+  "level": "A",
+  "minutes": 35,
+  "tags": [
+    "Dynamic memory",
+    "Copy constructor"
+  ],
+  "required": true,
+  "starter": "#include <cstdlib>\n#include <cstring>\nclass BadText { char* data_; public: explicit BadText(const char* text){data_=static_cast<char*>(std::malloc(std::strlen(text)));std::strcpy(data_,text);} ~BadText(){delete[] data_;} };\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Независимость копий",
+      "code": "BadText a(\"abc\"); BadText b(a); b[0]=char(120); CHECK(std::strcmp(a.c_str(),\"abc\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Присваивание и время жизни",
+      "code": "BadText a(\"old\"); {BadText b(\"new\"); CHECK(&(a=b)==&a);} a=a; CHECK(std::strcmp(a.c_str(),\"new\")==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Пустая строка",
+      "code": "BadText a(\"\"); CHECK(a.c_str()[0]==0); expect_throw<std::out_of_range>([&]{(void)a[0];});",
+      "category": "boundary"
+    },
+    {
+      "name": "Ошибки",
+      "code": "expect_throw<std::invalid_argument>([]{BadText a(nullptr);}); BadText a(\"a\"); expect_throw<std::out_of_range>([&]{(void)a[1];});",
+      "category": "negative"
+    },
+    {
+      "name": "Цикл владения",
+      "code": "for(int i=0;i<100;++i){BadText a(\"longer text\"); BadText b=a; CHECK(std::strcmp(b.c_str(),\"longer text\")==0);}",
+      "category": "memory"
+    }
+  ],
+  "memory": true,
+  "unsafeStarter": true,
+  "order": 224,
+  "hints": [
+    "Нарисуйте, какой объект владеет каждым буфером и когда этот буфер уничтожается.",
+    "C-строка требует size + 1 байт и завершающий ноль. new[] соответствует delete[], malloc — free. Копия владельца должна иметь независимый ресурс.",
+    "Проверьте пустой объект, nullptr, самоприсваивание и аргумент, ссылающийся внутрь текущего буфера. Для перекрывающегося переноса подходит memmove; длина переноса должна учитывать ноль. Не уничтожайте источник до завершения чтения."
+  ],
+  "filePath": "student/day-02/d2-c02/solution.hpp"
+}

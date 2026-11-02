@@ -1,0 +1,32 @@
+{
+  "id": "d4-s14",
+  "day": 4,
+  "kind": "S",
+  "title": "Проверяемая ссылка",
+  "prompt": "Контекст задаёт Shape, Circle. Напишите Circle& circle_ref(Shape&), при несовпадении типа ожидается bad_cast.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Шаблоны классов"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "#include <typeinfo>\nstruct Shape{virtual ~Shape()=default;}; struct Circle:Shape{};\n",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "Circle c; Shape b; CHECK(&circle_ref(c)==&c); expect_throw<std::bad_cast>([&]{circle_ref(b);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 188,
+  "hints": [
+    "Разделите параметры шаблона, аргументы функции и тип результата. Где каждый параметр объявлен?",
+    "При определении метода за классом нужны список template-параметров и квалификатор Class<T,...>::. Значение по умолчанию не повторяется. Полная специализация начинается с template<>.",
+    "Подставьте в свою сигнатуру сначала int, затем double или пользовательский тип. Проверьте const и ссылки отдельно. При конфликте вывода однотипного T явный аргумент шаблона отличается от добавления второго независимого параметра типа."
+  ],
+  "filePath": "student/day-04/d4-s14/solution.hpp"
+}

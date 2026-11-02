@@ -1,0 +1,32 @@
+{
+  "id": "d5-s12",
+  "day": 5,
+  "kind": "S",
+  "title": "Экзамен · RTTI ссылка",
+  "prompt": "Контекст задаёт B и D. Напишите D& checked(B&), бросающий bad_cast при неудаче.",
+  "level": "A",
+  "minutes": 4,
+  "tags": [
+    "Синтаксис"
+  ],
+  "required": true,
+  "starter": "// Напишите решение с нуля. Добавьте необходимые заголовки.\n",
+  "prefix": "#include <typeinfo>\nstruct B{virtual ~B()=default;};struct D:B{};\n",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Контракт и граничные значения",
+      "code": "B b; D d; CHECK(&checked(d)==&d); expect_throw<std::bad_cast>([&]{checked(b);});",
+      "category": "functional"
+    }
+  ],
+  "memory": false,
+  "order": 206,
+  "hints": [
+    "Сравните статический тип выражения и динамический тип объекта. Как контракт сообщает неудачу?",
+    "Проверяемое понижающее dynamic_cast требует полиморфную базу. Неудачный cast указателя даёт nullptr, ссылки — bad_cast. static_cast не проверяет динамический тип.",
+    "Сначала проверьте иерархию и виртуальный деструктор. Для точного динамического типа сравнивайте typeid-объекты через ==, а не реализационно-зависимое name(). Не разыменовывайте результат преобразования до проверки."
+  ],
+  "filePath": "student/day-05/d5-s12/solution.hpp"
+}
