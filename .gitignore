@@ -12,6 +12,5 @@ student/**/main.cpp
 student/**/notes.md
 student/**/test_adapter.hpp
 student/**/answer.json
-student/archive/
 !student/**/.gitkeep
 test-results/

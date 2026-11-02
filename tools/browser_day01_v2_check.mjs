@@ -15,12 +15,7 @@ const pythonExe=spawnSync(py,[...args,'-c','import sys;print(sys.executable)'],{
 let executablePath=process.env.PUPPETEER_EXECUTABLE_PATH;
 if(!executablePath){const cache=path.join(homedir(),'.cache','puppeteer','chrome');if(existsSync(cache))for(const version of readdirSync(cache).sort().reverse()){const file=path.join(cache,version,'chrome-win64','chrome.exe');if(existsSync(file)){executablePath=file;break;}}}
 if(!executablePath)throw Error('Set PUPPETEER_EXECUTABLE_PATH to Chrome/Chromium');
-// Historical solution is a sentinel, never a reference implementation.
-const old=path.join(profile,'student','day-01','d1-s01');mkdirSync(old,{recursive:true});
-writeFileSync(path.join(old,'solution.hpp'),'// learner archive sentinel');
 const env={...process.env,PYTHONUTF8:'1',MASTERY_DATA:profile};
-const migration=spawnSync(pythonExe,['-c','from tools.build_day01_v2 import archive_legacy; archive_legacy()'],{cwd:root,env,windowsHide:true,encoding:'utf8'});
-assert.equal(migration.status,0,migration.stderr);
 const backend=spawn(pythonExe,['-m','backend.server','--port','8768'],{cwd:root,env,windowsHide:true,stdio:['ignore','pipe','pipe']});
 let logs='';backend.stdout.on('data',s=>logs+=s);backend.stderr.on('data',s=>logs+=s);
 const base='http://127.0.0.1:8768';let browser,page;
@@ -33,9 +28,18 @@ try{
  for(let i=0;i<100;i++){try{if((await fetch(base+'/api/session')).ok)break;}catch{}await new Promise(r=>setTimeout(r,100));if(i===99)throw Error(logs);}
  browser=await puppeteer.launch({executablePath,headless:true,args:['--disable-gpu'],defaultViewport:{width:1440,height:1080}});
  page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));
+ await page.evaluateOnNewDocument(()=>{
+  if(!sessionStorage.getItem('clean-profile-seeded')){
+   localStorage.setItem('mastery-workspace','previous-workspace');
+   localStorage.setItem('mastery-draft-d01-v2-a01','previous learner answer');
+   sessionStorage.setItem('clean-profile-seeded','yes');
+  }
+ });
  const course=await (await fetch(base+'/api/course')).json();assert.equal(course.tasks.filter(t=>t.day===1).length,48);
  for(const task of course.tasks.filter(t=>t.version===2))assert.ok(!['answer','tests','checks','traceAnswer','diagnosisAnswer','variants'].some(k=>k in task));
  await visit('day/1');assert.equal(await page.$eval('h1',e=>e.textContent),'StereoLab');
+ assert.equal(await page.evaluate(()=>localStorage.getItem('mastery-draft-d01-v2-a01')),null);
+ assert.equal(await page.$('.v2-download'),null);
  assert.equal(await page.$$eval('.v2-roadmap button',e=>e.length),7);await page.waitForSelector('.v2-score-panel');
  await noOverflow();await page.screenshot({path:path.join(output,'roadmap-dark.png'),fullPage:true});
  await page.click('[aria-label="Сменить тему"]');await page.screenshot({path:path.join(output,'roadmap-light.png'),fullPage:true});await page.click('[aria-label="Сменить тему"]');
@@ -62,16 +66,20 @@ try{
  await visit('task/d01-v2-b02');const response=page.waitForResponse(r=>r.url().includes('/api/run/d01-v2-b02')&&r.request().method()==='POST');
  await click('Скомпилировать');assert.equal((await (await response).json()).status,'DEPENDENCY_ERROR');
  await visit('task/d01-v2-c01');await page.waitForSelector('.cm-content');assert.ok((await page.$eval('.file-tabs',e=>e.textContent)).includes('main.cpp'));
- await visit('archive/1');await page.waitForSelector('.v2-task-row');assert.equal(await page.$$eval('.v2-task-row',e=>e.length),52);
- const zip=await fetch(base+'/api/archive/day-1/solutions.zip');assert.equal(zip.status,200);assert.ok((await zip.arrayBuffer()).byteLength>100);
- await visit('task/d1-s01');await page.waitForSelector('.cm-content');assert.ok((await page.$eval('.cm-content',e=>e.textContent)).includes('learner archive sentinel'));assert.ok(await page.$('.v2-archive-banner'));
+ assert.equal((await fetch(base+'/api/archive/day-1')).status,404);
+ assert.equal((await fetch(base+'/api/task/d1-s01')).status,404);
  await visit('day/1');await page.setViewport({width:390,height:844});await noOverflow();await page.screenshot({path:path.join(output,'roadmap-mobile.png'),fullPage:true});
  await visit('task/d01-v2-p03');await noOverflow();await page.screenshot({path:path.join(output,'prediction-mobile.png'),fullPage:true});
  await visit('task/d01-v2-a01');await click('Код и проверка');await page.waitForSelector('.cm-content');await noOverflow();await page.screenshot({path:path.join(output,'editor-mobile.png'),fullPage:true});
  await visit('day/2');assert.equal(await page.$('.v2-roadmap'),null);assert.ok(await page.$('.tabs'));
  const summary=await (await fetch(base+'/api/day01/summary')).json();assert.equal(summary.maximum,130);assert.ok(summary.critical.length);assert.notEqual(summary.state,'Полный автоматический зачёт');
+ await page.evaluate(()=>localStorage.setItem('mastery-draft-d01-v2-a01','stale answer after reset'));
+ writeFileSync(path.join(profile,'progress','workspace-id'),'reset-browser-profile');
+ await page.reload({waitUntil:'networkidle0'});
+ assert.equal(await page.evaluate(()=>localStorage.getItem('mastery-draft-d01-v2-a01')),null);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('mastery-workspace')),'reset-browser-profile');
  assert.deepEqual(errors,[]);
- console.log('StereoLab browser QA PASS: 48 tasks, seven stages, answer secrecy, prediction persistence/variants, diagnosis gate, real dependency errors, console files, archive, themes, mobile, unchanged Day 2.');
+ console.log('StereoLab browser QA PASS: 48 tasks, seven stages, answer secrecy, prediction persistence/variants, diagnosis gate, real dependency errors, console files, themes, mobile, unchanged Day 2.');
 }catch(error){
  if(page){console.error('Browser errors:',errors);console.error((await page.$eval('body',e=>e.innerText)).slice(-5000));await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});}
  throw error;

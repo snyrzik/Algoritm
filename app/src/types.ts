@@ -29,7 +29,6 @@ export interface Task {
   diagnosisChoices?: {id:string;label:string}[];
   dependencies?: string[];
   fixtures?: string[];
-  archived?: boolean;
   lecture?: number;
   chapter?: number;
   protocol?: string;

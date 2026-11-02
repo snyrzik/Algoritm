@@ -1,8 +1,20 @@
 import json
 import sqlite3
+import threading
+import uuid
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from .catalog import DATA
+
+PROFILE_LOCK=threading.Lock()
+
+def profile_id():
+    """A new data directory must not restore drafts from an older browser profile."""
+    with PROFILE_LOCK:
+        folder=DATA/'progress';folder.mkdir(parents=True,exist_ok=True)
+        path=folder/'workspace-id'
+        if not path.exists():path.write_text(uuid.uuid4().hex,encoding='ascii')
+        return path.read_text(encoding='ascii').strip()
 
 @contextmanager
 def connect():

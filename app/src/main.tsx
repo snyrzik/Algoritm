@@ -66,7 +66,6 @@ const TheoryMarkdown = lazy(() =>
   import("./theory/Markdown").then((module) => ({ default: module.Markdown })),
 );
 const Day01Practice = lazy(() => import("./day01/Practice"));
-const Day01Archive = lazy(() => import("./day01/Practice").then(module=>({default:module.Day01Archive})));
 const Day01ScorePanel = lazy(() => import("./day01/Practice").then(module=>({default:module.ScorePanel})));
 const Prediction = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Prediction})));
 const Diagnosis = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Diagnosis})));
@@ -82,7 +81,7 @@ type Page =
   | "review"
   | "report"
   | "settings"
-  | "theory" | "archive";
+  | "theory";
 function route() {
   const p = location.hash.replace(/^#\/?/, "").split("/");
   return {
@@ -474,7 +473,6 @@ function App() {
   }
   function nextTask() {
     if (!detail) return;
-    if(detail.task.archived){go('archive/1');return;}
     if(detail.task.version===2){const list=tasks.filter(t=>t.group===detail.task.group&&t.version===2);const i=list.findIndex(t=>t.id===detail.task.id);go(i+1<list.length?'task/'+list[i+1].id:'day/1/'+stagePaths[detail.task.group!]);return;}
     if (detail.task.section === "lecture-theory") {
       go(
@@ -1039,13 +1037,12 @@ function App() {
     const quiz = t.kind === "Q" || t.kind === "P";
     return (
       <>
-        {t.archived&&<div className="v2-archive-banner"><p>Архивная практика v1. Решения и история сохранены; эти результаты не учитываются в StereoLab.</p><button onClick={()=>go('archive/1')}>К архиву</button></div>}
         <div className="exercise-heading">
           <button
             className="back-link"
             onClick={() =>
               go(
-                t.archived ? 'archive/1' : t.version===2 ? 'day/1/'+stagePaths[t.group!] : t.section === "lecture-theory"
+                t.version===2 ? 'day/1/'+stagePaths[t.group!] : t.section === "lecture-theory"
                   ? `theory/1/chapter-${t.chapter}`
                   : "day/" + t.day,
               )
@@ -1508,7 +1505,7 @@ function App() {
             Все попытки сохраняются локально
           </span>
           <button onClick={nextTask}>
-            {t.archived?'К архиву':t.version===2?'Следующее задание / сводка':t.section === "lecture-theory"
+            {t.version===2?'Следующее задание / сводка':t.section === "lecture-theory"
               ? t.chapter === 4
                 ? "К итогам лекции"
                 : "К следующей главе"
@@ -2045,8 +2042,6 @@ function App() {
               <RefreshCw className="spin" />
               <p>Подготавливаем рабочее пространство…</p>
             </div>
-          ) : locationState.page === "archive" ? (
-            <Suspense fallback={<div className="loading-state">Открываем архив…</div>}><Day01Archive go={go}/></Suspense>
           ) : locationState.page === "theory" ? (
             locationState.key === "1" ? (
               <Suspense

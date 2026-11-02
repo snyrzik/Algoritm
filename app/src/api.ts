@@ -1,13 +1,25 @@
 let token = "";
+let session: Promise<void> | null = null;
+function initializeSession() {
+  session ??= fetch("/api/session", {cache:"no-store"}).then(r=>{
+    if(!r.ok)throw new Error("Не удалось открыть локальную сессию");
+    return r.json();
+  }).then(value=>{
+    token=value.token;
+    if(localStorage.getItem("mastery-workspace")!==value.profileId){
+      for(const key of Object.keys(localStorage))
+        if(key.startsWith("mastery-draft-"))localStorage.removeItem(key);
+      localStorage.setItem("mastery-workspace",value.profileId);
+    }
+  }).catch(error=>{session=null;throw error;});
+  return session;
+}
 export async function api<T>(
   path: string,
   body?: unknown,
   method = "POST",
 ): Promise<T> {
-  if (body !== undefined && !token) {
-    const session = await fetch("/api/session").then((r) => r.json());
-    token = session.token;
-  }
+  await initializeSession();
   const response = await fetch(
     "/api/" + path,
     body === undefined

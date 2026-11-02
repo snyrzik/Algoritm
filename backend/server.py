@@ -5,8 +5,6 @@ import random
 import secrets
 import threading
 import time
-import io
-import zipfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
@@ -82,23 +80,10 @@ class Handler(BaseHTTPRequestHandler):
             if not self.allowed(): return self.send_json({'error':'Локальный доступ запрещён'},403)
             path=urlparse(self.path).path
             parts=path.strip('/').split('/')
-            if path=='/api/session': return self.send_json({'token':TOKEN})
+            if path=='/api/session': return self.send_json({'token':TOKEN,'profileId':storage.profile_id()})
             if path=='/api/day01/summary':
                 from .day01_v2.scoring import summary
                 return self.send_json(summary())
-            if path=='/api/archive/day-1':
-                archived=[t for t in catalog(include_archived=True) if t.get('archived') and t['day']==1]
-                ids={t['id'] for t in archived}
-                migration=DATA/'student/archive/day-01-v1/migration.json'
-                return self.send_json({'tasks':[public_task(t) for t in archived],'attempts':[a for a in storage.history() if a['task'] in ids],'backup':json.loads(migration.read_text(encoding='utf-8')) if migration.exists() else None})
-            if path=='/api/archive/day-1/solutions.zip':
-                folder=(DATA/'student/archive/day-01-v1').resolve()
-                output=io.BytesIO()
-                with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
-                    if folder.exists():
-                        for file in folder.rglob('*'):
-                            if file.is_file() and file.resolve().is_relative_to(folder):archive.write(file,file.relative_to(folder).as_posix())
-                payload=output.getvalue();self.send_response(200);self.send_header('Content-Type','application/zip');self.send_header('Content-Disposition','attachment; filename="day-01-v1-solutions.zip"');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
             if path=='/api/theory/day-1/lecture-1':
                 from .theory import lecture
                 return self.send_json(lecture())
@@ -232,9 +217,6 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     import argparse
     parser=argparse.ArgumentParser(); parser.add_argument('--port',type=int,default=8765); args=parser.parse_args()
-    if (ROOT/'days/day-01-operators/practice-v2/manifest.json').exists():
-        from tools.build_day01_v2 import archive_legacy
-        archive_legacy()
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler)
     server.daemon_threads=True
     print(f'C++ Mastery: http://127.0.0.1:{args.port}/#/day/1',flush=True)

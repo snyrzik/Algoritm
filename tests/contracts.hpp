@@ -7,16 +7,6 @@
 #include <stdexcept>
 #include <typeinfo>
 #include "support.hpp"
-class Vector3 {
-public:
- Vector3(double=0,double=0,double=0);
- double& operator[](std::size_t); const double& operator[](std::size_t) const;
- Vector3 operator+(const Vector3&)const; Vector3 operator-(const Vector3&)const;
- Vector3 operator+()const; Vector3 operator-()const; Vector3 operator*(double)const;
- Vector3& operator+=(const Vector3&); Vector3& operator-=(const Vector3&);
- bool operator==(const Vector3&)const; bool operator!=(const Vector3&)const;
- friend Vector3 operator*(double,const Vector3&); friend std::ostream& operator<<(std::ostream&,const Vector3&);
-};
 class Polynomial2 {
 public:
  Polynomial2(double=0,double=0,double=0);
@@ -27,17 +17,6 @@ public:
  bool operator==(const Polynomial2&)const; bool operator!=(const Polynomial2&)const;
  friend Polynomial2 operator*(double,const Polynomial2&); friend std::ostream& operator<<(std::ostream&,const Polynomial2&);
 };
-class Matrix2x2 {
-public:
- Matrix2x2(double=0,double=0,double=0,double=0);
- double& operator()(std::size_t,std::size_t);const double& operator()(std::size_t,std::size_t)const;
- Matrix2x2 operator+(const Matrix2x2&)const;Matrix2x2 operator-(const Matrix2x2&)const;Matrix2x2 operator*(const Matrix2x2&)const;
- bool operator==(const Matrix2x2&)const;bool operator!=(const Matrix2x2&)const;
- friend std::ostream& operator<<(std::ostream&,const Matrix2x2&);friend std::istream& operator>>(std::istream&,Matrix2x2&);
-};
-Vector3 transform(const Vector3&,const Matrix2x2&,const Polynomial2&);
-struct StreamReport{int first;double second;bool failed;bool ended;};
-StreamReport inspect_stream(const char*);
 class CMyString {
 public:
  CMyString();explicit CMyString(const char*);CMyString(const CMyString&);CMyString& operator=(const CMyString&);~CMyString();

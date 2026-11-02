@@ -26,16 +26,14 @@ class TheoryContentTests(unittest.TestCase):
         self.assertTrue(data['sections'][0]['markdown'].startswith('# Лекция № 1'))
         self.assertIn('Переход к полной практике',data['sections'][-1]['markdown'])
     def test_all_existing_days_and_tests_are_unchanged(self):
-        protected=json.loads((ROOT/'tests/day01_theory_legacy.sha256.json').read_text(encoding='utf-8'))
-        self.assertEqual(len(protected),763)
+        protected=json.loads((ROOT/'tests/course_content.sha256.json').read_text(encoding='utf-8'))
+        self.assertEqual(len(protected),626)
         for name,digest in protected.items():
-            if name=='days/day-01-operators/README.md':name='days/day-01-operators/archive/v1/README.md'
             self.assertEqual(hashlib.sha256((ROOT/name).read_bytes().replace(b'\r\n',b'\n')).hexdigest(),digest,name)
     def test_new_checks_do_not_replace_or_renumber_existing_tasks(self):
         old=catalog(); all_tasks=catalog(include_theory=True)
         self.assertEqual(len(old),288); self.assertEqual(len(all_tasks),292)
         self.assertEqual(sum(t['day']==1 for t in old),48)
-        self.assertEqual(len(catalog(include_theory=True,include_archived=True)),344)
         extra=[t for t in all_tasks if t['id'] not in {old_task['id'] for old_task in old}]
         self.assertEqual([t['id'] for t in extra],CHECK_IDS)
         self.assertEqual(sum(len(t['tests']) for t in extra),40)
@@ -72,14 +70,14 @@ class TheoryApiTests(unittest.TestCase):
         files=detail['files'];files['test_adapter.hpp']='// learner selects their own method names\n'
         status,_=self.request('/api/files/d1-l1-c01',{'files':files,'revision':detail['revision']},method='PUT');self.assertEqual(status,200)
         _,loaded=self.request('/api/task/d1-l1-c01');self.assertEqual(loaded['files']['test_adapter.hpp'],files['test_adapter.hpp'])
-        _,original=self.request('/api/task/d1-c01');self.assertNotIn('test_adapter.hpp',original['files'])
+        _,original=self.request('/api/task/d01-v2-a01');self.assertNotIn('test_adapter.hpp',original['files'])
     def test_check_attempt_does_not_complete_original_practice(self):
         task=get_task('d1-l1-c03');files=student_files(task)
         result={'status':'FAIL','score':0,'mode':'test','tests':[]}
         legacy.storage.record(task['id'],'test',result,files)
         _,progress=self.request('/api/progress')
         self.assertTrue(any(a['task']==task['id'] for a in progress['attempts']))
-        self.assertFalse(any(a['task']=='d1-c01' and a['status']=='PASS' for a in progress['attempts']))
+        self.assertFalse(any(a['task']=='d01-v2-a01' and a['status']=='PASS' for a in progress['attempts']))
 
 # Contract-only declarations validate the harness and adapter, never a solution.
 CONTRACTS={

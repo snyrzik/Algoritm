@@ -6,15 +6,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = Path(os.environ.get('MASTERY_DATA', ROOT)).resolve()
 DAY_NAMES = ['operators', 'memory', 'templates-functions', 'template-classes-rtti', 'final-exam']
 
-def catalog(include_theory=False, include_archived=False):
+def catalog(include_theory=False):
     result = []
-    manifest = ROOT / 'days/day-01-operators/practice-v2/manifest.json'
-    archived = set(json.loads(manifest.read_text(encoding='utf-8')).get('legacyIds', [])) if manifest.exists() else set()
     for path in sorted((ROOT / 'days').glob('day-*/*/**/exercise.json')):
         item = json.loads(path.read_text(encoding='utf-8'))
-        if item['id'] in archived:
-            if not include_archived: continue
-            item['archived'] = True
         if item.get('section') == 'lecture-theory' and not include_theory:
             continue
         item['_path'] = str(path.parent)
@@ -22,11 +17,11 @@ def catalog(include_theory=False, include_archived=False):
     return sorted(result, key=lambda t: (t['day'], t['order']))
 
 def get_task(task_id):
-    return next((t for t in catalog(include_theory=True, include_archived=True) if t['id'] == task_id), None)
+    return next((t for t in catalog(include_theory=True) if t['id'] == task_id), None)
 
 def public_task(task):
     if task.get('version') == 2:
-        allowed={'id','day','version','section','group','kind','level','number','title','prompt','maxPoints','required','minutes','order','tags','filePath','options','multiple','category','difficulty','runner','code','traceFields','diagnosisChoices','publicChecks','dependencies','fixtures','archived','variant'}
+        allowed={'id','day','version','section','group','kind','level','number','title','prompt','maxPoints','required','minutes','order','tags','filePath','options','multiple','category','difficulty','runner','code','traceFields','diagnosisChoices','publicChecks','dependencies','fixtures','variant'}
         return {k:v for k,v in task.items() if k in allowed}
     return {k: v for k, v in task.items() if k not in {'answer', 'explanation', 'optionExplanations', 'hints', '_path', 'tests', 'prefix', 'suffix', 'staticChecks'}}
 

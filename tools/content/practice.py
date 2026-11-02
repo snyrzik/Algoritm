@@ -1,17 +1,6 @@
 from .common import code, case
 
-VECTOR = '''Реализуйте Vector3 с приватными координатами double и конструктором Vector3(double x=0,double y=0,double z=0). Операции: бинарные + и -, унарные + и -, умножение на double с обеих сторон, == и != (точное сравнение координат), две версии [] с индексом std::size_t. Изменяемая версия возвращает double&, константная — const double&. Индексы вне 0..2 бросают std::out_of_range. Арифметика не меняет операнды. Вывод строго (x,y,z) с обычным форматированием потока, без пробелов и перевода строки. Готовые контейнеры не использовать. Определения размещайте в solution.hpp или в solution.cpp с объявлениями в заголовке.'''
-VCASES=[
-case('Нулевой и обычный конструкторы','const Vector3 z; CHECK(z[0]==0 && z[1]==0 && z[2]==0); const Vector3 v(1,2,3); CHECK(v[0]==1 && v[2]==3);','boundary'),
-case('Сложение и сохранение операндов','const Vector3 a(1,2,3),b(4,5,6); const auto c=a+b; CHECK(c==Vector3(5,7,9)); CHECK(a==Vector3(1,2,3) && b==Vector3(4,5,6));'),
-case('Вычитание и унарные операции','const Vector3 a(1,-2,3); CHECK(-a==Vector3(-1,2,-3)); CHECK(+a==a); CHECK(a-a==Vector3());'),
-case('Скаляр с обеих сторон','const Vector3 v(2,-4,6); CHECK(v*0.5==Vector3(1,-2,3)); CHECK(-2.0*v==Vector3(-4,8,-12)); CHECK(0.0*v==Vector3());'),
-case('Изменяемая и константная индексация','Vector3 v; v[1]=9; const Vector3& c=v; CHECK(c[1]==9); CHECK(&v[1]==&c[1]);'),
-case('Индексы за границами','Vector3 v; const Vector3& c=v; expect_throw<std::out_of_range>([&]{(void)v[3];}); expect_throw<std::out_of_range>([&]{(void)c[std::numeric_limits<std::size_t>::max()];});','negative'),
-case('Сравнения','CHECK(Vector3(1,2,3)!=Vector3(1,2,4)); CHECK(!(Vector3(1,2,3)!=Vector3(1,2,3)));'),
-case('Формат и цепочка вывода','std::ostringstream out; const Vector3 a(1,2,3),b(-1,0,4); CHECK(&(out<<a)==&out); out<<" | "<<b; CHECK(out.str()=="(1,2,3) | (-1,0,4)");','io'),
-]
-VTYPE='static_assert(std::is_same_v<decltype(std::declval<Vector3&>()[0]),double&>); static_assert(std::is_same_v<decltype(std::declval<const Vector3&>()[0]),const double&>);'
+# Shared user-type contract required by the unchanged Day 3 exercises.
 POLY='''Реализуйте Polynomial2(double a=0,double b=0,double c=0) для a*x*x+b*x+c. Индексы: p[0]=c, p[1]=b, p[2]=a. Две версии [] возвращают double& / const double&; неверный индекс → out_of_range. Поддержите +, -, унарные + и -, умножение на double с обеих сторон и const-operator()(double). Вывод в поток: [a,b,c] без пробелов. Сравнение == и != — точное по коэффициентам. Арифметика не изменяет операнды. Собственные приватные поля, без STL-контейнеров.'''
 PCASES=[
 case('Порядок коэффициентов','const Polynomial2 p(2,3,4); CHECK(p[0]==4 && p[1]==3 && p[2]==2);'),
@@ -21,36 +10,7 @@ case('Умножение','const Polynomial2 p(2,3,4); CHECK(2.0*p==Polynomial2(
 case('Индексирование','Polynomial2 p; p[2]=3; p[1]=2; p[0]=1; const auto& c=p; CHECK(c(2)==17); expect_throw<std::out_of_range>([&]{(void)c[3];}); expect_throw<std::out_of_range>([&]{(void)p[3];});','negative'),
 case('Вывод и сравнение','std::ostringstream o; const Polynomial2 p(2,3,4); CHECK(&(o<<p)==&o); CHECK(o.str()=="[2,3,4]"); CHECK(p!=Polynomial2());'),
 ]
-MATRIX='''Реализуйте Matrix2x2(double a=0,double b=0,double c=0,double d=0), строки (a,b),(c,d). Доступ m(row,col) для std::size_t: double& и const double&; каждая координата должна быть меньше 2, иначе out_of_range. Поддержите +, -, матричное умножение, == и != по точному равенству элементов. Произведения вычисляйте по правилу строка×столбец, не поэлементно. Операнды неизменны.'''
-MCASES=[
-case('Инициализация и доступ','Matrix2x2 m(1,2,3,4); m(1,0)=7; const auto& c=m; CHECK(c(0,1)==2 && c(1,0)==7); CHECK(Matrix2x2()==Matrix2x2(0,0,0,0));'),
-case('Арифметика','const Matrix2x2 a(1,2,3,4),b(5,6,7,8); CHECK(a+b==Matrix2x2(6,8,10,12)); CHECK(b-a==Matrix2x2(4,4,4,4));'),
-case('Настоящее умножение матриц','const Matrix2x2 a(1,2,3,4),b(5,6,7,8); CHECK(a*b==Matrix2x2(19,22,43,50)); CHECK(b*a==Matrix2x2(23,34,31,46)); CHECK(a==Matrix2x2(1,2,3,4));'),
-case('Единица и ноль','const Matrix2x2 a(1,-2,3,4),id(1,0,0,1); CHECK(a*id==a && id*a==a); CHECK(a*Matrix2x2()==Matrix2x2());','boundary'),
-case('Границы обеих координат','Matrix2x2 m; const auto& c=m; expect_throw<std::out_of_range>([&]{(void)m(2,0);}); expect_throw<std::out_of_range>([&]{(void)c(0,2);}); CHECK(m!=Matrix2x2(1,0,0,0));','negative'),
-]
-MIO=''' Добавьте потоковые << и >>. Формат [[a,b],[c,d]], разрешены пробельные символы вокруг чисел и разделителей. Проверяйте все скобки и запятые. При неполном или неверном вводе устанавливайте failbit и полностью сохраняйте прежнюю матрицу. Чтение заканчивается сразу после последней скобки; следующий объект остаётся доступным. Исключения потока не включайте самостоятельно.'''
-MIOCASES=[
-case('Потоковая цепочка','std::ostringstream o; const Matrix2x2 m(1,2,3,4); CHECK(&(o<<m)==&o); o<<m; CHECK(o.str()=="[[1,2],[3,4]][[1,2],[3,4]]");','io'),
-case('Ввод с пробелами и последовательное чтение','std::istringstream in(" [ [1, 2], [3,4] ] [[5,6],[7,8]]"); Matrix2x2 a,b; CHECK(&(in>>a)==&in); in>>b; CHECK(!in.fail()); CHECK(a==Matrix2x2(1,2,3,4) && b==Matrix2x2(5,6,7,8));','io'),
-case('Плохие разделители и неполный ввод','for(const char* text:{"[[1;2],[3,4]]","[(1,2),(3,4)]","[[1,2],[3,]]","[[1,2],[3,4]","[[1,2] [3,4]]",""}){std::istringstream in(text); Matrix2x2 m(9,8,7,6); in>>m; CHECK(in.fail()); CHECK(m==Matrix2x2(9,8,7,6));}','negative'),
-case('Некорректное число','std::istringstream in("[[1,no],[3,4]]"); Matrix2x2 m(2,3,4,5); in>>m; CHECK(in.fail() && m==Matrix2x2(2,3,4,5));','negative'),
-]
-code(1,'C','A1 · Vector3 Basics',VECTOR,VCASES,checks=VTYPE,tags=['Перегрузка операторов','const correctness'])
-code(1,'C','A2 · Polynomial2',POLY,PCASES,tags=['Перегрузка операторов','const correctness'])
-code(1,'C','A3 · Matrix2x2',MATRIX,MCASES,tags=['Перегрузка операторов','References'])
-code(1,'C','B1 · Полный набор Vector3',VECTOR+' Добавьте += и -= с возвратом Vector3&. Цепочки должны изменять исходный объект. Реализуйте = с обычной семантикой копирования.',VCASES+[case('Цепочки и алиасинг','Vector3 a(1,2,3); const Vector3 b(2,3,4); CHECK(&((a+=b)-=b)==&a); CHECK(a==Vector3(1,2,3)); a+=a; CHECK(a==Vector3(2,4,6)); a-=a; CHECK(a==Vector3());')],checks=VTYPE,level='B')
-code(1,'C','B2 · Потоковый вывод Vector3',VECTOR+' Отдельно проверьте вывод через cout и ostringstream. Состояние форматирования потока (precision, fixed) должно применяться обычным образом.',VCASES+[case('Форматирование и cout','const Vector3 a(1.25,2,3); std::ostringstream o; o.setf(std::ios::fixed); o.precision(2); o<<a; CHECK(o.str()=="(1.25,2.00,3.00)"); std::cout<<a;')],level='B',tags=['Потоки'])
-code(1,'C','B3 · Транзакционный ввод Matrix2x2',MATRIX+MIO,MCASES+MIOCASES,level='B',tags=['Потоки','Exception safety'])
-code(1,'C','B4 · Состояние потоков','Напишите struct StreamReport { int first; double second; bool failed; bool ended; }; и StreamReport inspect_stream(const char* text). Создайте istringstream, последовательно прочитайте int, double, int. Первые два начальных значения 0. После третьей попытки сохраните fail() и eof(). nullptr → invalid_argument. В notes.md объясните разницу между этими битами и исключением.',[
-case('Некорректный третий токен','auto r=inspect_stream("12 3.5 wrong"); CHECK(r.first==12 && r.second==3.5 && r.failed && !r.ended);'),
-case('Полный ввод','auto r=inspect_stream("12 3.5 8"); CHECK(r.first==12 && r.second==3.5 && !r.failed && r.ended);'),
-case('Пробел в конце','auto r=inspect_stream("12 3.5 8 "); CHECK(!r.failed && !r.ended);','boundary'),
-case('Неполный ввод','auto r=inspect_stream("12 3.5"); CHECK(r.failed && r.ended);','negative'),
-case('Пустой ввод и nullptr','auto r=inspect_stream(""); CHECK(r.failed && r.ended && r.first==0); expect_throw<std::invalid_argument>([]{inspect_stream(nullptr);});','negative')],level='B',tags=['Потоки'])
-code(1,'C','C · Operator Challenge',VECTOR+'\n\n'+POLY+'\n\n'+MATRIX+'\n\nРеализуйте Vector3 transform(const Vector3& v,const Matrix2x2& m,const Polynomial2& p): матрица преобразует первые две координаты, третья сохраняется; затем p применяется к каждой из трёх координат. Используйте публичные операторы классов, без доступа к их приватным данным. В notes.md объясните выбор вспомогательных функций.',VCASES+PCASES+MCASES+[
-case('Композиция','const Vector3 v(1,2,3); const Matrix2x2 m(1,2,3,4); const Polynomial2 p(1,0,1); CHECK(transform(v,m,p)==Vector3(26,122,10)); CHECK(v==Vector3(1,2,3));'),
-case('Нулевое и единичное преобразование','CHECK(transform(Vector3(-1,2,0),Matrix2x2(1,0,0,1),Polynomial2(0,1,0))==Vector3(-1,2,0)); CHECK(transform(Vector3(1,2,3),Matrix2x2(),Polynomial2(0,1,0))==Vector3(0,0,3));')],level='C',minutes=65,tags=['Перегрузка операторов','const correctness','Проектирование'])
+
 
 STRING='''Создайте CMyString на собственном динамическом массиве new char[], без std::string или готовых контейнеров в реализации хранения. Обязательны: пустой конструктор, explicit-конструктор из const char*, правило трёх, size() const -> std::size_t, c_str() const -> const char*, две версии [] (char& и const char&), ==, != по содержимому. nullptr в конструкторе → invalid_argument. Индексы [0,size()) доступны; остальные → out_of_range. Пустая строка имеет валидный c_str() с нулём. Копии независимы, самоприсваивание допустимо, присваивание возвращает CMyString&. При неудаче копирования исходное состояние сохраняется. Все размеры включают место для нуля; переполнение → length_error.'''
 SCASES=[
