@@ -15,7 +15,7 @@ def main():
     if args.doctor:
         report=doctor(); print(json.dumps(report,ensure_ascii=False,indent=2)); return 0 if report['available'] else 2
     if not args.task and not args.day: p.error('Укажите --task d1-s01 или --day 1, либо --doctor')
-    tasks=[t for t in catalog() if t['kind'] in ('S','D','C') and (t['id']==args.task if args.task else t['day']==args.day)]
+    tasks=[t for t in catalog(include_theory=bool(args.task)) if t['kind'] in ('S','D','C') and (t['id']==args.task if args.task else t['day']==args.day)]
     if not tasks: p.error('Задание не найдено или не содержит C++')
     failed=0
     for t in tasks:

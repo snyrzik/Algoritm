@@ -8,11 +8,13 @@
     "dev": "node tools/start.mjs --dev",
     "build": "tsc --noEmit && vite build",
     "prepare:course": "node tools/python.mjs tools/build_course.py",
+    "prepare:theory": "node tools/python.mjs tools/add_day01_theory.py",
     "check": "node tools/python.mjs tools/check.py",
     "doctor": "node tools/python.mjs tools/check.py --doctor",
     "test": "node tools/python.mjs -m unittest discover -s tests -v",
     "test:contracts": "node tools/python.mjs tools/check_contracts.py",
-    "test:browser": "node tools/browser_check.mjs"
+    "test:browser": "node tools/browser_check.mjs",
+    "test:theory-browser": "node tools/browser_theory_check.mjs"
   },
   "dependencies": {
     "@codemirror/commands": "^6.8.1",
@@ -21,9 +23,12 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.36.5",
+    "@lezer/highlight": "^1.2.5",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

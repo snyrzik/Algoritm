@@ -29,7 +29,7 @@ def static_review(task, files):
 def grade(task, files, mode='test'):
     folder=DATA/'.build'/'runs'/uuid.uuid4().hex
     folder.mkdir(parents=True,exist_ok=True)
-    for name in ('solution.hpp','solution.cpp'):
+    for name in ('solution.hpp','solution.cpp',*task.get('starterFiles',{})):
         (folder/name).write_text(files.get(name,''),encoding='utf-8')
     wrapper=task.get('prefix','')+'\n#include "solution.hpp"\n'+task.get('suffix','')
     (folder/'candidate.hpp').write_text(wrapper,encoding='utf-8')

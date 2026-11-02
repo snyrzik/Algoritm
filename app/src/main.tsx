@@ -59,14 +59,31 @@ import {
   statusNames,
 } from "./types";
 import "./styles.css";
+import { Day01TheoryEntry } from "./theory/Day01TheoryEntry";
+const Theory = lazy(() => import("./theory/Theory"));
+const TheoryMarkdown = lazy(() =>
+  import("./theory/Markdown").then((module) => ({ default: module.Markdown })),
+);
 const Editor = lazy(() =>
   import("./Editor").then((module) => ({ default: module.Editor })),
 );
 
-type Page = "home" | "day" | "task" | "review" | "report" | "settings";
+type Page =
+  | "home"
+  | "day"
+  | "task"
+  | "review"
+  | "report"
+  | "settings"
+  | "theory";
 function route() {
   const p = location.hash.replace(/^#\/?/, "").split("/");
-  return { page: (p[0] || "day") as Page, key: p[1] || "1" };
+  return {
+    page: (p[0] || "day") as Page,
+    key: p[1] || "1",
+    section: p[2] || "overview",
+    anchor: p[3] || "",
+  };
 }
 function pct(tasks: Task[], latest: Record<string, Attempt>) {
   const r = tasks.filter((t) => t.required);
@@ -216,6 +233,14 @@ function App() {
     window.addEventListener("hashchange", h);
     return () => window.removeEventListener("hashchange", h);
   }, []);
+  useEffect(() => {
+    if (
+      locationState.page === "day" &&
+      locationState.key === "1" &&
+      locationState.section === "practice"
+    )
+      setFilter("C");
+  }, [locationState.page, locationState.key, locationState.section]);
   useEffect(() => {
     Promise.all([
       api<{ days: Day[]; tasks: Task[] }>("course").then((c) => {
@@ -440,6 +465,12 @@ function App() {
   }
   function nextTask() {
     if (!detail) return;
+    if (detail.task.section === "lecture-theory") {
+      go(
+        `theory/1/${detail.task.chapter! < 4 ? "chapter-" + (detail.task.chapter! + 1) : "summary"}`,
+      );
+      return;
+    }
     let list = tasks.filter(
       (t) => t.day === detail.task.day && t.kind === detail.task.kind,
     );
@@ -635,6 +666,9 @@ function App() {
           </span>
         </div>
         {dayCards()}
+        {!home && currentDay === 1 && (
+          <Day01TheoryEntry attempts={attempts} go={go} />
+        )}
         <section className="focus-card">
           <div>
             <div className="eyebrow">
@@ -993,15 +1027,29 @@ function App() {
     return (
       <>
         <div className="exercise-heading">
-          <button className="back-link" onClick={() => go("day/" + t.day)}>
+          <button
+            className="back-link"
+            onClick={() =>
+              go(
+                t.section === "lecture-theory"
+                  ? `theory/1/chapter-${t.chapter}`
+                  : "day/" + t.day,
+              )
+            }
+          >
             <ArrowLeft size={15} />
-            День 0{t.day}
+            {t.section === "lecture-theory"
+              ? `Лекция № 1 · Глава ${t.chapter}`
+              : `День 0${t.day}`}
           </button>
           <div className="exercise-title">
             <span className={"type-icon type-" + t.kind}>{t.kind}</span>
             <div>
               <div className="eyebrow">
-                {labels[t.kind]} / {t.id} {t.category ? " / " + t.category : ""}
+                {t.section === "lecture-theory"
+                  ? "Закрепление теории"
+                  : labels[t.kind]}{" "}
+                / {t.id} {t.category ? " / " + t.category : ""}
               </div>
               <h1>{t.title}</h1>
             </div>
@@ -1178,11 +1226,25 @@ function App() {
                 {sideTab === "condition" ? (
                   <>
                     <div className="eyebrow">КОНТРАКТ ЗАДАНИЯ</div>
-                    {t.prompt.split("\n\n").map((p, i) => (
-                      <p key={i} className="statement">
-                        {p}
-                      </p>
-                    ))}
+                    {t.section === "lecture-theory" ? (
+                      <div className="lecture-task-condition">
+                        <Suspense fallback={<p>Открывается условие…</p>}>
+                          <TheoryMarkdown source={t.prompt} />
+                        </Suspense>
+                      </div>
+                    ) : (
+                      t.prompt.split("\n\n").map((p, i) => (
+                        <p key={i} className="statement">
+                          {p}
+                        </p>
+                      ))
+                    )}
+                    {t.protocol && (
+                      <div className="lecture-protocol">
+                        <h3>Подключение к проверкам</h3>
+                        <p>{t.protocol}</p>
+                      </div>
+                    )}
                     {(detail.context.before || detail.context.after) && (
                       <details open>
                         <summary>Контекст компиляции</summary>
@@ -1430,7 +1492,11 @@ function App() {
             Все попытки сохраняются локально
           </span>
           <button onClick={nextTask}>
-            Следующее задание
+            {t.section === "lecture-theory"
+              ? t.chapter === 4
+                ? "К итогам лекции"
+                : "К следующей главе"
+              : "Следующее задание"}
             <ArrowRight size={15} />
           </button>
         </div>
@@ -1793,40 +1859,55 @@ function App() {
           </button>
           <div className="nav-caption">ПРОГРАММА ОБУЧЕНИЯ</div>
           {days.map((d) => (
-            <button
-              className={
-                "day-nav " +
-                ((locationState.page === "day" ||
-                  locationState.page === "task") &&
-                currentDay === d.id
-                  ? "nav-active"
-                  : "")
-              }
-              key={d.id}
-              onClick={() => go("day/" + d.id)}
-            >
-              <span className="day-number">0{d.id}</span>
-              <span>
-                <small>День {d.id}</small>
-                {
-                  [
-                    "Операторы",
-                    "Память и строки",
-                    "Шаблоны функций",
-                    "Классы и RTTI",
-                    "Итоговый экзамен",
-                  ][d.id - 1]
+            <React.Fragment key={d.id}>
+              <button
+                className={
+                  "day-nav " +
+                  ((locationState.page === "day" ||
+                    locationState.page === "task" ||
+                    locationState.page === "theory") &&
+                  currentDay === d.id
+                    ? "nav-active"
+                    : "")
                 }
-              </span>
-              {pct(
-                tasks.filter((t) => t.day === d.id),
-                latest,
-              ) === 100 ? (
-                <Check size={15} />
-              ) : (
-                <ChevronRight size={14} />
+                key={d.id}
+                onClick={() => go("day/" + d.id)}
+              >
+                <span className="day-number">0{d.id}</span>
+                <span>
+                  <small>День {d.id}</small>
+                  {
+                    [
+                      "Операторы",
+                      "Память и строки",
+                      "Шаблоны функций",
+                      "Классы и RTTI",
+                      "Итоговый экзамен",
+                    ][d.id - 1]
+                  }
+                </span>
+                {pct(
+                  tasks.filter((t) => t.day === d.id),
+                  latest,
+                ) === 100 ? (
+                  <Check size={15} />
+                ) : (
+                  <ChevronRight size={14} />
+                )}
+              </button>
+              {d.id === 1 && currentDay === 1 && (
+                <button
+                  className={
+                    "day01-theory-nav " +
+                    (locationState.page === "theory" ? "nav-active" : "")
+                  }
+                  onClick={() => go("theory/1/overview")}
+                >
+                  <BookOpen size={14} />
+                  Лекция № 1 · Теория
+                </button>
               )}
-            </button>
+            </React.Fragment>
           ))}
           <div className="nav-caption">ВАШЕ ОБУЧЕНИЕ</div>
           <button
@@ -1883,7 +1964,9 @@ function App() {
             <span>Рабочее пространство</span>
             <ChevronRight size={13} />
             <strong>
-              {locationState.page === "day" || locationState.page === "task"
+              {locationState.page === "day" ||
+              locationState.page === "task" ||
+              locationState.page === "theory"
                 ? `День 0${currentDay}`
                 : (
                     {
@@ -1898,6 +1981,12 @@ function App() {
               <>
                 <ChevronRight size={13} />
                 <span>{locationState.key}</span>
+              </>
+            )}
+            {locationState.page === "theory" && (
+              <>
+                <ChevronRight size={13} />
+                <span>Лекция № 1 · Теория</span>
               </>
             )}
           </div>
@@ -1939,6 +2028,26 @@ function App() {
               <RefreshCw className="spin" />
               <p>Подготавливаем рабочее пространство…</p>
             </div>
+          ) : locationState.page === "theory" ? (
+            locationState.key === "1" ? (
+              <Suspense
+                fallback={
+                  <div className="loading-state">
+                    <RefreshCw className="spin" />
+                    <p>Открываем теорию…</p>
+                  </div>
+                }
+              >
+                <Theory
+                  section={locationState.section}
+                  anchor={locationState.anchor}
+                  attempts={attempts}
+                  go={go}
+                />
+              </Suspense>
+            ) : (
+              <div className="empty">Теория этой лекции не найдена.</div>
+            )
           ) : locationState.page === "task" ? (
             Exercise()
           ) : locationState.page === "review" ? (

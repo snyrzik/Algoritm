@@ -16,6 +16,10 @@ export interface Task {
   memory?: boolean;
   starter?: string;
   category?: string;
+  section?: "lecture-theory";
+  lecture?: number;
+  chapter?: number;
+  protocol?: string;
 }
 export interface Day {
   id: number;

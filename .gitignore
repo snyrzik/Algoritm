@@ -9,5 +9,6 @@ __pycache__/
 student/**/solution.hpp
 student/**/solution.cpp
 student/**/notes.md
+student/**/test_adapter.hpp
 !student/**/.gitkeep
 test-results/

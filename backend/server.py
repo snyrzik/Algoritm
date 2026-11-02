@@ -81,6 +81,9 @@ class Handler(BaseHTTPRequestHandler):
             path=urlparse(self.path).path
             parts=path.strip('/').split('/')
             if path=='/api/session': return self.send_json({'token':TOKEN})
+            if path=='/api/theory/day-1/lecture-1':
+                from .theory import lecture
+                return self.send_json(lecture())
             if path=='/api/course':
                 return self.send_json({'days':json.loads((ROOT/'days/course.json').read_text(encoding='utf-8')),'tasks':[public_task(t) for t in catalog()]})
             if path=='/api/doctor': return self.send_json(doctor())
