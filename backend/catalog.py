@@ -35,7 +35,7 @@ def student_dir(task):
 
 def student_files(task):
     folder = student_dir(task)
-    names = ['solution.hpp', 'solution.cpp', 'notes.md'] if task['kind'] in ('S', 'D', 'C') else ['notes.md']
+    names = ['notes.md'] if task.get('localMain') else (['solution.hpp', 'solution.cpp', 'notes.md'] if task['kind'] in ('S', 'D', 'C') else ['notes.md'])
     names += [name for name in task.get('starterFiles', {}) if name not in names]
     files = {}
     for name in names:

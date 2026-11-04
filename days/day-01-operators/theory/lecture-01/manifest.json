@@ -1,12 +1,18 @@
 {
   "day": 1,
   "lecture": 1,
-  "sourceFilename": "CppMastery_Day01_Theory_READY.md",
-  "sourceSha256": "e0608d2ffed33fef5b5d0fe45be5adcc12f906d3544d8b816d2af16012012eec",
+  "sourceFilename": "Lecture_01_FULL_THEORY.md",
+  "sourceSha256": "b8940d0ddec865d8c518979ff3d818ca74efd82730c4fdcb5c0171cab4f3d982",
   "checkIds": [
-    "d1-l1-c01",
-    "d1-l1-c02",
-    "d1-l1-c03",
-    "d1-l1-c04"
+    "l01-v3-c01",
+    "l01-v3-c02",
+    "l01-v3-c03",
+    "l01-v3-c04",
+    "l01-v3-c05"
+  ],
+  "projectIds": [
+    "l01-v3-p01",
+    "l01-v3-p02",
+    "l01-v3-p03"
   ]
 }

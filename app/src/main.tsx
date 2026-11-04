@@ -59,17 +59,11 @@ import {
   statusNames,
 } from "./types";
 import "./styles.css";
-import "./day01/practice.css";
-import { Day01TheoryEntry } from "./theory/Day01TheoryEntry";
-const Theory = lazy(() => import("./theory/Theory"));
+const Theory = lazy(() => import("./lecture01/Lecture01"));
 const TheoryMarkdown = lazy(() =>
   import("./theory/Markdown").then((module) => ({ default: module.Markdown })),
 );
-const Day01Practice = lazy(() => import("./day01/Practice"));
-const Day01ScorePanel = lazy(() => import("./day01/Practice").then(module=>({default:module.ScorePanel})));
-const Prediction = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Prediction})));
 const ManualExercise = lazy(() => import("./manual/ManualExercise"));
-const stagePaths:Record<string,string>={Q:'quiz',S:'syntax',P:'prediction',D:'debugging',A:'A',B:'B',C:'C'};
 const Editor = lazy(() =>
   import("./Editor").then((module) => ({ default: module.Editor })),
 );
@@ -93,7 +87,6 @@ function route() {
 }
 function pct(tasks: Task[], latest: Record<string, Attempt>) {
   const r = tasks.filter((t) => t.required);
-  if(r.length&&r.every(t=>t.version===2&&t.day===1))return Math.round(r.reduce((sum,t)=>sum+(latest[t.id]?.pointsEarned||0),0)/r.reduce((sum,t)=>sum+(t.maxPoints||0),0)*100);
   return r.length
     ? Math.round(
         (r.filter((t) => isCompleted(latest[t.id])).length / r.length) *
@@ -450,10 +443,9 @@ function App() {
   }
   function nextTask() {
     if (!detail) return;
-    if(detail.task.version===2){const list=tasks.filter(t=>t.group===detail.task.group&&t.version===2);const i=list.findIndex(t=>t.id===detail.task.id);go(i+1<list.length?'task/'+list[i+1].id:'day/1/'+stagePaths[detail.task.group!]);return;}
     if (detail.task.section === "lecture-theory") {
       go(
-        `theory/1/${detail.task.chapter! < 4 ? "chapter-" + (detail.task.chapter! + 1) : "summary"}`,
+        `theory/1/${detail.task.chapter! < 5 ? "chapter-" + (detail.task.chapter! + 1) : "summary"}`,
       );
       return;
     }
@@ -615,7 +607,7 @@ function App() {
   }
   function Dashboard({ home = false }: { home?: boolean }) {
     const dt = home ? tasks : tasks.filter((t) => t.day === currentDay);
-    if(!home&&currentDay===1&&dt.some(t=>t.version===2))return <Suspense fallback={<div className="loading-state">Открываем StereoLab…</div>}><Day01Practice tasks={dt} attempts={attempts} go={go} section={locationState.section} dayCards={dayCards()} theory={<Day01TheoryEntry attempts={attempts} go={go}/>}/></Suspense>;
+    if(!home&&currentDay===1)return <Suspense fallback={<div className="loading-state">Открываем лекцию № 1…</div>}><Theory section={locationState.section} anchor={locationState.anchor} attempts={attempts} go={go}/></Suspense>;
     if (currentDay === 5 && exam && !exam.finished)
       dt.sort((a, b) =>
         a.kind === "S" && b.kind === "S"
@@ -653,9 +645,6 @@ function App() {
           </span>
         </div>
         {dayCards()}
-        {!home && currentDay === 1 && (
-          <Day01TheoryEntry attempts={attempts} go={go} />
-        )}
         <section className="focus-card">
           <div>
             <div className="eyebrow">
@@ -921,14 +910,14 @@ function App() {
             className="back-link"
             onClick={() =>
               go(
-                t.version===2 ? 'day/1/'+stagePaths[t.group!] : t.section === "lecture-theory"
+                t.section === 'lecture-practice' ? 'theory/1/practice' : t.section === "lecture-theory"
                   ? `theory/1/chapter-${t.chapter}`
                   : "day/" + t.day,
               )
             }
           >
             <ArrowLeft size={15} />
-            {t.version===2 ? 'StereoLab · '+t.group : t.section === "lecture-theory"
+            {t.section === 'lecture-practice' ? 'Лекция № 1 · Практика' : t.section === "lecture-theory"
               ? `Лекция № 1 · Глава ${t.chapter}`
               : `День 0${t.day}`}
           </button>
@@ -962,7 +951,7 @@ function App() {
             )}
           </div>
         </div>
-        {t.version===2&&t.kind==='P'?<Suspense fallback={<p>Открывается трассировка…</p>}><Prediction task={t} files={files} edit={edit} persist={persist} onResult={setResult} refresh={refresh}/></Suspense>:quiz ? (
+        {quiz ? (
           <div className="quiz-layout">
             <section className="quiz-card">
               <div className="eyebrow">
@@ -1084,8 +1073,8 @@ function App() {
             Все попытки сохраняются локально
           </span>
           <button onClick={nextTask}>
-            {t.version===2?'Следующее задание / сводка':t.section === "lecture-theory"
-              ? t.chapter === 4
+            {t.section === "lecture-theory"
+              ? t.chapter === 5
                 ? "К итогам лекции"
                 : "К следующей главе"
               : "Следующее задание"}
@@ -1244,7 +1233,6 @@ function App() {
             Экспорт истории
           </button>
         </div>
-        {tasks.some(t=>t.version===2)&&<Suspense fallback={<p className="muted">Результаты StereoLab…</p>}><Day01ScorePanel attempts={attempts} go={go}/></Suspense>}
         <div className="report-banner">
           <GraduationCap size={28} />
           <div>

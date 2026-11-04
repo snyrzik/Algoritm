@@ -17,7 +17,9 @@ export interface Task {
   starter?: string;
   category?: string;
   difficulty?: string;
-  section?: "lecture-theory" | "stereolab";
+  section?: "lecture-theory" | "lecture-practice";
+  project?: string;
+  localMain?: string;
   version?: number;
   number?: number;
   group?: "Q" | "S" | "P" | "D" | "A" | "B" | "C";
@@ -83,7 +85,7 @@ export interface Result {
 }
 export const isCompleted = (result?: {status:string}) => !!result && ['PASS','SELF_CHECKED'].includes(result.status);
 export interface SelfCheckGuide {
-  task:string;mode:string;main:string;originalCode:string;expectedOutput:string;console:boolean;guideHash:string;
+  task:string;mode:string;main:string;originalCode:string;expectedOutput:string;console:boolean;guideHash:string;assertBased?:boolean;
   instructions:string;review:string[];
   cases:{id:string;name:string;category?:string;critical?:boolean;input?:string;expectedOutput?:string;expectedError?:string;exitCode?:number}[];
   extraFiles:{name:string;source:string}[];
@@ -130,7 +132,7 @@ export const labels: Record<Kind, string> = {
   C: "Практика",
 };
 export const statusNames: Record<string, string> = {
-  SELF_CHECKED: "Проверено мной",
+  SELF_CHECKED: "Отмечено мной",
   NEEDS_WORK: "Нужна доработка",
   PASS: "Пройдено",
   FAIL: "Есть ошибки",

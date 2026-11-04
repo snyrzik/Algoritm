@@ -1,0 +1,49 @@
+{
+  "id": "l01-v3-c04",
+  "day": 1,
+  "kind": "D",
+  "level": "A",
+  "required": true,
+  "version": 3,
+  "section": "lecture-theory",
+  "lecture": 1,
+  "chapter": 4,
+  "title": "Закрепление 4 · TextHolder",
+  "order": 10004,
+  "minutes": 25,
+  "prompt": "## Самостоятельное закрепление главы 4: «Почему класс ломается после копирования?»\n\n**Условие.** Дан небольшой `TextHolder`, который владеет символьным буфером и умеет показывать содержимое. При копировании объекта и последующем изменении одного из экземпляров возникают ошибки, а при завершении программы возможен сбой.\n\nТребуется самостоятельно:\n\n1. Указать, кому принадлежит буфер в каждом состоянии.\n2. Объяснить, какой специальной операции класса не хватает и почему.\n3. Исправить копирование и присваивание с учётом самоприсваивания.\n4. Написать короткую локальную проверку независимости копий.\n5. Объяснить, почему неверно рассчитывать длину буфера без места под `\\0`.\n\nВ этой проверке не давай готового решения класса. Проверяй понимание времени жизни ресурсов, а не только совпадение вывода.",
+  "tags": [
+    "Лекция № 1",
+    "TextHolder"
+  ],
+  "starter": "// Исходный класс с дефектом копирования. Исправьте самостоятельно.\n#include <cstddef>\n#include <cstring>\n#include <stdexcept>\nclass TextHolder {\n    char* data_;\npublic:\n    explicit TextHolder(const char* text) {\n        data_ = new char[std::strlen(text) + 1];\n        std::strcpy(data_, text);\n    }\n    ~TextHolder() { delete[] data_; }\n    const char* c_str() const { return data_; }\n    char& operator[](std::size_t index) {\n        if (index >= std::strlen(data_)) throw std::out_of_range(\"index\");\n        return data_[index];\n    }\n};\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "",
+  "tests": [
+    {
+      "name": "Копия владеет независимым буфером",
+      "category": "ownership",
+      "code": "TextHolder a(\"cat\"); TextHolder b(a); b[0]='b'; CHECK(std::strcmp(a.c_str(),\"cat\")==0); CHECK(std::strcmp(b.c_str(),\"bat\")==0); CHECK(a.c_str()!=b.c_str());"
+    },
+    {
+      "name": "Присваивание и самоприсваивание",
+      "category": "ownership",
+      "code": "TextHolder a(\"cat\"), b(\"long old value\"); b=a; b[0]='r'; CHECK(std::strcmp(a.c_str(),\"cat\")==0); b=mastery_alias(b); CHECK(std::strcmp(b.c_str(),\"rat\")==0);"
+    },
+    {
+      "name": "Копия живёт после уничтожения оригинала",
+      "category": "lifetime",
+      "code": "TextHolder* copy=nullptr; {TextHolder original(\"alive\"); copy=new TextHolder(original);} CHECK(std::strcmp(copy->c_str(),\"alive\")==0); delete copy;"
+    },
+    {
+      "name": "Пустая строка и место для нулевого символа",
+      "category": "boundary",
+      "code": "const TextHolder empty(\"\"); CHECK(empty.c_str()!=nullptr && empty.c_str()[0]==0); const TextHolder one(\"x\"); CHECK(one.c_str()[1]==0);"
+    }
+  ],
+  "memory": false,
+  "filePath": "student/day-01/l01-v3-c04/solution.hpp",
+  "hints": [],
+  "protocol": "В пакете не задан точный API TextHolder. Для готового main используется открытый учебный протокол: конструктор из const char*, c_str() const и изменяемый operator[]. Ниже дан исходный класс с дефектом, а не готовое решение. В notes.md объясните владельцев, время жизни, самоприсваивание и место для нулевого символа; отдельно проверьте память в своей IDE."
+}

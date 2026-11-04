@@ -11,13 +11,13 @@ from tools.reset_workspace import reset_workspace
 class CleanWorkspaceTests(unittest.TestCase):
     def test_only_current_day_one_material_is_available(self):
         tasks=[t for t in catalog() if t['day']==1]
-        self.assertEqual(len(tasks),48)
-        self.assertTrue(all(t['id'].startswith('d01-v2-') for t in tasks))
+        self.assertEqual(len(tasks),3)
+        self.assertTrue(all(t['id'].startswith('l01-v3-p') for t in tasks))
         self.assertIsNone(get_task('d1-s01'))
         from tools.content import questions,syntax,practice,debugging
         from tools.content.common import TASKS
         self.assertTrue(all(t['day']!=1 for t in TASKS))
-        for name in ('archive','quiz','syntax','prediction','debugging','practice'):
+        for name in ('archive','quiz','syntax','prediction','debugging','practice-v2'):
             self.assertFalse((ROOT/'days/day-01-operators'/name).exists())
     def test_reset_checks_paths_and_removes_answers_and_backups(self):
         with tempfile.TemporaryDirectory() as temp:

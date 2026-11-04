@@ -34,18 +34,24 @@ export interface Lecture {
   sourceSha256: string;
   sections: Section[];
   checks: Task[];
+  projects: Task[];
+  localInstructions: string;
+  reading: string[];
 }
 interface Props {
   section: string;
   anchor: string;
   attempts: Attempt[];
   go: (path: string) => Promise<void>;
+  onReading?: (reading:string[]) => void;
 }
 
-export default memo(function Theory({ section, anchor, attempts, go }: Props) {
+export default memo(function Theory({ section, anchor, attempts, go, onReading }: Props) {
   const [lecture, setLecture] = useState<Lecture | null>(null);
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [readingBusy,setReadingBusy] = useState(false);
+  const [readingError,setReadingError] = useState('');
   const content = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let current = true;
@@ -83,7 +89,7 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
       } else window.scrollTo({ top: 0, behavior: "instant" });
     });
     return () => cancelAnimationFrame(frame);
-  }, [selected?.id, anchor, lecture]);
+  }, [selected?.id, anchor, lecture?.id]);
   if (error)
     return (
       <div className="error-banner" role="alert">
@@ -107,6 +113,12 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
   ).length;
   const position = lecture.sections.findIndex((s) => s.id === selected.id);
   const check = lecture.checks.find((t) => t.id === selected.checkId);
+  async function markReading(){
+    if(!selected||!lecture)return;
+    setReadingBusy(true);setReadingError('');
+    try{const value=await api<{reading:string[]}>('lecture-read/'+selected.id,{completed:!lecture.reading.includes(selected.id)});setLecture({...lecture,reading:value.reading});onReading?.(value.reading);}
+    catch(e){setReadingError(String(e));}finally{setReadingBusy(false);}
+  }
   const title = selected.chapter
     ? `Глава ${selected.chapter}`
     : selected.id === "summary"
@@ -149,11 +161,12 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
           </span>
           <strong>
             {passed}
-            <small> / 4</small>
+            <small> / {lecture.checks.length}</small>
           </strong>
           <div className="progress-bar">
-            <i style={{ width: `${(passed / 4) * 100}%` }} />
+            <i style={{ width: `${(passed / lecture.checks.length) * 100}%` }} />
           </div>
+          <small>Прочитано глав: {lecture.reading.length} / 5</small>
         </div>
       </div>
       <button
@@ -204,15 +217,15 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
           <div className="theory-nav-note">
             <Code2 size={17} />
             <p>
-              После каждой главы — отдельная проверка с вашим кодом и реальными
-              самостоятельной проверкой.
+              После каждой главы — самостоятельное задание. Прочтение и
+              выполнение учитываются отдельно.
             </p>
           </div>
           <button
             className="theory-to-practice"
-            onClick={() => go("day/1/practice")}
+            onClick={() => go("theory/1/practice")}
           >
-            <ArrowRight size={15} />К полной практике Дня 1
+            <ArrowRight size={15} />К трём проектам
           </button>
         </aside>
         <div className="theory-reading-column" ref={content}>
@@ -240,8 +253,11 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
             </details>
           )}
           <article className="theory-article" aria-label={selected.title}>
+            <div className="lecture01-example-label">Теоретический пример — учебный код в тексте главы</div>
             <Markdown source={selected.markdown} />
           </article>
+          {selected.chapter&&<div className="lecture01-read-toggle"><span>Прочтение главы не засчитывает выполнение задания.</span><button disabled={readingBusy} onClick={markReading}><Check size={15}/>{lecture.reading.includes(selected.id)?'Прочитано · снять отметку':'Отметить главу прочитанной'}</button></div>}
+          {readingError&&<p role="alert">{readingError}</p>}
           {check && (
             <section
               className="theory-check-card"
@@ -252,7 +268,7 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
               </div>
               <div>
                 <div className="eyebrow">
-                  ЗАКРЕПЛЕНИЕ ПОСЛЕ ГЛАВЫ {selected.chapter}
+                  САМОСТОЯТЕЛЬНОЕ ЗАДАНИЕ / ГЛАВА {selected.chapter}
                 </div>
                 <h3>{check.title.replace(/^Закрепление \d · /, "")}</h3>
                 <p>
@@ -282,7 +298,7 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
                 className="primary"
                 onClick={() => go("task/" + check.id)}
               >
-                Открыть редактор
+                Открыть закрепление
                 <ArrowRight size={15} />
               </button>
             </section>
@@ -291,14 +307,14 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
             <section className="theory-practice-card">
               <BookOpen size={24} />
               <div>
-                <h3>Продолжите полную практику</h3>
+                <h3>Перейдите к самостоятельным проектам</h3>
                 <p>
-                  Четыре закрепления лекции: {passed} из 4. Основные задания Дня
-                  1 проходят отдельно.
+                  Закрепления лекции: {passed} из {lecture.checks.length}.
+                  Базовая проверка трёх проектов отмечается отдельно.
                 </p>
               </div>
-              <button className="primary" onClick={() => go("day/1/practice")}>
-                Открыть практику A/B/C
+              <button className="primary" onClick={() => go("theory/1/practice")}>
+                Открыть три проекта
                 <ArrowRight size={15} />
               </button>
             </section>
@@ -324,14 +340,14 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
               onClick={() =>
                 position + 1 < lecture.sections.length
                   ? go(`theory/1/${lecture.sections[position + 1].id}`)
-                  : go("day/1/practice")
+                  : go("theory/1/practice")
               }
             >
               {position + 1 < lecture.sections.length
                 ? lecture.sections[position + 1].chapter
                   ? `К главе ${lecture.sections[position + 1].chapter}`
                   : "Итоги теории"
-                : "К полной практике"}
+                : "К трём проектам"}
               <ArrowRight size={15} />
             </button>
           </nav>

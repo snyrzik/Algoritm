@@ -81,7 +81,7 @@ class Handler(BaseHTTPRequestHandler):
             parts=path.strip('/').split('/')
             if path=='/api/session': return self.send_json({'token':TOKEN,'profileId':storage.profile_id()})
             if path=='/api/day01/summary':
-                from .day01_v2.scoring import summary
+                from .theory import summary
                 return self.send_json(summary())
             if path=='/api/theory/day-1/lecture-1':
                 from .theory import lecture
@@ -103,13 +103,6 @@ class Handler(BaseHTTPRequestHandler):
                 task=get_task(parts[2])
                 if not task: return self.send_json({'error':'Задание не найдено'},404)
                 with task_lock(task['id']): files=student_files(task)
-                if task.get('runner')=='prediction':
-                    from .day01_v2.scoring import with_variant
-                    from urllib.parse import parse_qs
-                    try:saved=json.loads(files.get('answer.json','{}')).get('variant',0)
-                    except (ValueError,TypeError):saved=0
-                    requested=parse_qs(urlparse(self.path).query).get('variant',[saved])[0]
-                    task=with_variant(task,int(requested))
                 # Opening a timed syntax item starts its clock before editing.
                 timer_error=None
                 try: check_exam(task)
@@ -122,7 +115,6 @@ class Handler(BaseHTTPRequestHandler):
             if len(parts)==3 and parts[:2]==['api','review']:
                 task=get_task(parts[2])
                 if not task or not any(a['mode']=='answer' for a in storage.history(parts[2])): return self.send_json({'error':'Разбор доступен после ответа'},403)
-                if task.get('runner')=='prediction':return self.send_json(next(a['feedback'] for a in storage.history(task['id']) if a['mode']=='answer'))
                 exam=exam_state()
                 if exam and exam['timed'] and not exam['finished'] and task['day']==5: return self.send_json({'deferred':True,'message':'Разбор откроется после завершения экзамена.'})
                 return self.send_json({k:task[k] for k in ('answer','explanation','optionExplanations')})
@@ -167,6 +159,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json(exam_state())
             parts=path.strip('/').split('/')
             if len(parts)!=3: return self.send_json({'error':'Маршрут не найден'},404)
+            if parts[:2]==['api','lecture-read']:
+                from .theory import mark_read
+                return self.send_json({'reading':mark_read(parts[2],body.get('completed'))})
             task=get_task(parts[2])
             if not task: return self.send_json({'error':'Задание не найдено'},404)
             action=parts[1]
@@ -193,18 +188,9 @@ class Handler(BaseHTTPRequestHandler):
                 if action=='answer':
                     if task['kind'] not in ('Q','P'): raise ValueError('Для этого задания используйте самостоятельную проверку')
                     check_exam(task)
-                    if task.get('runner')=='prediction':
-                        from .day01_v2.scoring import prediction
-                        result=prediction(task,body)
-                        return self.send_json(storage.record(task['id'],'answer',result,body))
                     result=grade_answer(task,body.get('answer'))
                     if task.get('version')==2:result.update(pointsEarned=1 if result['status']=='PASS' else 0,maxPoints=1)
                     return self.send_json(storage.record(task['id'],'answer',result,{'answer':body['answer']}))
-                if action=='diagnosis':
-                    if task.get('version')!=2 or task['kind']!='D':raise ValueError('Диагностика относится к новому Code review Дня 1')
-                    from .day01_v2.scoring import diagnosis
-                    result=diagnosis(task,body)
-                    return self.send_json(storage.record(task['id'],'diagnosis',result,body))
                 if action=='self-check':
                     check_exam(task)
                     files=student_files(task)

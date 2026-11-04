@@ -10,12 +10,12 @@ from backend.storage import record
 
 def main():
     p=argparse.ArgumentParser(description='C++ Mastery: реальная проверка файлов student/')
-    p.add_argument('--doctor',action='store_true'); p.add_argument('--task'); p.add_argument('--day',type=int,choices=range(1,6)); p.add_argument('--compile',action='store_true'); p.add_argument('--no-record',action='store_true')
+    p.add_argument('--doctor',action='store_true'); p.add_argument('--task'); p.add_argument('--day',type=int,choices=range(2,6)); p.add_argument('--compile',action='store_true'); p.add_argument('--no-record',action='store_true')
     args=p.parse_args()
     if args.doctor:
         report=doctor(); print(json.dumps(report,ensure_ascii=False,indent=2)); return 0 if report['available'] else 2
-    if not args.task and not args.day: p.error('Укажите --task d01-v2-s01 или --day 1, либо --doctor')
-    tasks=[t for t in catalog(include_theory=bool(args.task)) if t['kind'] in ('S','D','C') and (t['id']==args.task if args.task else t['day']==args.day)]
+    if not args.task and not args.day: p.error('Укажите --task d2-s01 или --day 1, либо --doctor')
+    tasks=[t for t in catalog(include_theory=bool(args.task)) if t['day']!=1 and t['kind'] in ('S','D','C') and (t['id']==args.task if args.task else t['day']==args.day)]
     if not tasks: p.error('Задание не найдено или не содержит C++')
     failed=0
     for t in tasks:

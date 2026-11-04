@@ -27,9 +27,6 @@ def static_review(task, files):
     return errors
 
 def grade(task, files, mode='test'):
-    if task.get('version') == 2:
-        from .day01_v2.grading import grade as grade_v2
-        return grade_v2(task, files, mode)
     folder=DATA/'.build'/'runs'/uuid.uuid4().hex
     folder.mkdir(parents=True,exist_ok=True)
     for name in ('solution.hpp','solution.cpp',*task.get('starterFiles',{})):

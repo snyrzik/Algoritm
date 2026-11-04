@@ -1,0 +1,88 @@
+{
+  "id": "l01-v3-c03",
+  "day": 1,
+  "kind": "C",
+  "level": "A",
+  "required": true,
+  "version": 3,
+  "section": "lecture-theory",
+  "lecture": 1,
+  "chapter": 3,
+  "title": "Закрепление 3 · FixedHistory",
+  "order": 10003,
+  "minutes": 25,
+  "prompt": "## Закрепление после главы 3 · Класс `FixedHistory`\n\n> **Формат:** одна составная задача на 15–25 минут. Код интерфейса нужно придумать самостоятельно.\n\nСоздай класс `FixedHistory`, хранящий **ровно четыре целых значения** в обычном массиве-члене класса. Динамическая память не нужна.\n\nТребования:\n\n1. Конструктор принимает четыре начальных значения.\n2. Изменяемый `operator[]` позволяет писать `history[2] = 100`.\n3. Константный `operator[]` позволяет читать значения у `const FixedHistory`.\n4. `operator()(first, second) const` возвращает сумму двух указанных элементов и по возможности использует уже написанную индексацию.\n5. Добавь метод `swap_indices(a, b)`, меняющий местами элементы по двум индексам.\n6. Любой недопустимый индекс должен приводить к `std::out_of_range`.\n7. Если в `swap_indices` второй индекс некорректен, **ни один элемент не должен измениться**. Предусмотри также случай, когда `a == b`.\n\n**Критерии:** две корректные версии `operator[]`; ссылочные результаты там, где требуется изменение; `const`-корректность; отсутствие копирования массива ради чтения; повторное использование проверок; сохранение состояния при ошибке; правильная работа с одинаковыми индексами.",
+  "tags": [
+    "Лекция № 1",
+    "FixedHistory"
+  ],
+  "starter": "// Самостоятельное решение. Добавьте нужные заголовки и напишите класс.\n",
+  "prefix": "",
+  "suffix": "",
+  "checks": "\nstatic_assert(std::is_same_v<decltype(std::declval<FixedHistory&>()[0]),int&>);\nstatic_assert(std::is_same_v<std::remove_cv_t<std::remove_reference_t<decltype(std::declval<const FixedHistory&>()[0])>>,int>);\nstatic_assert(!std::is_assignable_v<decltype(std::declval<const FixedHistory&>()[0]),int>, \"Const object must not expose writable elements\");\nstatic_assert(std::is_same_v<decltype(std::declval<const FixedHistory&>()(0,1)),int>);\n",
+  "tests": [
+    {
+      "name": "Четыре начальных значения",
+      "code": "const FixedHistory h(10,-20,30,0); CHECK(h[0]==10 && h[1]==-20 && h[2]==30 && h[3]==0);",
+      "category": "functional"
+    },
+    {
+      "name": "Изменяемый индекс возвращает живой элемент",
+      "code": "FixedHistory h(1,2,3,4); int& element=h[2]; element=100; CHECK(h[2]==100); h[2]=77; CHECK(element==77);",
+      "category": "types"
+    },
+    {
+      "name": "const-чтение наблюдает оригинал",
+      "code": "FixedHistory h(1,2,3,4); const FixedHistory& read=h; h[1]=55; CHECK(read[1]==55 && read[0]==1);",
+      "category": "functional"
+    },
+    {
+      "name": "operator() суммирует, но не изменяет",
+      "code": "const FixedHistory h(2,5,-7,11); CHECK(h(0,3)==13 && h(1,2)==-2 && h(3,3)==22); CHECK(h[0]==2 && h[3]==11);",
+      "category": "functional"
+    },
+    {
+      "name": "Перестановка крайних и средних элементов",
+      "code": "FixedHistory h(1,2,3,4); h.swap_indices(0,3); CHECK(h[0]==4 && h[3]==1); h.swap_indices(1,2); CHECK(h[1]==3 && h[2]==2);",
+      "category": "functional"
+    },
+    {
+      "name": "Одинаковые индексы допустимы",
+      "code": "FixedHistory h(1,2,3,4); h.swap_indices(2,2); CHECK(h[0]==1 && h[1]==2 && h[2]==3 && h[3]==4);",
+      "category": "boundary"
+    },
+    {
+      "name": "Недопустимый изменяемый индекс",
+      "code": "FixedHistory h(1,2,3,4); expect_throw<std::out_of_range>([&]{h[4]=99;}); expect_throw<std::out_of_range>([&]{(void)h[9];}); CHECK(h[0]==1 && h[3]==4);",
+      "category": "negative"
+    },
+    {
+      "name": "Недопустимый const-индекс",
+      "code": "const FixedHistory h(1,2,3,4); expect_throw<std::out_of_range>([&]{(void)h[4];});",
+      "category": "negative"
+    },
+    {
+      "name": "Проверяются оба индекса суммы",
+      "code": "const FixedHistory h(1,2,3,4); expect_throw<std::out_of_range>([&]{(void)h(4,0);}); expect_throw<std::out_of_range>([&]{(void)h(0,4);});",
+      "category": "negative"
+    },
+    {
+      "name": "Ошибка второго индекса не меняет ни один элемент",
+      "code": "FixedHistory h(1,2,3,4); expect_throw<std::out_of_range>([&]{h.swap_indices(1,4);}); CHECK(h[0]==1 && h[1]==2 && h[2]==3 && h[3]==4); expect_throw<std::out_of_range>([&]{h.swap_indices(4,1);}); CHECK(h[1]==2);",
+      "category": "exception"
+    },
+    {
+      "name": "Независимость копий",
+      "code": "FixedHistory h(1,2,3,4); auto copy=h; copy[0]=99; CHECK(h[0]==1 && copy[0]==99);",
+      "category": "functional"
+    },
+    {
+      "name": "Обычный массив без динамического выделения",
+      "code": "const long before=mastery_memory::live; {FixedHistory h(1,2,3,4); CHECK(mastery_memory::live==before); h.swap_indices(0,3); CHECK(mastery_memory::live==before);} CHECK(mastery_memory::live==before);",
+      "category": "storage"
+    }
+  ],
+  "memory": false,
+  "filePath": "student/day-01/l01-v3-c03/solution.hpp",
+  "hints": []
+}

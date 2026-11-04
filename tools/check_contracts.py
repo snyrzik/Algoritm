@@ -13,15 +13,10 @@ def main():
     failed=[]
     for task in catalog():
         if task['kind']!='C':continue
-        if task.get('runner')=='console':
-            from backend.day01_v2.console import cases
-            assert len(cases())>=13
-            print(task['id'],'console scenarios OK (compilation/runtime covered by tests/test_day01_v2.py)',flush=True)
-            continue
-        header='stereolab_contracts.hpp' if task.get('version')==2 else 'contracts.hpp'
-        (folder/'candidate.hpp').write_text(f'#include "{header}"\n',encoding='utf-8')
+        if task.get('version')==3:continue
+        (folder/'candidate.hpp').write_text('#include "contracts.hpp"\n',encoding='utf-8')
         day=next(p for p in Path(task['_path']).parents if p.name.startswith('day-'))
-        path=day/('practice-v2/tests' if task.get('version')==2 else 'tests')/f"{task['id']}.cpp"
+        path=day/'tests'/f"{task['id']}.cpp"
         includes=[folder,ROOT/'tools',ROOT/'tests']
         args=[tc['exe'],'/nologo','/std:c++17','/EHsc','/W4','/WX','/utf-8','/Zs',*[f'/I{p}' for p in includes],path] if tc['kind']=='msvc' else [tc['exe'],'-std=c++17','-fsyntax-only',*[f'-I{p}' for p in includes],path]
         result=run_process(args,folder,tc['env'],30)

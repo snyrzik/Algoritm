@@ -1,0 +1,7 @@
+{
+  "1": "class ScoreCounter {public: explicit ScoreCounter(int=0); int points()const; ScoreCounter& add(int);}; bool higher_score(const ScoreCounter&,const ScoreCounter&);",
+  "2": "class Duration {public: explicit Duration(int);int seconds()const;Duration& operator+=(const Duration&);Duration& operator++();Duration operator++(int);Duration operator-()const;};Duration operator+(const Duration&,const Duration&);bool operator==(const Duration&,const Duration&);bool operator!=(const Duration&,const Duration&);",
+  "3": "#include <cstddef>\nclass FixedHistory{public:FixedHistory(int,int,int,int);int& operator[](std::size_t);const int& operator[](std::size_t)const;int operator()(std::size_t,std::size_t)const;void swap_indices(std::size_t,std::size_t);};",
+  "5": "#include <iostream>\nclass ClockTime{public:ClockTime(int,int);};std::ostream& operator<<(std::ostream&,const ClockTime&);std::istream& operator>>(std::istream&,ClockTime&);",
+  "4": "class TextHolder { public: explicit TextHolder(const char*); TextHolder(const TextHolder&); TextHolder& operator=(const TextHolder&); ~TextHolder(); const char* c_str() const; char& operator[](std::size_t); };"
+}

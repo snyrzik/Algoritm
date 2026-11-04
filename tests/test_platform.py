@@ -26,8 +26,8 @@ def fixture(body, tests=None, memory=False):
 
 class ContentTests(unittest.TestCase):
     def test_counts_and_unique_ids(self):
-        items=catalog(); self.assertEqual(len(items),288); self.assertEqual(len({t['id'] for t in items}),288)
-        for day,minimums in {1:[16,14,6,6,6],2:[15,18,5,8,8],3:[15,20,5,8,9],4:[18,20,5,8,8],5:[30,20,5,10,3]}.items():
+        items=catalog(); self.assertEqual(len(items),243); self.assertEqual(len({t['id'] for t in items}),243)
+        for day,minimums in {2:[15,18,5,8,8],3:[15,20,5,8,9],4:[18,20,5,8,8],5:[30,20,5,10,3]}.items():
             for kind,count in zip('QSPDC',minimums): self.assertGreaterEqual(sum(t['day']==day and t['kind']==kind for t in items),count)
     def test_questions_have_valid_answers_and_explanations(self):
         for t in catalog():
@@ -45,9 +45,7 @@ class ContentTests(unittest.TestCase):
     def test_every_cpp_task_has_real_harness(self):
         for t in catalog():
             if t['kind'] in ('S','D','C'):
-                if t.get('runner')=='console':
-                    from backend.day01_v2.console import cases
-                    self.assertGreaterEqual(len(cases()),10);continue
+                if t.get('localMain'):continue
                 self.assertTrue(t['tests'],t['id'])
                 day=next(p for p in Path(t['_path']).parents if p.name.startswith('day-'))
                 harness=day/('practice-v2/tests' if t.get('version')==2 else 'tests')/f"{t['id']}.cpp"
@@ -55,7 +53,7 @@ class ContentTests(unittest.TestCase):
                 self.assertIn('candidate.hpp',harness.read_text(encoding='utf-8'))
                 if t['kind']=='C':self.assertGreaterEqual(len(t['tests']),3,t['id'])
     def test_generation_does_not_overwrite_student_code(self):
-        t=get_task('d01-v2-s01'); student_files(t)
+        t=get_task('d2-s01'); student_files(t)
         path=DATA/t['filePath'];path.write_text('// learner content',encoding='utf-8')
         self.assertEqual(student_files(t)['solution.hpp'],'// learner content')
     def test_exact_multiselect_grading(self):
@@ -129,24 +127,24 @@ class ApiTests(unittest.TestCase):
         r=c.getresponse();status=r.status;data=json.loads(r.read());c.close();return status,data
     def test_local_session_and_catalog(self):
         status,data=self.request('/api/session');self.assertEqual(status,200);self.assertEqual(data['token'],server.TOKEN)
-        status,data=self.request('/api/course');self.assertEqual(len(data['tasks']),288);self.assertEqual(len(data['days']),5)
+        status,data=self.request('/api/course');self.assertEqual(len(data['tasks']),243);self.assertEqual(len(data['days']),5)
     def test_cross_origin_and_missing_token_rejected(self):
-        status,_=self.request('/api/answer/d01-v2-q01',{'answer':[1]},token=False);self.assertEqual(status,403)
-        status,_=self.request('/api/answer/d01-v2-q01',{'answer':[1]},origin='http://evil.example');self.assertEqual(status,403)
+        status,_=self.request('/api/answer/d2-q01',{'answer':[1]},token=False);self.assertEqual(status,403)
+        status,_=self.request('/api/answer/d2-q01',{'answer':[1]},origin='http://evil.example');self.assertEqual(status,403)
     def test_no_answer_before_attempt_then_persistent_result(self):
         status,_=self.request('/api/review/d5-q30');self.assertEqual(status,403)
         status,data=self.request('/api/answer/d5-q30',{'answer':[1]});self.assertEqual(data['status'],'PASS')
         status,data=self.request('/api/review/d5-q30');self.assertEqual(data['answer'],[1]);self.assertTrue(storage.history('d5-q30'))
     def test_conflict_does_not_overwrite_external_edit(self):
-        _,detail=self.request('/api/task/d01-v2-s02');files=detail['files'];files['solution.hpp']='// draft'
+        _,detail=self.request('/api/task/d2-s02');files=detail['files'];files['solution.hpp']='// draft'
         path=DATA/detail['task']['filePath'];path.write_text('// external',encoding='utf-8')
-        status,_=self.request('/api/files/d01-v2-s02',{'files':files,'revision':detail['revision']},method='PUT')
+        status,_=self.request('/api/files/d2-s02',{'files':files,'revision':detail['revision']},method='PUT')
         self.assertEqual(status,409);self.assertEqual(path.read_text(encoding='utf-8'),'// external')
     def test_file_allowlist_and_save(self):
-        _,detail=self.request('/api/task/d01-v2-s03');files=detail['files'];files['../evil']='no'
-        status,_=self.request('/api/files/d01-v2-s03',{'files':files,'revision':detail['revision']},method='PUT');self.assertEqual(status,400)
+        _,detail=self.request('/api/task/d2-s03');files=detail['files'];files['../evil']='no'
+        status,_=self.request('/api/files/d2-s03',{'files':files,'revision':detail['revision']},method='PUT');self.assertEqual(status,400)
         del files['../evil'];files['notes.md']='Reasoning from the learner.'
-        status,saved=self.request('/api/files/d01-v2-s03',{'files':files,'revision':detail['revision']},method='PUT');self.assertEqual(status,200);self.assertEqual(saved['revision'],revision(files))
+        status,saved=self.request('/api/files/d2-s03',{'files':files,'revision':detail['revision']},method='PUT');self.assertEqual(status,200);self.assertEqual(saved['revision'],revision(files))
     def test_exam_hints_and_review_are_deferred(self):
         _,e=self.request('/api/exam/start',{'timed':True});self.assertEqual(len(set(e['tasks'])),20)
         status,_=self.request('/api/hint/d5-s01',{'level':1});self.assertEqual(status,403)
@@ -155,8 +153,8 @@ class ApiTests(unittest.TestCase):
         self.request('/api/exam/finish',{});_,r=self.request('/api/review/d5-q01');self.assertEqual(r['answer'],[0])
         self.request('/api/exam/start',{'timed':False})
     def test_snapshots_and_hint_counts(self):
-        self.request('/api/hint/d01-v2-q03',{'level':1});self.request('/api/answer/d01-v2-q03',{'answer':[2]})
-        entry=storage.history('d01-v2-q03')[0];self.assertEqual(entry['hintsUsed'],1)
+        self.request('/api/hint/d2-q03',{'level':1});self.request('/api/answer/d2-q03',{'answer':[2]})
+        entry=storage.history('d2-q03')[0];self.assertEqual(entry['hintsUsed'],1)
         _,snapshot=self.request('/api/snapshot/'+str(entry['id']));self.assertEqual(snapshot['files']['answer'],[2])
     def test_syntax_deadline_survives_reload_and_blocks_late_run(self):
         import time

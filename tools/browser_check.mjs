@@ -5,6 +5,7 @@ import {
   mkdirSync,
   readdirSync,
   existsSync,
+  readFileSync,
   rmSync,
 } from "node:fs";
 import { tmpdir, homedir } from "node:os";
@@ -102,43 +103,77 @@ async function visit(hash) {
 }
 const requests=[];page.on('request',r=>requests.push(r.url()));
 try {
-  await visit('day/1');assert.equal(await page.$eval('h1',e=>e.textContent),'StereoLab');
+  await visit('day/1');await page.waitForSelector('.lecture01-tabs');
+  assert.equal(await page.$eval('h1',e=>e.textContent),'Перегрузка операций');
+  assert.equal(await page.$('.stereolab-page'),null);
   for(let day=2;day<=5;day++){await click('День '+day);await page.waitForFunction(n=>location.hash==='#/day/'+n,{},day);}
-  await page.click('[aria-label="Сменить тему"]');assert.equal(await page.$eval('html',e=>e.dataset.theme),'light');await page.click('[aria-label="Сменить тему"]');
-  await visit('task/d01-v2-q01');await page.click('.option');await click('Проверить ответ');await page.waitForSelector('.answer-review');
-  await visit('task/d01-v2-a01');await page.waitForSelector('.manual-cases');
+  await visit('theory/1/overview');await page.waitForSelector('.theory-article');
+  assert.equal(await page.$$eval('.theory-navigation nav button',nodes=>nodes.length),7);
+  for(let chapter=1;chapter<=5;chapter++){
+    await visit('theory/1/chapter-'+chapter);await page.waitForSelector('.theory-check-card');
+    assert.ok((await page.$eval('.theory-article',e=>e.textContent)).includes('Глава '+chapter));
+    assert.ok(await page.$('.language-cpp .tok-keyword'));
+    assert.ok((await page.$eval('.theory-check-card',e=>e.textContent)).includes(['ScoreCounter','Duration','FixedHistory','TextHolder','ClockTime'][chapter-1]));
+  }
+  await click('Отметить главу прочитанной');await page.waitForFunction(()=>document.querySelector('.lecture01-read-toggle')?.textContent.includes('Прочитано ·'));
+  assert.equal((await (await fetch('http://127.0.0.1:8766/api/progress')).json()).attempts.length,0);
+  await page.reload({waitUntil:'networkidle0'});await page.waitForFunction(()=>document.querySelector('.lecture01-read-toggle')?.textContent.includes('Прочитано ·'));
+  await visit('theory/1/chapter-4');assert.ok(await page.$('.theory-memory'));
+  await page.screenshot({path:path.join(output,'lecture01-theory-desktop.png'),fullPage:false});
+  await visit('theory/1/practice');await page.waitForSelector('.lecture01-project');
+  assert.equal((await page.$$('.lecture01-project')).length,3);
+  const context=browser.defaultBrowserContext();await context.overridePermissions('http://127.0.0.1:8766',['clipboard-read','clipboard-write','clipboard-sanitized-write']);
+  const cdp=await page.createCDPSession();
+  await cdp.send('Browser.setDownloadBehavior',{behavior:'allow',downloadPath:output,eventsEnabled:true});
+  await visit('theory/1/local-checks');await page.waitForSelector('.lecture01-local-main');
+  for(const [index,name] of ['Matrix2x2','CMyString','DynamicVector'].entries()){
+    await page.$$eval('.lecture01-project-picker button',(buttons,i)=>buttons[i].click(),index);
+    await page.waitForFunction(n=>document.querySelector('.lecture01-local-main h3')?.textContent.includes(n),{},name);
+    await page.bringToFront();
+    await (await page.$('.lecture01-main-heading button')).click();
+    await page.waitForFunction(()=>[...document.querySelectorAll('.lecture01-main-heading button')].some(b=>b.textContent.includes('Скопировано')));
+    const clipboard=await page.evaluate(()=>navigator.clipboard.readText());
+    const guide=await (await fetch('http://127.0.0.1:8766/api/self-check/l01-v3-p0'+(index+1))).json();
+    assert.equal(clipboard.replace(/\r\n/g,'\n'),guide.main);
+    assert.ok((await page.$eval('.lecture01-output',e=>e.textContent)).includes(name+': основные проверки пройдены.'));
+  }
+  rmSync(path.join(output,'main.cpp'),{force:true});
+  await click('Скачать main.cpp');
+  for(let i=0;i<50&&!existsSync(path.join(output,'main.cpp'));i++)await new Promise(r=>setTimeout(r,100));
+  assert.ok(existsSync(path.join(output,'main.cpp')));
+  assert.equal(readFileSync(path.join(output,'main.cpp'),'utf8'),(await (await fetch('http://127.0.0.1:8766/api/self-check/l01-v3-p03')).json()).main);
+  console.log('Lecture/source navigation and three real clipboard/download checks passed.');
+  await page.screenshot({path:path.join(output,'lecture01-local-desktop.png'),fullPage:false});
+  await visit('task/l01-v3-p01');await page.waitForSelector('.manual-cases');
   assert.equal(await page.$('.manual-main'),null);assert.equal(await page.$('.run-toolbar'),null);
-  assert.equal(await page.$('.manual-saved'),null);
   await click('Показать main для проверки');await page.waitForSelector('.manual-main');
-  assert.ok((await page.$eval('.manual-main',e=>e.textContent)).includes('int main()'));
-  assert.ok((await page.$eval('.manual-expected',e=>e.textContent)).includes('ALL CHECKS PASSED (13)'));
-  assert.equal((await (await fetch('http://127.0.0.1:8766/api/progress')).json()).attempts.some(a=>a.task==='d01-v2-a01'),false);
-  const mark=page.waitForResponse(r=>r.url().includes('/api/self-check/d01-v2-a01')&&r.request().method()==='POST');
+  assert.ok((await page.$eval('.manual-expected',e=>e.textContent)).includes('Matrix2x2: основные проверки пройдены.'));
+  assert.ok(!(await page.$eval('.manual-expected',e=>e.textContent)).includes('ALL CHECKS PASSED'));
+  assert.equal((await (await fetch('http://127.0.0.1:8766/api/progress')).json()).attempts.length,0);
+  const mark=page.waitForResponse(r=>r.url().includes('/api/self-check/l01-v3-p01')&&r.request().method()==='POST');
   await click('Да, всё совпало');assert.equal((await (await mark).json()).status,'SELF_CHECKED');
-  await page.waitForSelector('.manual-saved.done');
-  await page.screenshot({path:path.join(output,'manual-desktop.png'),fullPage:true});
-  await page.reload({waitUntil:'networkidle0'});await page.waitForSelector('.manual-saved.done');
-  assert.ok((await page.$eval('.exercise-title',e=>e.textContent)).includes('Проверено мной'));
+  await page.waitForSelector('.manual-saved.done');await page.reload({waitUntil:'networkidle0'});await page.waitForSelector('.manual-saved.done');
+  assert.ok((await page.$eval('.exercise-title',e=>e.textContent)).includes('Отмечено мной'));
   await click('Есть расхождения');await page.waitForSelector('.manual-saved.pending');
-  await page.waitForFunction(()=>document.querySelector('.exercise-title')?.textContent.includes('Нужна доработка'));
-  await visit('task/d3-s02');await click('Ваш черновик решения');await page.waitForSelector('.cm-content');
-  await page.click('.cm-content');await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');
-  await page.keyboard.type('template<class T> T identity(T value) { return value; }\n// saved manual draft');
+  await click('Ваш черновик решения');await page.waitForSelector('.cm-content');
+  assert.ok((await page.$eval('.file-tabs .active',e=>e.textContent)).includes('Matrix2x2.hpp'));
+  await page.click('.cm-content');await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');await page.keyboard.type('// saved local draft');
   await new Promise(r=>setTimeout(r,1400));await page.reload({waitUntil:'networkidle0'});await click('Ваш черновик решения');await page.waitForSelector('.cm-content');
-  assert.ok((await page.$eval('.cm-content',e=>e.textContent)).includes('saved manual draft'));
-  for(const task of ['d2-c03','d4-c01','d5-c01','d1-l1-c01']){await visit('task/'+task);await page.waitForSelector('.manual-cases');await click('Показать main для проверки');await page.waitForSelector('.manual-expected');}
-  await visit('task/d01-v2-c01');await click('Показать main для проверки');await page.waitForSelector('.manual-scenario-label select');
-  await page.select('.manual-scenario-label select','7');await page.waitForFunction(()=>document.querySelector('.manual-expected')?.textContent.includes('OUT_OF_RANGE'));
-  await visit('settings');assert.ok((await page.$eval('main',e=>e.textContent)).includes('Как сдавать задания'));
-  assert.equal(await page.$('.compiler-output'),null);
-  await visit('task/d01-v2-a02');await page.setViewport({width:390,height:844});await page.waitForSelector('.manual-reveal');await click('Показать main для проверки');
-  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  await page.screenshot({path:path.join(output,'manual-mobile.png'),fullPage:true});
-  await page.click('[aria-label="Сменить тему"]');await page.screenshot({path:path.join(output,'manual-mobile-light.png'),fullPage:true});
+  assert.ok((await page.$eval('.cm-content',e=>e.textContent)).includes('saved local draft'));
+  for(let chapter=1;chapter<=5;chapter++){await visit('task/l01-v3-c0'+chapter);await page.waitForSelector('.manual-cases');await click('Показать main для проверки');await page.waitForSelector('.manual-expected');}
+  await visit('task/d2-q01');await page.click('.option');await click('Проверить ответ');await page.waitForSelector('.answer-review');
+  for(const task of ['d2-c03','d4-c01','d5-c01']){await visit('task/'+task);await page.waitForSelector('.manual-cases');await click('Показать main для проверки');await page.waitForSelector('.manual-expected');}
+  await page.setViewport({width:390,height:844});
+  for(const route of ['theory/1/chapter-4','theory/1/practice','theory/1/local-checks','task/l01-v3-p02']){
+    await visit(route);await page.waitForSelector(route.startsWith('task')?'.manual-cases':'.lecture01-tabs');
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),route+' must not overflow');
+  }
+  await page.screenshot({path:path.join(output,'lecture01-mobile.png'),fullPage:true});
+  await page.click('[aria-label="Сменить тему"]');await page.screenshot({path:path.join(output,'lecture01-mobile-light.png'),fullPage:false});
   assert.ok(!requests.some(url=>url.includes('/api/doctor')||url.includes('/api/run/')));
-  await stop();await launch();await visit('task/d01-v2-a01');await page.waitForSelector('.manual-saved.pending');
+  await stop();await launch();await visit('task/l01-v3-p01');await page.waitForSelector('.manual-saved.pending');
   assert.deepEqual(errors,[]);
-  console.log('Browser QA PASS: five days, ready main and expected output, no compiler requests, explicit reversible self-check, draft/history persistence, server restart, dark/light and mobile.');
+  console.log('Browser QA PASS: five exact chapters, five checks, three projects, copy/download main, local instructions, separate reading, reversible marks, drafts, restart, other days, dark/light and mobile.');
 } finally {
   await browser.close();
   await stop();

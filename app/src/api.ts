@@ -6,6 +6,8 @@ function initializeSession() {
     return r.json();
   }).then(value=>{
     token=value.token;
+    for(const key of Object.keys(localStorage))
+      if(/^mastery-draft-(?:d01-v2-|d1-)/.test(key))localStorage.removeItem(key);
     if(localStorage.getItem("mastery-workspace")!==value.profileId){
       for(const key of Object.keys(localStorage))
         if(key.startsWith("mastery-draft-"))localStorage.removeItem(key);
