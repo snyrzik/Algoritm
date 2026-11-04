@@ -59,7 +59,7 @@ let browser;
 async function click(text) {
   await page.waitForFunction(
     (t) =>
-      [...document.querySelectorAll("button")].some((b) =>
+      [...document.querySelectorAll("button,summary")].some((b) =>
         b.innerText.includes(t),
       ),
     {},
@@ -67,7 +67,7 @@ async function click(text) {
   );
   await page.evaluate(
     (t) =>
-      [...document.querySelectorAll("button")]
+      [...document.querySelectorAll("button,summary")]
         .find((b) => b.innerText.includes(t))
         .click(),
     text,
@@ -183,6 +183,7 @@ try {
         });
       }
       await click("Открыть редактор");
+      await click("Ваш черновик решения");
       await page.waitForSelector(".cm-content");
       assert.ok(
         (await page.$eval(".exercise-title", (e) => e.textContent)).includes(
@@ -263,17 +264,10 @@ try {
     fullPage: true,
   });
   await click("Открыть редактор");
-  await page.waitForSelector(".workspace-switch");
-  await click("Код и проверка");
-  await page.waitForSelector(".cm-content");
-  const response = page.waitForResponse(
-    (r) =>
-      r.url().includes("/api/run/d1-l1-c01") && r.request().method() === "POST",
-    { timeout: 90000 },
-  );
-  await click("Скомпилировать");
-  const result = await (await response).json();
-  assert.equal(result.status, "COMPILE_ERROR");
+  await page.waitForSelector('.manual-cases');
+  await click('Показать main для проверки');await page.waitForSelector('.manual-expected');
+  assert.ok((await page.$eval('.manual-expected',e=>e.textContent)).includes('ALL CHECKS PASSED'));
+  assert.equal(await page.$('.run-toolbar'),null);
   await page.screenshot({
     path: path.join(output, "mobile-check.png"),
     fullPage: true,
@@ -293,7 +287,7 @@ try {
   assert.ok(!progress.attempts.some((a) => a.status === "PASS"));
   assert.deepEqual(errors, []);
   console.log(
-    "Theory browser QA PASS: complete verbatim prose and examples in all six sections; four chapter checks; C++ highlighting; memory diagrams; TOC deep links; reload; light/dark; mobile navigation/editor; real compile errors; original Day 1/other days preserved.",
+    "Theory browser QA PASS: complete verbatim prose and examples in all six sections; four chapter checks; C++ highlighting; memory diagrams; TOC deep links; reload; light/dark; mobile navigation/editor; ready main and expected output; original Day 1/other days preserved.",
   );
 } finally {
   if (browser) await browser.close();

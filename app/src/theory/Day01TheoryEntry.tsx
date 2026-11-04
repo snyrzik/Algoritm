@@ -1,3 +1,4 @@
+import {isCompleted} from "../types";
 import { BookOpen, ArrowRight, Check } from "lucide-react";
 import type { Attempt } from "../types";
 import "./entry.css";
@@ -21,7 +22,7 @@ export function Day01TheoryEntry({
   ];
   const passed = chapters.filter(
     (_, index) =>
-      latest[`d1-l1-c${String(index + 1).padStart(2, "0")}`]?.status === "PASS",
+      isCompleted(latest[`d1-l1-c${String(index + 1).padStart(2, "0")}`]),
   ).length;
   return (
     <section
@@ -52,8 +53,7 @@ export function Day01TheoryEntry({
           >
             <span>{String(index + 1).padStart(2, "0")}</span>
             {title}
-            {latest[`d1-l1-c${String(index + 1).padStart(2, "0")}`]?.status ===
-            "PASS" ? (
+            {isCompleted(latest[`d1-l1-c${String(index + 1).padStart(2, "0")}`]) ? (
               <Check size={13} />
             ) : (
               <ArrowRight size={12} />

@@ -78,6 +78,16 @@ export interface Result {
   rules?: string[];
   variant?: number;
   feedback?: {expectedOutput:string;explanation:string;trace:{label:string;correct:boolean}[]};
+  manual?: boolean;
+  checkedCases?: string[];
+}
+export const isCompleted = (result?: {status:string}) => !!result && ['PASS','SELF_CHECKED'].includes(result.status);
+export interface SelfCheckGuide {
+  task:string;mode:string;main:string;originalCode:string;expectedOutput:string;console:boolean;guideHash:string;
+  instructions:string;review:string[];
+  cases:{id:string;name:string;category?:string;critical?:boolean;input?:string;expectedOutput?:string;expectedError?:string;exitCode?:number}[];
+  extraFiles:{name:string;source:string}[];
+  dependencies:{id:string;name:string;title:string}[];
 }
 export interface Attempt extends Result {
   id: number;
@@ -120,6 +130,8 @@ export const labels: Record<Kind, string> = {
   C: "Практика",
 };
 export const statusNames: Record<string, string> = {
+  SELF_CHECKED: "Проверено мной",
+  NEEDS_WORK: "Нужна доработка",
   PASS: "Пройдено",
   FAIL: "Есть ошибки",
   COMPILE_ERROR: "Ошибка компиляции",

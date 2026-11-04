@@ -1,3 +1,4 @@
+import {isCompleted} from "../types";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -102,7 +103,7 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
     if (attempt.mode !== "compile" && !latest[attempt.task])
       latest[attempt.task] = attempt;
   const passed = lecture.checks.filter(
-    (t) => latest[t.id]?.status === "PASS",
+    (t) => isCompleted(latest[t.id]),
   ).length;
   const position = lecture.sections.findIndex((s) => s.id === selected.id);
   const check = lecture.checks.find((t) => t.id === selected.checkId);
@@ -192,7 +193,7 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
                     ? item.title.replace(/^Глава \d\. /, "").replace(/`/g, "")
                     : item.title}
                 </span>
-                {item.checkId && latest[item.checkId]?.status === "PASS" ? (
+                {item.checkId && isCompleted(latest[item.checkId]) ? (
                   <Check size={13} />
                 ) : (
                   <ChevronRight size={12} />
@@ -204,7 +205,7 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
             <Code2 size={17} />
             <p>
               После каждой главы — отдельная проверка с вашим кодом и реальными
-              тестами.
+              самостоятельной проверкой.
             </p>
           </div>
           <button
@@ -255,8 +256,8 @@ export default memo(function Theory({ section, anchor, attempts, go }: Props) {
                 </div>
                 <h3>{check.title.replace(/^Закрепление \d · /, "")}</h3>
                 <p>
-                  Откройте самостоятельную проверку: напишите код с нуля и
-                  запустите тесты. У этой задачи своя история попыток.
+                  Напишите код с нуля, сравните результат с готовым main и
+                  отметьте, совпал ли вывод. У этой задачи своя история отметок.
                 </p>
                 <div className="theory-check-meta">
                   <span

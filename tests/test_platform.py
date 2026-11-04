@@ -70,6 +70,7 @@ class ContentTests(unittest.TestCase):
 class RunnerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if os.environ.get('MASTERY_TEST_COMPILER')!='1':raise unittest.SkipTest('Optional C++ development checks: set MASTERY_TEST_COMPILER=1')
         cls.d=doctor()
         if not cls.d['available']:raise unittest.SkipTest('C++ compiler unavailable: '+cls.d['details'])
     def test_real_success_and_independent_failure(self):
@@ -164,7 +165,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(first['syntaxDeadline'],second['syntaxDeadline'])
         self.assertGreater(first['syntaxDeadline'],time.time())
         with storage.connect() as db:db.execute('UPDATE syntax_clock SET started=?',(time.time()-300,))
-        status,r=self.request('/api/run/d5-s01',{'mode':'test'})
+        status,r=self.request('/api/self-check/d5-s01',{'completed':True,'checkedCases':[]})
         self.assertEqual(status,400);self.assertIn('4 минуты',r['error'])
         self.request('/api/exam/start',{'timed':False})
 

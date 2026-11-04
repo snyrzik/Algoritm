@@ -10,13 +10,12 @@ from pathlib import Path
 from urllib.parse import urlparse
 from . import storage
 from .catalog import ROOT, DATA, catalog, get_task, public_task, student_files, student_dir
-from .compiler import doctor
-from .grading import grade, grade_answer, revision
+from .answers import grade_answer, revision
+from .self_check import guide,report,bundle
 
 TOKEN=secrets.token_urlsafe(32)
 LOCKS={}
 LOCKS_GUARD=threading.Lock()
-RUN_SLOTS=threading.BoundedSemaphore(2)
 
 def task_lock(task_id):
     with LOCKS_GUARD: return LOCKS.setdefault(task_id,threading.RLock())
@@ -89,8 +88,17 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json(lecture())
             if path=='/api/course':
                 return self.send_json({'days':json.loads((ROOT/'days/course.json').read_text(encoding='utf-8')),'tasks':[public_task(t) for t in catalog()]})
-            if path=='/api/doctor': return self.send_json(doctor())
+            if path=='/api/doctor': return self.send_json({'error':'Используется самостоятельная проверка без встроенного компилятора'},410)
             if path=='/api/progress': return self.send_json({'attempts':storage.history(),'exam':exam_state()})
+            if len(parts)==3 and parts[:2]==['api','self-check']:
+                task=get_task(parts[2])
+                if not task:return self.send_json({'error':'Задание не найдено'},404)
+                return self.send_json(guide(task))
+            if len(parts)==3 and parts[:2]==['api','self-check-bundle']:
+                task=get_task(parts[2])
+                if not task:return self.send_json({'error':'Задание не найдено'},404)
+                with task_lock(task['id']):payload=bundle(task)
+                self.send_response(200);self.send_header('Content-Type','application/zip');self.send_header('Content-Disposition',f'attachment; filename="{task["id"]}-check.zip"');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
             if len(parts)==3 and parts[:2]==['api','task']:
                 task=get_task(parts[2])
                 if not task: return self.send_json({'error':'Задание не найдено'},404)
@@ -183,7 +191,7 @@ class Handler(BaseHTTPRequestHandler):
                     storage.hint(task['id'],level)
                     return self.send_json({'text':task['hints'][level-1],'level':level})
                 if action=='answer':
-                    if task['kind'] not in ('Q','P'): raise ValueError('Это задание проверяется компилятором')
+                    if task['kind'] not in ('Q','P'): raise ValueError('Для этого задания используйте самостоятельную проверку')
                     check_exam(task)
                     if task.get('runner')=='prediction':
                         from .day01_v2.scoring import prediction
@@ -197,18 +205,12 @@ class Handler(BaseHTTPRequestHandler):
                     from .day01_v2.scoring import diagnosis
                     result=diagnosis(task,body)
                     return self.send_json(storage.record(task['id'],'diagnosis',result,body))
-                if action=='run':
-                    if task['kind'] not in ('S','D','C'): raise ValueError('Для этого задания выберите ответ')
+                if action=='self-check':
                     check_exam(task)
-                    mode=body.get('mode','test')
-                    if mode not in ('compile','test'): raise ValueError('Неизвестный режим')
                     files=student_files(task)
-                    if body.get('revision') and body['revision']!=revision(files): return self.send_json({'error':'Код изменился; сохраните или обновите файлы.'},409)
-                    with RUN_SLOTS: result=grade(task,files,mode)
-                    # Record expired work, but do not count it as an exam pass.
-                    try: check_exam(task)
-                    except ValueError as exc: result.update(status='EXPIRED',message=str(exc))
-                    return self.send_json(storage.record(task['id'],mode,result,files))
+                    result=report(task,body,files)
+                    return self.send_json(storage.record(task['id'],'self-check',result,files))
+                if action=='run':return self.send_json({'error':'Встроенная компиляция отключена. Откройте main для самостоятельной проверки.'},410)
                 return self.send_json({'error':'Маршрут не найден'},404)
         except (ValueError,TypeError,KeyError) as exc: self.send_json({'error':str(exc)},400)
         except (BrokenPipeError,ConnectionResetError): pass
@@ -220,7 +222,6 @@ def main():
     server=ThreadingHTTPServer(('127.0.0.1',args.port),Handler)
     server.daemon_threads=True
     print(f'C++ Mastery: http://127.0.0.1:{args.port}/#/day/1',flush=True)
-    threading.Thread(target=doctor,daemon=True).start()
     try: server.serve_forever()
     except KeyboardInterrupt: pass
     finally: server.server_close()

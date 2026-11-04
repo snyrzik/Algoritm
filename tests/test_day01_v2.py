@@ -4,6 +4,7 @@ Reference code lives exclusively in tests/fixtures and must never reach student/
 """
 import http.client
 import json
+import os
 import sys
 import threading
 import unittest
@@ -64,13 +65,14 @@ class StereoLabContentTests(unittest.TestCase):
             self.assertEqual(result['maximum'],130);self.assertTrue(result['critical'])
         all_pass=[dict(task=t['id'],mode='test',status='PASS',compiled=True,pointsEarned=t['maxPoints']) for t in TASKS]
         with patch('backend.day01_v2.scoring.storage.history',return_value=all_pass):
-            self.assertEqual(summary()['earned'],130);self.assertEqual(summary()['state'],'Полный автоматический зачёт')
+            self.assertEqual(summary()['earned'],130);self.assertEqual(summary()['state'],'Все задания отмечены выполненными')
             all_pass[0]=dict(all_pass[0],status='FAIL',pointsEarned=0)
-            self.assertNotEqual(summary()['state'],'Полный автоматический зачёт')
+            self.assertNotEqual(summary()['state'],'Все задания отмечены выполненными')
 
 class StereoLabRunnerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if os.environ.get('MASTERY_TEST_COMPILER')!='1':raise unittest.SkipTest('Optional compiler checks')
         if not doctor()['available']:raise unittest.SkipTest('C++ compiler unavailable')
     def assert_pass(self,task,files):
         result=grade(task,files)

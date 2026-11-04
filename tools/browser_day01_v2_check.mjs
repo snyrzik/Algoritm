@@ -21,7 +21,7 @@ let logs='';backend.stdout.on('data',s=>logs+=s);backend.stderr.on('data',s=>log
 const base='http://127.0.0.1:8768';let browser,page;
 const errors=[];
 async function visit(hash){await page.goto(base+'/#/'+hash,{waitUntil:'networkidle0'});await page.waitForSelector('h1');}
-async function click(text){await page.waitForFunction(t=>[...document.querySelectorAll('button')].some(b=>b.textContent.includes(t)),{},text);await page.evaluate(t=>[...document.querySelectorAll('button')].find(b=>b.textContent.includes(t)).click(),text);}
+async function click(text){await page.waitForFunction(t=>[...document.querySelectorAll('button,summary')].some(b=>b.textContent.includes(t)),{},text);await page.evaluate(t=>[...document.querySelectorAll('button,summary')].find(b=>b.textContent.includes(t)).click(),text);}
  async function fill(selector,value){await page.waitForSelector(selector);await page.click(selector);await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');await page.keyboard.type(value);}
 async function noOverflow(){assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal page overflow');}
 try{
@@ -56,21 +56,19 @@ try{
  await click('Новый вариант');await page.waitForFunction(previous=>document.querySelector('.v2-reasoning-card pre')?.textContent!==previous,{},originalCode);
  await new Promise(r=>setTimeout(r,1600));await page.reload({waitUntil:'networkidle0'});
  assert.notEqual(await page.$eval('.v2-reasoning-card pre',e=>e.textContent),originalCode);
- await visit('task/d01-v2-d02');await page.waitForSelector('.cm-content');
- assert.equal(await page.$eval('.cm-content',e=>e.contentEditable),'false');
- assert.equal(await page.$$eval('.run-toolbar button',nodes=>nodes.length===2&&nodes.every(n=>n.disabled)),true);
- await fill('[aria-label="В чём дефект?"]','The operation changes a different object during the chained expression.');
- await page.click('.v2-diagnosis-rules input');await click('Зафиксировать разбор');
- await page.waitForFunction(()=>document.querySelector('.cm-content')?.contentEditable==='true');
- await page.screenshot({path:path.join(output,'diagnosis-editor.png'),fullPage:true});
- await visit('task/d01-v2-b02');const response=page.waitForResponse(r=>r.url().includes('/api/run/d01-v2-b02')&&r.request().method()==='POST');
- await click('Скомпилировать');assert.equal((await (await response).json()).status,'DEPENDENCY_ERROR');
- await visit('task/d01-v2-c01');await page.waitForSelector('.cm-content');assert.ok((await page.$eval('.file-tabs',e=>e.textContent)).includes('main.cpp'));
+ await visit('task/d01-v2-d02');await page.waitForSelector('.manual-cases');
+ assert.ok((await page.$eval('.manual-condition',e=>e.textContent)).includes('Meter operator+='));
+ assert.equal(await page.$('.run-toolbar'),null);await click('Показать main для проверки');await page.waitForSelector('.manual-main');
+ assert.ok((await page.$eval('.manual-expected',e=>e.textContent)).includes('ALL CHECKS PASSED'));
+ await page.screenshot({path:path.join(output,'manual-debugging.png'),fullPage:true});
+ await visit('task/d01-v2-b02');await click('Показать main для проверки');await page.waitForSelector('.manual-dependencies');
+ assert.ok((await page.$eval('.manual-dependencies',e=>e.textContent)).includes('AudioBlock'));
+ await visit('task/d01-v2-c01');await click('Показать main для проверки');await page.waitForSelector('.manual-scenario-label select');
  assert.equal((await fetch(base+'/api/archive/day-1')).status,404);
  assert.equal((await fetch(base+'/api/task/d1-s01')).status,404);
  await visit('day/1');await page.setViewport({width:390,height:844});await noOverflow();await page.screenshot({path:path.join(output,'roadmap-mobile.png'),fullPage:true});
  await visit('task/d01-v2-p03');await noOverflow();await page.screenshot({path:path.join(output,'prediction-mobile.png'),fullPage:true});
- await visit('task/d01-v2-a01');await click('Код и проверка');await page.waitForSelector('.cm-content');await noOverflow();await page.screenshot({path:path.join(output,'editor-mobile.png'),fullPage:true});
+ await visit('task/d01-v2-a01');await click('Ваш черновик решения');await page.waitForSelector('.cm-content');await noOverflow();await page.screenshot({path:path.join(output,'editor-mobile.png'),fullPage:true});
  await visit('day/2');assert.equal(await page.$('.v2-roadmap'),null);assert.ok(await page.$('.tabs'));
  const summary=await (await fetch(base+'/api/day01/summary')).json();assert.equal(summary.maximum,130);assert.ok(summary.critical.length);assert.notEqual(summary.state,'Полный автоматический зачёт');
  await page.evaluate(()=>localStorage.setItem('mastery-draft-d01-v2-a01','stale answer after reset'));
@@ -79,7 +77,7 @@ try{
  assert.equal(await page.evaluate(()=>localStorage.getItem('mastery-draft-d01-v2-a01')),null);
  assert.equal(await page.evaluate(()=>localStorage.getItem('mastery-workspace')),'reset-browser-profile');
  assert.deepEqual(errors,[]);
- console.log('StereoLab browser QA PASS: 48 tasks, seven stages, answer secrecy, prediction persistence/variants, diagnosis gate, real dependency errors, console files, themes, mobile, unchanged Day 2.');
+ console.log('StereoLab browser QA PASS: 48 tasks, seven stages, answer secrecy, prediction persistence/variants, manual debugging checks, component files, console scenarios, themes, mobile, unchanged Day 2.');
 }catch(error){
  if(page){console.error('Browser errors:',errors);console.error((await page.$eval('body',e=>e.innerText)).slice(-5000));await page.screenshot({path:path.join(output,'failure.png'),fullPage:true});}
  throw error;

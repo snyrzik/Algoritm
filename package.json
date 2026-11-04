@@ -10,10 +10,9 @@
     "prepare:course": "node tools/python.mjs tools/build_course.py",
     "prepare:theory": "node tools/python.mjs tools/add_day01_theory.py",
     "prepare:day01": "node tools/python.mjs tools/build_day01_v2.py",
-    "check": "node tools/python.mjs tools/check.py",
-    "doctor": "node tools/python.mjs tools/check.py --doctor",
     "test": "node tools/python.mjs -m unittest discover -s tests -v",
     "test:contracts": "node tools/python.mjs tools/check_contracts.py",
+    "test:manual-mains": "node tools/python.mjs tools/check_manual_mains.py",
     "test:browser": "node tools/browser_check.mjs",
     "test:theory-browser": "node tools/browser_theory_check.mjs",
     "test:day01-browser": "node tools/browser_day01_v2_check.mjs"

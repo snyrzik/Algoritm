@@ -52,7 +52,7 @@ import {
   Kind,
   Attempt,
   Detail,
-  Doctor,
+  isCompleted,
   Result,
   Exam,
   labels,
@@ -68,7 +68,7 @@ const TheoryMarkdown = lazy(() =>
 const Day01Practice = lazy(() => import("./day01/Practice"));
 const Day01ScorePanel = lazy(() => import("./day01/Practice").then(module=>({default:module.ScorePanel})));
 const Prediction = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Prediction})));
-const Diagnosis = lazy(() => import("./day01/Reasoning").then(module=>({default:module.Diagnosis})));
+const ManualExercise = lazy(() => import("./manual/ManualExercise"));
 const stagePaths:Record<string,string>={Q:'quiz',S:'syntax',P:'prediction',D:'debugging',A:'A',B:'B',C:'C'};
 const Editor = lazy(() =>
   import("./Editor").then((module) => ({ default: module.Editor })),
@@ -96,7 +96,7 @@ function pct(tasks: Task[], latest: Record<string, Attempt>) {
   if(r.length&&r.every(t=>t.version===2&&t.day===1))return Math.round(r.reduce((sum,t)=>sum+(latest[t.id]?.pointsEarned||0),0)/r.reduce((sum,t)=>sum+(t.maxPoints||0),0)*100);
   return r.length
     ? Math.round(
-        (r.filter((t) => latest[t.id]?.status === "PASS").length / r.length) *
+        (r.filter((t) => isCompleted(latest[t.id])).length / r.length) *
           100,
       )
     : 0;
@@ -104,7 +104,7 @@ function pct(tasks: Task[], latest: Record<string, Attempt>) {
 function Badge({ status }: { status?: string }) {
   return (
     <span className={"status " + (status || "NEW")}>
-      {status === "PASS" ? <Check size={12} /> : null}
+      {isCompleted(status ? {status} : undefined) ? <Check size={12} /> : null}
       {status ? statusNames[status] || status : "Не начато"}
     </span>
   );
@@ -126,8 +126,7 @@ function App() {
     [days, setDays] = useState<Day[]>([]),
     [tasks, setTasks] = useState<Task[]>([]),
     [attempts, setAttempts] = useState<Attempt[]>([]),
-    [exam, setExam] = useState<Exam | null>(null),
-    [doctor, setDoctor] = useState<Doctor | null>(null);
+    [exam, setExam] = useState<Exam | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null),
     [files, setFiles] = useState<Record<string, string>>({}),
     [filename, setFilename] = useState("solution.hpp"),
@@ -168,7 +167,7 @@ function App() {
   for (const a of attempts)
     if (!['compile','diagnosis'].includes(a.mode) && !latest[a.task]) latest[a.task] = a;
   const completed = tasks.filter(
-      (t) => t.required && latest[t.id]?.status === "PASS",
+      (t) => t.required && isCompleted(latest[t.id]),
     ).length,
     required = tasks.filter((t) => t.required).length;
   const currentDay =
@@ -258,9 +257,6 @@ function App() {
     ])
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
-    api<Doctor>("doctor")
-      .then(setDoctor)
-      .catch((e) => setError(String(e)));
   }, [refresh]);
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
@@ -389,25 +385,6 @@ function App() {
       );
     }
   }
-  async function run(mode: string) {
-    if (!detail) return;
-    setBusy(true);
-    setError("");
-    try {
-      await persist();
-      const r = await api<Result>("run/" + detail.task.id, {
-        mode,
-        revision: editing.current?.revision,
-      });
-      setResult(r);
-      setConsoleTab(mode === "compile" || !r.compiled ? "compile" : "tests");
-      await refresh();
-    } catch (e) {
-      setError(String(e));
-    } finally {
-      setBusy(false);
-    }
-  }
   async function answer() {
     if (!detail) return;
     setBusy(true);
@@ -500,7 +477,7 @@ function App() {
     );
   }
   const failedTasks = tasks.filter(
-    (t) => latest[t.id] && latest[t.id].status !== "PASS",
+    (t) => latest[t.id] && !isCompleted(latest[t.id]),
   );
   const allTags = [...new Set(tasks.flatMap((t) => t.tags))];
   const weakTags = [...new Set(failedTasks.flatMap((t) => t.tags))];
@@ -516,10 +493,10 @@ function App() {
     : 0;
   const topicData = allTags.map((tag) => {
     const group = tasks.filter((t) => t.tags.includes(tag));
-    const pass = group.filter((t) => latest[t.id]?.status === "PASS");
+    const pass = group.filter((t) => isCompleted(latest[t.id]));
     const evidence = attempts.filter(
       (a) =>
-        a.status === "PASS" &&
+        isCompleted(a) &&
         a.hintsUsed === 0 &&
         group.some((t) => t.id === a.task),
     );
@@ -536,7 +513,7 @@ function App() {
         pct(group, latest) >= 95 &&
         dates.size >= 2 &&
         independent.size >= 3 &&
-        !group.some((t) => latest[t.id] && latest[t.id].status !== "PASS"),
+        !group.some((t) => latest[t.id] && !isCompleted(latest[t.id])),
     };
   });
 
@@ -717,7 +694,7 @@ function App() {
                         ? recommendation?.id
                         : dt.find(
                             (t) =>
-                              !latest[t.id] || latest[t.id].status !== "PASS",
+                              !latest[t.id] || !isCompleted(latest[t.id]),
                           )?.id || dt[0]?.id),
                   )
                 }
@@ -793,7 +770,7 @@ function App() {
               <strong>
                 {
                   dt.filter(
-                    (t) => t.required && latest[t.id]?.status === "PASS",
+                    (t) => t.required && isCompleted(latest[t.id]),
                   ).length
                 }
                 <em> / {dt.filter((t) => t.required).length}</em>
@@ -824,7 +801,7 @@ function App() {
                       (a) =>
                         a.mode !== "compile" &&
                         a.hintsUsed === 0 &&
-                        a.status === "PASS",
+                        isCompleted(a),
                     ).length
                   : "—"}
                 <em>{attempts.length ? " без подсказок" : " нет данных"}</em>
@@ -870,7 +847,7 @@ function App() {
         <div className="section-heading">
           <div>
             <h2>{home ? "Программа интенсива" : "Практикум дня"}</h2>
-            <p>Каждая проверка — результат реального запуска.</p>
+            <p>Проверьте решение с готовым main и отметьте результат.</p>
           </div>
           <label className="search">
             <Search size={15} />
@@ -931,104 +908,6 @@ function App() {
     );
   }
 
-  function Results() {
-    if (!result)
-      return (
-        <div className="console-empty">
-          <Terminal size={24} />
-          <span>Здесь появятся настоящие результаты компиляции и тестов.</span>
-          <small>Нажмите «Скомпилировать» или «Запустить тесты».</small>
-        </div>
-      );
-    return (
-      <>
-        <div className="result-summary">
-          <Badge status={result.status} />
-          {result.maxPoints!==undefined&&<strong className="v2-result-points">{result.pointsEarned||0} / {result.maxPoints} баллов</strong>}
-          <span>{result.message}</span>
-        </div>
-        {consoleTab === "compile" ? (
-          <pre className="compiler-output">
-            {result.compilation ||
-              "Для этой попытки компиляция не выполнялась."}
-          </pre>
-        ) : consoleTab === "memory" ? (
-          <div className="memory-detail">
-            <h3>Проверка ресурсов</h3>
-            {result.memory ? (
-              <>
-                <p>
-                  AddressSanitizer:{" "}
-                  <strong>
-                    {result.memory.addressSanitizer
-                      ? "запущен"
-                      : "не запускался"}
-                  </strong>
-                </p>
-                <p>
-                  UndefinedBehaviorSanitizer:{" "}
-                  {result.memory.undefinedSanitizer
-                    ? "запущен"
-                    : "недоступен / не требуется"}
-                </p>
-                <p>
-                  LeakSanitizer:{" "}
-                  {result.memory.leakSanitizer
-                    ? "запущен"
-                    : "недоступен / не требуется"}
-                </p>
-                <p>
-                  Счётчик new/delete и проверка пар освобождения:{" "}
-                  {result.memory.allocationTracking
-                    ? "включены"
-                    : "не включены"}
-                  .
-                </p>
-                <small>
-                  Это результаты конкретных сценариев, а не доказательство
-                  отсутствия всех возможных дефектов. Полный набор санитайзеров
-                  доступен при подходящей GCC/Clang-сборке.
-                </small>
-              </>
-            ) : (
-              <p>Проверка памяти не выполнялась.</p>
-            )}
-          </div>
-        ) : (
-          <div className="test-results">
-            {result.staticErrors?.map((e) => (
-              <p className="test-failure" key={e}>
-                <TriangleAlert size={14} /> {e}
-              </p>
-            ))}
-            {result.tests?.length ? (
-              result.tests.map((t, i) => (
-                <details
-                  key={i}
-                  className={"test-result " + (t.passed ? "ok" : "fail")}
-                >
-                  <summary>
-                    <span>
-                      {t.passed ? <CheckCircle2 size={15} /> : <X size={15} />}
-                      <b>{t.passed ? "PASS" : "FAIL"}</b>
-                      {t.name}
-                    </span>
-                    <small>{t.duration.toFixed(2)} с</small>
-                  </summary>
-                  <pre>{t.output || "Проверка завершилась без вывода."}</pre>
-                </details>
-              ))
-            ) : (
-              <p className="muted">
-                Функциональные тесты в этой попытке не выполнялись.
-              </p>
-            )}
-            {result.reviewNote && <p className="muted">{result.reviewNote}</p>}
-          </div>
-        )}
-      </>
-    );
-  }
   function Exercise() {
     if (!detail || detail.task.id !== locationState.key)
       return <div className="empty">Загружается задание…</div>;
@@ -1083,7 +962,6 @@ function App() {
             )}
           </div>
         </div>
-        {t.version===2&&t.kind==='D'&&<Suspense fallback={<p className="muted">Открывается разбор…</p>}><Diagnosis task={t} files={files} history={hs} edit={edit} persist={persist} refresh={refresh}/></Suspense>}
         {t.version===2&&t.kind==='P'?<Suspense fallback={<p>Открывается трассировка…</p>}><Prediction task={t} files={files} edit={edit} persist={persist} onResult={setResult} refresh={refresh}/></Suspense>:quiz ? (
           <div className="quiz-layout">
             <section className="quiz-card">
@@ -1196,308 +1074,9 @@ function App() {
             </aside>
           </div>
         ) : (
-          <div className={"workspace " + workspaceTab}>
-            <div className="workspace-switch">
-              <button
-                className={workspaceTab === "condition" ? "active" : ""}
-                onClick={() => setWorkspaceTab("condition")}
-              >
-                <BookOpen size={15} />
-                Условие и история
-              </button>
-              <button
-                className={workspaceTab === "code" ? "active" : ""}
-                onClick={() => setWorkspaceTab("code")}
-              >
-                <Code2 size={15} />
-                Код и проверка
-              </button>
-            </div>
-            <aside className="problem-pane">
-              <div className="pane-tabs">
-                <button
-                  className={sideTab === "condition" ? "active" : ""}
-                  onClick={() => setSideTab("condition")}
-                >
-                  Условие
-                </button>
-                <button
-                  className={sideTab === "history" ? "active" : ""}
-                  onClick={() => setSideTab("history")}
-                >
-                  История <small>{hs.length}</small>
-                </button>
-                <button
-                  className={sideTab === "hints" ? "active" : ""}
-                  onClick={() => setSideTab("hints")}
-                >
-                  Подсказки
-                </button>
-              </div>
-              <div className="problem-content">
-                {sideTab === "condition" ? (
-                  <>
-                    <div className="eyebrow">КОНТРАКТ ЗАДАНИЯ</div>
-                    {t.section === "lecture-theory" || t.version===2 ? (
-                      <div className={t.version===2?'rich-task-condition':'lecture-task-condition'}>
-                        <Suspense fallback={<p>Открывается условие…</p>}>
-                          <TheoryMarkdown source={t.prompt} />
-                        </Suspense>
-                      </div>
-                    ) : (
-                      t.prompt.split("\n\n").map((p, i) => (
-                        <p key={i} className="statement">
-                          {p}
-                        </p>
-                      ))
-                    )}
-                    {t.protocol && (
-                      <div className="lecture-protocol">
-                        <h3>Подключение к проверкам</h3>
-                        <p>{t.protocol}</p>
-                      </div>
-                    )}
-                    {(detail.context.before || detail.context.after) && (
-                      <details open>
-                        <summary>Контекст компиляции</summary>
-                        <p className="muted">
-                          Этот код добавляется проверяющей системой вокруг
-                          вашего фрагмента; повторять его в редакторе не нужно.
-                        </p>
-                        {detail.context.before && (
-                          <>
-                            <small>До вашего фрагмента</small>
-                            <pre>{detail.context.before}</pre>
-                          </>
-                        )}
-                        {detail.context.after && (
-                          <>
-                            <small>После вашего фрагмента</small>
-                            <pre>{detail.context.after}</pre>
-                          </>
-                        )}
-                      </details>
-                    )}
-                    <h3>Что проверяется</h3>
-                    <ul className="requirements">
-                      {detail.testNames.map((test, i) => (
-                        <li key={i}>
-                          <ListChecks size={14} />
-                          {test.name}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="file-note">
-                      <FolderOpen size={16} />
-                      <span>
-                        Решения на диске<code>{t.filePath}</code>
-                      </span>
-                    </div>
-                  </>
-                ) : sideTab === "history" ? (
-                  <>
-                    <h3>Попытки сохранены</h3>
-                    <p className="muted">
-                      Компиляция не считается выполнением. Снимок позволяет
-                      увидеть код в момент проверки.
-                    </p>
-                    {hs.length ? (
-                      hs.map((a, i) => (
-                        <div className="attempt" key={a.id}>
-                          <div>
-                            <Badge status={a.status} />
-                            <small>
-                              {new Date(a.created).toLocaleString("ru-RU")}
-                            </small>
-                          </div>
-                          <p>
-                            {a.mode === "compile" ? "Компиляция" : "Тесты"} ·{" "}
-                            {a.score}% · подсказок: {a.hintsUsed || 0}
-                            {i === hs.length - 1 ? " · первая попытка" : ""}
-                          </p>
-                          <button
-                            onClick={async () => {
-                              const s = await api<{
-                                files: Record<string, string>;
-                              }>("snapshot/" + a.id);
-                              download(
-                                t.id + "-attempt-" + a.id + ".json",
-                                JSON.stringify(s.files, null, 2),
-                              );
-                            }}
-                          >
-                            Скачать снимок
-                            <Download size={13} />
-                          </button>
-                          <button onClick={() => setResult(a)}>
-                            Показать результаты
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="muted">Попыток пока нет.</p>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Lightbulb size={22} />
-                    <h3>Подсказки по запросу</h3>
-                    <p>
-                      Три уровня: направление, правило языка, разбор подхода.
-                      Использование записывается в историю.
-                    </p>
-                    {hint && <div className="hint-box">{hint}</div>}
-                    <button
-                      disabled={hintLevel >= 3 || !!(activeExam && t.day === 5)}
-                      onClick={askHint}
-                    >
-                      Подсказка {Math.min(hintLevel + 1, 3)} из 3
-                      <ChevronRight size={14} />
-                    </button>
-                    <p className="muted">
-                      Полное решение не открывается автоматически. В
-                      экзаменационном режиме подсказки отключены.
-                    </p>
-                  </>
-                )}
-              </div>
-            </aside>
-            <section className="coding-pane">
-              <div className="editor-toolbar">
-                <div className="file-tabs">
-                  {Object.keys(files).map((name) => (
-                    <button
-                      key={name}
-                      className={filename === name ? "active" : ""}
-                      onClick={() => setFilename(name)}
-                    >
-                      <FileCode2 size={14} />
-                      {name}
-                      {dirty && filename === name ? (
-                        <span className="unsaved-dot" />
-                      ) : null}
-                    </button>
-                  ))}
-                </div>
-                <span className="language">C++17</span>
-              </div>
-              {restored && (
-                <div className="draft-notice">
-                  Восстановлен черновик браузера.{" "}
-                  <button
-                    onClick={() => {
-                      persist()
-                        .then(() => setRestored(false))
-                        .catch((e) => setError(String(e)));
-                    }}
-                  >
-                    Сохранить
-                  </button>
-                  <button onClick={reloadDisk}>Взять версию с диска</button>
-                </div>
-              )}
-              <div className="editor-area">
-                <Suspense
-                  fallback={<div className="empty">Загружается редактор…</div>}
-                >
-                  <Editor
-                    readOnly={t.version===2&&t.kind==='D'&&!hs.some(a=>a.mode==='diagnosis')}
-                    value={files[filename] || ""}
-                    onChange={edit}
-                    theme={theme}
-                    filename={t.id + "/" + filename}
-                  />
-                </Suspense>
-              </div>
-              <div className="editor-status">
-                <span>
-                  <span
-                    className={"tiny-dot " + (dirty ? "pending" : "saved")}
-                  />
-                  {saveState}
-                </span>
-                <div>
-                  <button
-                    title="Обновить файлы с диска; несохранённый черновик скачается отдельно"
-                    onClick={reloadDisk}
-                  >
-                    <RefreshCw size={13} />С диска
-                  </button>
-                  <button
-                    onClick={() => persist().catch((e) => setError(String(e)))}
-                  >
-                    <Save size={13} />
-                    Сохранить
-                  </button>
-                </div>
-              </div>
-              <div className="run-toolbar">
-                <span>
-                  {doctor?.available ? (
-                    <>
-                      <span className="live-dot" />
-                      {doctor.compiler}
-                    </>
-                  ) : (
-                    <>
-                      <TriangleAlert size={14} />
-                      Компилятор недоступен
-                    </>
-                  )}
-                </span>
-                <div>
-                  <button disabled={busy || (t.version===2&&t.kind==='D'&&!hs.some(a=>a.mode==='diagnosis'))} onClick={() => run("compile")}>
-                    <Braces size={15} />
-                    Скомпилировать
-                  </button>
-                  <button
-                    className="primary"
-                    disabled={busy || (t.version===2&&t.kind==='D'&&!hs.some(a=>a.mode==='diagnosis'))}
-                    onClick={() => run("test")}
-                  >
-                    {busy ? (
-                      <RefreshCw size={15} className="spin" />
-                    ) : (
-                      <Play size={15} />
-                    )}{" "}
-                    {busy ? "Проверка…" : "Запустить тесты"}
-                  </button>
-                </div>
-              </div>
-              <div className="console">
-                <div className="console-tabs">
-                  <button
-                    className={consoleTab === "tests" ? "active" : ""}
-                    onClick={() => setConsoleTab("tests")}
-                  >
-                    <ListChecks size={14} />
-                    Результаты{" "}
-                    {result?.tests?.length ? (
-                      <small>
-                        {result.tests.filter((t) => t.passed).length}/
-                        {result.tests.length}
-                      </small>
-                    ) : null}
-                  </button>
-                  <button
-                    className={consoleTab === "compile" ? "active" : ""}
-                    onClick={() => setConsoleTab("compile")}
-                  >
-                    <Terminal size={14} />
-                    Компиляция
-                  </button>
-                  <button
-                    className={consoleTab === "memory" ? "active" : ""}
-                    onClick={() => setConsoleTab("memory")}
-                  >
-                    <ShieldCheck size={14} />
-                    Память
-                  </button>
-                </div>
-                {Results()}
-              </div>
-            </section>
-          </div>
+          <Suspense fallback={<p className="muted">Открываем самостоятельную проверку…</p>}>
+            <ManualExercise detail={detail} files={files} history={hs} edit={edit} persist={persist} refresh={refresh} onResult={setResult} theme={theme} go={go}/>
+          </Suspense>
         )}
         <div className="exercise-bottom">
           <span>
@@ -1603,7 +1182,7 @@ function App() {
           </div>
         </div>
         {attempts
-          .filter((a) => a.mode !== "compile" && a.status !== "PASS")
+          .filter((a) => a.mode !== "compile" && !isCompleted(a))
           .slice(0, 20)
           .map((a) => (
             <button
@@ -1624,7 +1203,7 @@ function App() {
   }
   function ReportPage() {
     const remaining = tasks.filter(
-      (t) => t.required && latest[t.id]?.status !== "PASS",
+      (t) => t.required && !isCompleted(latest[t.id]),
     );
     const dimensions = [
       ["Синтаксис", tasks.filter((t) => t.kind === "S")],
@@ -1646,7 +1225,7 @@ function App() {
       <>
         <div className="page-heading">
           <div>
-            <div className="eyebrow">ПОДТВЕРЖДЁННЫЕ РЕЗУЛЬТАТЫ</div>
+            <div className="eyebrow">ВАШИ РЕЗУЛЬТАТЫ</div>
             <h1>Прогресс и готовность</h1>
             <p>
               Результат вычисляется по последней проверке каждого обязательного
@@ -1671,8 +1250,8 @@ function App() {
           <div>
             <h2>
               {remaining.length
-                ? "Готовность к лабораторной ещё не подтверждена"
-                : "Обязательные автоматические проверки пройдены"}
+                ? "Есть задания для самостоятельной проверки"
+                : "Все обязательные задания отмечены выполненными"}
             </h2>
             <p>
               {completed} из {required} заданий пройдено. {remaining.length} ещё
@@ -1697,8 +1276,8 @@ function App() {
           <div>
             <h2>Освоение тем</h2>
             <p>
-              Для подтверждения: ≥95%, три самостоятельных задания, минимум две
-              даты проверки и отсутствие текущих ошибок.
+              Процент показывает выполненные задания. Повторные самостоятельные
+              проверки в разные дни отмечаются отдельно.
             </p>
           </div>
         </div>
@@ -1712,7 +1291,7 @@ function App() {
               <strong>{t.score}%</strong>
               <small>
                 {t.mastered
-                  ? "Устойчивость подтверждена"
+                  ? "Есть повторная самостоятельная проверка"
                   : t.pass
                     ? "Нужна повторная проверка"
                     : "Нет подтверждения"}
@@ -1728,109 +1307,27 @@ function App() {
         </div>
         {taskTable(remaining.slice(0, 15))}
         <div className="grading-scale">
-          <h3>Шкала результатов</h3>
+          <h3>Как считается прогресс</h3>
           <p>
-            0–49% — тема не усвоена · 50–69% — существенные пробелы · 70–84% —
-            базовое владение · 85–94% — хорошее владение · 95–100% — уверенное
-            владение при выполнении критических условий.
+            Процент отражает долю выполненных заданий. В программных заданиях
+            результатом служит ваша отметка после сравнения с main; в Q/P —
+            проверка ответа на сайте.
           </p>
           <p>
             Смысл письменного разбора, читаемость и авторство не оцениваются
-            автоматически. PASS подтверждает только перечисленные автоматические
-            проверки.
+            автоматически. Отметка «Проверено мной» сохраняет результат вашей самопроверки.
           </p>
         </div>
       </>
     );
   }
   function SettingsPage() {
-    return (
-      <>
-        <div className="page-heading">
-          <div>
-            <div className="eyebrow">ЛОКАЛЬНАЯ СРЕДА</div>
-            <h1>Инструменты и настройки</h1>
-            <p>Решения и прогресс остаются на этом компьютере.</p>
-          </div>
-        </div>
-        <div className="settings-grid">
-          <section className="settings-card">
-            <Terminal />
-            <h2>Компилятор</h2>
-            <p>{doctor?.compiler || "Проверка окружения…"}</p>
-            <code>{doctor?.path}</code>
-            <ul>
-              <li>
-                C++17:{" "}
-                {doctor?.available
-                  ? "проверен реальным запуском"
-                  : "не подтверждён"}
-              </li>
-              <li>
-                AddressSanitizer:{" "}
-                {doctor?.addressSanitizer
-                  ? "обнаруживает дефекты"
-                  : "недоступен"}
-              </li>
-              <li>
-                UBSan: {doctor?.undefinedSanitizer ? "доступен" : "недоступен"}
-              </li>
-              <li>
-                LeakSanitizer:{" "}
-                {doctor?.leakSanitizer ? "доступен" : "недоступен"}
-              </li>
-            </ul>
-            {doctor?.details && <pre>{doctor.details}</pre>}
-            <p>
-              GCC/Clang: -std=c++17 -Wall -Wextra -Wconversion -Wpedantic
-              -Werror. Windows поддерживает MSVC /std:c++17 /W4 /WX.
-            </p>
-          </section>
-          <section className="settings-card">
-            <FolderOpen />
-            <h2>Файлы и сохранение</h2>
-            <p>
-              Редактор синхронизируется с <code>student/day-XX/ID/</code>. Можно
-              работать напрямую в IDE; вернитесь в окно или нажмите «С диска».
-            </p>
-            <p>
-              История и снимки: <code>progress/mastery.sqlite3</code>.
-              Автосохранение: через 0,8 секунды после ввода. Конфликт с внешней
-              правкой не перезаписывает файлы молча.
-            </p>
-            <p>Проверка из терминала:</p>
-            <pre>
-              npm run check -- --task d1-s01{"\n"}npm run check -- --day 1{"\n"}
-              npm run doctor
-            </pre>
-          </section>
-          <section className="settings-card">
-            <Sun />
-            <h2>Оформление</h2>
-            <p>Тема применяется к интерфейсу и редактору кода.</p>
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              Включить {theme === "dark" ? "светлую" : "тёмную"} тему
-            </button>
-          </section>
-          <section className="settings-card">
-            <ShieldCheck />
-            <h2>Границы проверки</h2>
-            <p>
-              Компиляция ограничена 40 секундами, один тест — 8 секундами, вывод
-              — 48 КБ. Сервер слушает только 127.0.0.1.
-            </p>
-            <p>
-              Это среда для вашего локального кода. Ограничение времени не
-              заменяет системную песочницу. Тесты проверяют заданный контракт;
-              память оценивается с учётом доступных инструментов.
-            </p>
-          </section>
-        </div>
-      </>
-    );
+    return <><div className="page-heading"><div><div className="eyebrow">ВАША ПРАКТИКА</div><h1>Настройки и самостоятельная проверка</h1><p>Задания, main, ожидаемый вывод и ваши отметки о результате.</p></div></div><div className="settings-grid">
+      <section className="settings-card"><CheckCircle2/><h2>Как сдавать задания</h2><p>Напишите решение в своей среде C++. В задании откройте «Показать main для проверки», проверьте перечисленные случаи и сравните вывод с ожидаемым.</p><p>Если всё совпало, нажмите «Да, всё совпало». Если нашли ошибку — «Есть расхождения». Отметку можно изменить в любой момент.</p></section>
+      <section className="settings-card"><FolderOpen/><h2>Файлы и сохранение</h2><p>Черновик на сайте синхронизируется с <code>student/day-XX/ID/</code>. Можно работать напрямую в своей IDE.</p><p>Вместе с main можно скачать архив проверки: в нём ваши исходники, нужные заголовки и ожидаемый вывод. История отметок хранится в <code>progress/mastery.sqlite3</code>.</p></section>
+      <section className="settings-card"><Sun/><h2>Оформление</h2><p>Тема применяется к интерфейсу и черновику кода.</p><button onClick={()=>setTheme(theme==='dark'?'light':'dark')}>{theme==='dark'?<Sun size={16}/>:<Moon size={16}/>}Включить {theme==='dark'?'светлую':'тёмную'} тему</button></section>
+      <section className="settings-card"><ShieldCheck/><h2>Что означает прогресс</h2><p>«Проверено мной» — ваша отметка о совпадении результатов с примером. Сайт сохраняет её и учитывает в прогрессе.</p><p>Тесты с вариантами ответа и предсказанием вывода проверяются на сайте. Запускать ваш C++-код на сайте не требуется.</p></section>
+    </div></>;
   }
 
   return (
@@ -1959,17 +1456,7 @@ function App() {
             <Settings2 size={17} />
             Среда и настройки
           </button>
-          <div className="local-badge">
-            <span
-              className={
-                "tiny-dot " + (doctor?.available ? "saved" : "pending")
-              }
-            />
-            {doctor?.available
-              ? "Локальная среда готова"
-              : "Диагностика окружения"}
-            <span>v1.0</span>
-          </div>
+          <div className="local-badge"><span className="tiny-dot saved"/>Самостоятельная проверка<span>v1.1</span></div>
         </div>
       </aside>
       <div className="main-shell">

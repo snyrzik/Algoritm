@@ -1,5 +1,6 @@
 """The additive Day 1 lecture, source fidelity, and existing-course isolation."""
 import hashlib
+import os
 import http.client
 import json
 import sys
@@ -91,6 +92,7 @@ class ClockTime{public:ClockTime(int,int);};std::ostream& operator<<(std::ostrea
 class TheoryRunnerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if os.environ.get('MASTERY_TEST_COMPILER')!='1':raise unittest.SkipTest('Optional compiler checks')
         if not doctor()['available']:raise unittest.SkipTest('C++ compiler unavailable')
     def test_all_four_contract_harnesses_compile(self):
         tc=toolchain()

@@ -1,18 +1,11 @@
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { python } from "./python.mjs";
 process.chdir(fileURLToPath(new URL("..", import.meta.url)));
 const [bin, prefix] = python();
 const env = { ...process.env, PYTHONUTF8: "1" };
-const setup = spawnSync(bin, [...prefix, "tools/build_course.py"], {
-  stdio: "inherit",
-  env,
-  windowsHide: true,
-});
-if (setup.status !== 0) process.exit(setup.status ?? 1);
 const dev = process.argv.includes("--dev");
-if (!dev && !existsSync("app/dist/index.html")) {
+if (!dev) {
   const build = spawnSync(
     process.execPath,
     ["node_modules/vite/bin/vite.js", "build"],
