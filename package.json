@@ -14,6 +14,7 @@
     "test:contracts": "node tools/python.mjs tools/check_contracts.py",
     "test:manual-mains": "node tools/python.mjs tools/check_manual_mains.py",
     "test:browser": "node tools/browser_check.mjs",
+    "test:platform-browser": "node tools/browser_platform_check.mjs",
     "test:theory-browser": "node tools/browser_check.mjs",
     "test:day01-browser": "node tools/browser_check.mjs"
   },

@@ -13,7 +13,7 @@ import {
   List,
   RefreshCw,
 } from "lucide-react";
-import { api } from "../api";
+import { api,errorMessage } from "../api";
 import { type Attempt, type Task, statusNames } from "../types";
 import { Markdown, headings } from "./Markdown";
 import "./theory.css";
@@ -60,7 +60,7 @@ export default memo(function Theory({ section, anchor, attempts, go, onReading }
         if (current) setLecture(data);
       })
       .catch((e) => {
-        if (current) setError(String(e));
+        if (current) setError(errorMessage(e));
       });
     return () => {
       current = false;
@@ -94,7 +94,7 @@ export default memo(function Theory({ section, anchor, attempts, go, onReading }
     return (
       <div className="error-banner" role="alert">
         {error}
-        <button onClick={() => go("day/1")}>Вернуться к дню 1</button>
+        <button onClick={() => go("module/1")}>Вернуться к модулю</button>
       </div>
     );
   if (!lecture || !selected)
@@ -117,7 +117,7 @@ export default memo(function Theory({ section, anchor, attempts, go, onReading }
     if(!selected||!lecture)return;
     setReadingBusy(true);setReadingError('');
     try{const value=await api<{reading:string[]}>('lecture-read/'+selected.id,{completed:!lecture.reading.includes(selected.id)});setLecture({...lecture,reading:value.reading});onReading?.(value.reading);}
-    catch(e){setReadingError(String(e));}finally{setReadingBusy(false);}
+    catch(e){setReadingError(errorMessage(e));}finally{setReadingBusy(false);}
   }
   const title = selected.chapter
     ? `Глава ${selected.chapter}`
@@ -139,9 +139,9 @@ export default memo(function Theory({ section, anchor, attempts, go, onReading }
   return (
     <div className="theory-page">
       <div className="theory-topline">
-        <button className="back-link" onClick={() => go("day/1")}>
+        <button className="back-link" onClick={() => go("module/1")}>
           <ArrowLeft size={15} />
-          День 1 · Перегрузка операторов
+          Модуль 1 · Перегрузка операций
         </button>
         <button className="theory-source-button" onClick={downloadOriginal}>
           <Download size={14} />
@@ -149,25 +149,8 @@ export default memo(function Theory({ section, anchor, attempts, go, onReading }
         </button>
       </div>
       <div className="theory-page-header">
-        <div>
-          <div className="eyebrow">ЛЕКЦИЯ № 1 / ДЕНЬ 1</div>
-          <h2>Теория</h2>
-          <p>{lecture.title}</p>
-        </div>
-        <div className="theory-header-progress">
-          <span>
-            <Code2 size={15} />
-            Закрепления
-          </span>
-          <strong>
-            {passed}
-            <small> / {lecture.checks.length}</small>
-          </strong>
-          <div className="progress-bar">
-            <i style={{ width: `${(passed / lecture.checks.length) * 100}%` }} />
-          </div>
-          <small>Прочитано глав: {lecture.reading.length} / 5</small>
-        </div>
+        <p><BookOpen size={15}/> Прочитано глав: {lecture.reading.length} / 5</p>
+        <p><Code2 size={15}/> Закреплений выполнено: {passed} / {lecture.checks.length}</p>
       </div>
       <button
         className="theory-mobile-menu"

@@ -1,20 +1,27 @@
 import json
 import os
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = Path(os.environ.get('MASTERY_DATA', ROOT)).resolve()
 DAY_NAMES = ['operators', 'memory', 'templates-functions', 'template-classes-rtti', 'final-exam']
+_CATALOG=None
+_CATALOG_LOCK=threading.Lock()
 
 def catalog(include_theory=False):
-    result = []
-    for path in sorted((ROOT / 'days').glob('day-*/*/**/exercise.json')):
-        item = json.loads(path.read_text(encoding='utf-8'))
-        if item.get('section') == 'lecture-theory' and not include_theory:
-            continue
-        item['_path'] = str(path.parent)
-        result.append(item)
-    return sorted(result, key=lambda t: (t['day'], t['order']))
+    # Course definitions are immutable during a server session. Learner files
+    # remain uncached so edits made in an external IDE are always read from disk.
+    global _CATALOG
+    if _CATALOG is None:
+        with _CATALOG_LOCK:
+            if _CATALOG is None:
+                result=[]
+                for path in sorted((ROOT/'days').glob('day-*/*/**/exercise.json')):
+                    item=json.loads(path.read_text(encoding='utf-8'))
+                    item['_path']=str(path.parent);result.append(item)
+                _CATALOG=tuple(sorted(result,key=lambda t:(t['day'],t['order'])))
+    return [dict(item) for item in _CATALOG if include_theory or item.get('section')!='lecture-theory']
 
 def get_task(task_id):
     return next((t for t in catalog(include_theory=True) if t['id'] == task_id), None)

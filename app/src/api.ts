@@ -1,4 +1,5 @@
 let token = "";
+export function errorMessage(error:unknown){return error instanceof Error?error.message:String(error);}
 let session: Promise<void> | null = null;
 function initializeSession() {
   session ??= fetch("/api/session", {cache:"no-store"}).then(r=>{

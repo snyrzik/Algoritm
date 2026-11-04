@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from .catalog import DATA
 
 PROFILE_LOCK=threading.Lock()
+DB_LOCK=threading.RLock()
 
 def profile_id():
     """A new data directory must not restore drafts from an older browser profile."""
@@ -18,17 +19,20 @@ def profile_id():
 
 @contextmanager
 def connect():
-    (DATA / 'progress').mkdir(parents=True, exist_ok=True)
-    db = sqlite3.connect(DATA / 'progress' / 'mastery.sqlite3', timeout=20)
-    db.execute('PRAGMA journal_mode=WAL')
-    db.execute('CREATE TABLE IF NOT EXISTS attempts (id INTEGER PRIMARY KEY, task TEXT NOT NULL, created TEXT NOT NULL, mode TEXT NOT NULL, result TEXT NOT NULL, snapshot TEXT NOT NULL)')
-    db.execute('CREATE TABLE IF NOT EXISTS hints (id INTEGER PRIMARY KEY, task TEXT NOT NULL, created TEXT NOT NULL, level INTEGER NOT NULL)')
-    db.execute('CREATE TABLE IF NOT EXISTS exams (id INTEGER PRIMARY KEY, started REAL NOT NULL, duration INTEGER NOT NULL, timed INTEGER NOT NULL, finished REAL, tasks TEXT NOT NULL)')
-    try:
-        with db:
-            yield db
-    finally:
-        db.close()
+    # HTTP workers may initialize tables and update navigation concurrently.
+    # Serialize these short local transactions to avoid read-to-write lock upgrades.
+    with DB_LOCK:
+        (DATA / 'progress').mkdir(parents=True, exist_ok=True)
+        db = sqlite3.connect(DATA / 'progress' / 'mastery.sqlite3', timeout=20)
+        try:
+            db.execute('PRAGMA journal_mode=WAL')
+            db.execute('CREATE TABLE IF NOT EXISTS attempts (id INTEGER PRIMARY KEY, task TEXT NOT NULL, created TEXT NOT NULL, mode TEXT NOT NULL, result TEXT NOT NULL, snapshot TEXT NOT NULL)')
+            db.execute('CREATE TABLE IF NOT EXISTS hints (id INTEGER PRIMARY KEY, task TEXT NOT NULL, created TEXT NOT NULL, level INTEGER NOT NULL)')
+            db.execute('CREATE TABLE IF NOT EXISTS exams (id INTEGER PRIMARY KEY, started REAL NOT NULL, duration INTEGER NOT NULL, timed INTEGER NOT NULL, finished REAL, tasks TEXT NOT NULL)')
+            with db:
+                yield db
+        finally:
+            db.close()
 
 def now(): return datetime.now(timezone.utc).isoformat()
 

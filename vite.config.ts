@@ -9,5 +9,15 @@ export default defineConfig({
     strictPort: true,
     proxy: { "/api": "http://127.0.0.1:8765" },
   },
-  build: { outDir: "dist", emptyOutDir: true },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [{name: "cpp-language", test: /node_modules[\\/](?:@codemirror|@lezer)[\\/]/}],
+        },
+      },
+    },
+  },
 });

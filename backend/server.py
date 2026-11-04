@@ -87,9 +87,14 @@ class Handler(BaseHTTPRequestHandler):
                 from .theory import lecture
                 return self.send_json(lecture())
             if path=='/api/course':
-                return self.send_json({'days':json.loads((ROOT/'days/course.json').read_text(encoding='utf-8')),'tasks':[public_task(t) for t in catalog()]})
+                return self.send_json({'days':json.loads((ROOT/'days/course.json').read_text(encoding='utf-8')),'tasks':[public_task(t) for t in catalog(include_theory=True)]})
+            if path=='/api/learning':
+                from .learning import state
+                return self.send_json(state())
             if path=='/api/doctor': return self.send_json({'error':'Используется самостоятельная проверка без встроенного компилятора'},410)
-            if path=='/api/progress': return self.send_json({'attempts':storage.history(),'exam':exam_state()})
+            if path=='/api/progress':
+                from .theory import reading
+                return self.send_json({'attempts':storage.history(),'exam':exam_state(),'reading':reading()})
             if len(parts)==3 and parts[:2]==['api','self-check']:
                 task=get_task(parts[2])
                 if not task:return self.send_json({'error':'Задание не найдено'},404)
@@ -146,6 +151,9 @@ class Handler(BaseHTTPRequestHandler):
             if 'application/json' not in self.headers.get('Content-Type',''): return self.send_json({'error':'Ожидается JSON'},415)
             body=json.loads(self.rfile.read(length) or '{}')
             path=urlparse(self.path).path
+            if path=='/api/learning':
+                from .learning import update
+                return self.send_json(update(body))
             if path=='/api/exam/start':
                 tasks=[t['id'] for t in catalog() if t['day']==5 and t['kind']=='S']
                 random.SystemRandom().shuffle(tasks)

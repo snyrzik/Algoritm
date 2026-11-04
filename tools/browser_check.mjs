@@ -106,7 +106,7 @@ try {
   await visit('day/1');await page.waitForSelector('.lecture01-tabs');
   assert.equal(await page.$eval('h1',e=>e.textContent),'Перегрузка операций');
   assert.equal(await page.$('.stereolab-page'),null);
-  for(let day=2;day<=5;day++){await click('День '+day);await page.waitForFunction(n=>location.hash==='#/day/'+n,{},day);}
+  for(let module=2;module<=5;module++){await click('\u041c\u043e\u0434\u0443\u043b\u044c '+module);await page.waitForFunction(n=>location.hash==='#/module/'+n,{},module);}
   await visit('theory/1/overview');await page.waitForSelector('.theory-article');
   assert.equal(await page.$$eval('.theory-navigation nav button',nodes=>nodes.length),7);
   for(let chapter=1;chapter<=5;chapter++){
@@ -161,7 +161,7 @@ try {
   await new Promise(r=>setTimeout(r,1400));await page.reload({waitUntil:'networkidle0'});await click('Ваш черновик решения');await page.waitForSelector('.cm-content');
   assert.ok((await page.$eval('.cm-content',e=>e.textContent)).includes('saved local draft'));
   for(let chapter=1;chapter<=5;chapter++){await visit('task/l01-v3-c0'+chapter);await page.waitForSelector('.manual-cases');await click('Показать main для проверки');await page.waitForSelector('.manual-expected');}
-  await visit('task/d2-q01');await page.click('.option');await click('Проверить ответ');await page.waitForSelector('.answer-review');
+  await visit('task/d2-q01');await page.waitForSelector('.option');await page.click('.option');await click('Проверить ответ');await page.waitForSelector('.answer-review');
   for(const task of ['d2-c03','d4-c01','d5-c01']){await visit('task/'+task);await page.waitForSelector('.manual-cases');await click('Показать main для проверки');await page.waitForSelector('.manual-expected');}
   await page.setViewport({width:390,height:844});
   for(const route of ['theory/1/chapter-4','theory/1/practice','theory/1/local-checks','task/l01-v3-p02']){
@@ -174,6 +174,8 @@ try {
   await stop();await launch();await visit('task/l01-v3-p01');await page.waitForSelector('.manual-saved.pending');
   assert.deepEqual(errors,[]);
   console.log('Browser QA PASS: five exact chapters, five checks, three projects, copy/download main, local instructions, separate reading, reversible marks, drafts, restart, other days, dark/light and mobile.');
+} catch(error) {
+  console.error('Browser diagnostics:',errors,await page.evaluate(()=>document.body.innerText).catch(()=>''));throw error;
 } finally {
   await browser.close();
   await stop();

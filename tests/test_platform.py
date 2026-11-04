@@ -127,7 +127,7 @@ class ApiTests(unittest.TestCase):
         r=c.getresponse();status=r.status;data=json.loads(r.read());c.close();return status,data
     def test_local_session_and_catalog(self):
         status,data=self.request('/api/session');self.assertEqual(status,200);self.assertEqual(data['token'],server.TOKEN)
-        status,data=self.request('/api/course');self.assertEqual(len(data['tasks']),243);self.assertEqual(len(data['days']),5)
+        status,data=self.request('/api/course');self.assertEqual(len(data['tasks']),248);self.assertEqual(len(data['days']),5)
     def test_cross_origin_and_missing_token_rejected(self):
         status,_=self.request('/api/answer/d2-q01',{'answer':[1]},token=False);self.assertEqual(status,403)
         status,_=self.request('/api/answer/d2-q01',{'answer':[1]},origin='http://evil.example');self.assertEqual(status,403)
