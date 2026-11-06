@@ -13,5 +13,7 @@ student/**/notes.md
 student/**/test_adapter.hpp
 student/**/answer.json
 student/day-01/l01-v3-*/**
+student/day-02/l02-local-*/**
+student/day-03/l03-local-*/**
 !student/**/.gitkeep
 test-results/

@@ -21,32 +21,10 @@ def task_lock(task_id):
     with LOCKS_GUARD: return LOCKS.setdefault(task_id,threading.RLock())
 
 def exam_state():
+    # Historical exam data is preserved for the learner; no new timed sessions exist.
     with storage.connect() as db:
         row=db.execute('SELECT id,started,duration,timed,finished,tasks FROM exams ORDER BY id DESC LIMIT 1').fetchone()
-        if row and row[3] and not row[4] and time.time()>=row[1]+row[2]:
-            db.execute('UPDATE exams SET finished=? WHERE id=?',(row[1]+row[2],row[0]))
-            row=(*row[:4],row[1]+row[2],row[5])
-    return None if not row else dict(id=row[0],started=row[1],duration=row[2],timed=bool(row[3]),finished=row[4],tasks=json.loads(row[5]),serverTime=time.time())
-
-def check_exam(task):
-    exam=exam_state()
-    if task['day']==5 and exam and exam['timed'] and exam['finished']:
-        raise ValueError('Экзаменационная сессия завершена. Начните новую сессию или тренировку без таймера.')
-    if task['day']==5 and exam and exam['timed'] and task['kind']=='S':
-        # Each syntax item has a persistent, server-owned start time. Refreshing
-        # or switching tasks cannot reset the budget within this exam session.
-        with storage.connect() as db:
-            db.execute('CREATE TABLE IF NOT EXISTS syntax_clock (exam INTEGER,task TEXT,started REAL,PRIMARY KEY(exam,task))')
-            db.execute('INSERT OR IGNORE INTO syntax_clock VALUES(?,?,?)',(exam['id'],task['id'],time.time()))
-            started=db.execute('SELECT started FROM syntax_clock WHERE exam=? AND task=?',(exam['id'],task['id'])).fetchone()[0]
-        if time.time()-started>240: raise ValueError('Лимит 4 минуты на этот синтаксический вопрос истёк. Продолжите экзамен или начните тренировочную сессию.')
-
-def syntax_deadline(task):
-    exam=exam_state()
-    if not exam or not exam['timed'] or exam['finished'] or task['day']!=5 or task['kind']!='S': return None
-    with storage.connect() as db:
-        row=db.execute('SELECT started FROM syntax_clock WHERE exam=? AND task=?',(exam['id'],task['id'])).fetchone()
-    return row[0]+240 if row else None
+    return None if not row else dict(id=row[0],started=row[1],duration=row[2],timed=bool(row[3]),finished=row[4],tasks=json.loads(row[5]))
 
 class Handler(BaseHTTPRequestHandler):
     server_version='CppMastery/1.0'
@@ -86,6 +64,34 @@ class Handler(BaseHTTPRequestHandler):
             if path=='/api/theory/day-1/lecture-1':
                 from .theory import lecture
                 return self.send_json(lecture())
+            if path=='/api/lectures':
+                from .lectures import overview
+                return self.send_json(overview())
+            if path=='/api/saved-work':
+                from .saved_work import overview as saved_overview
+                return self.send_json(saved_overview())
+            if path=='/api/saved-work-bundle':
+                from .saved_work import bundle as saved_bundle
+                payload=saved_bundle()
+                self.send_response(200);self.send_header('Content-Type','application/zip');self.send_header('Content-Disposition','attachment; filename="my-earlier-work.zip"');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
+            if len(parts)==3 and parts[:2]==['api','lectures']:
+                from .lectures import lecture
+                return self.send_json(lecture(int(parts[2])))
+            if len(parts)==4 and parts[:2]==['api','lecture-main']:
+                from .lectures import main_bytes
+                payload=main_bytes(int(parts[2]),parts[3])
+                self.send_response(200);self.send_header('Content-Type','text/plain; charset=utf-8');self.send_header('Content-Disposition',f'attachment; filename="{parts[3]}"');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
+            if len(parts)==3 and parts[:2]==['api','lecture-task']:
+                task=get_task(parts[2])
+                if not task or not task.get('packLecture'):return self.send_json({'error':'Задание лекции не найдено'},404)
+                from .lectures import guide as pack_guide
+                return self.send_json(pack_guide(task))
+            if len(parts)==3 and parts[:2]==['api','lecture-bundle']:
+                task=get_task(parts[2])
+                if not task or not task.get('packLecture'):return self.send_json({'error':'Задание лекции не найдено'},404)
+                from .lectures import bundle as pack_bundle
+                with task_lock(task['id']):payload=pack_bundle(task)
+                self.send_response(200);self.send_header('Content-Type','application/zip');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
             if path=='/api/course':
                 return self.send_json({'days':json.loads((ROOT/'days/course.json').read_text(encoding='utf-8')),'tasks':[public_task(t) for t in catalog(include_theory=True)]})
             if path=='/api/learning':
@@ -94,7 +100,8 @@ class Handler(BaseHTTPRequestHandler):
             if path=='/api/doctor': return self.send_json({'error':'Используется самостоятельная проверка без встроенного компилятора'},410)
             if path=='/api/progress':
                 from .theory import reading
-                return self.send_json({'attempts':storage.history(),'exam':exam_state(),'reading':reading()})
+                from .lectures import reading as pack_reading
+                return self.send_json({'attempts':storage.history(),'exam':exam_state(),'reading':reading()+pack_reading()})
             if len(parts)==3 and parts[:2]==['api','self-check']:
                 task=get_task(parts[2])
                 if not task:return self.send_json({'error':'Задание не найдено'},404)
@@ -108,12 +115,8 @@ class Handler(BaseHTTPRequestHandler):
                 task=get_task(parts[2])
                 if not task: return self.send_json({'error':'Задание не найдено'},404)
                 with task_lock(task['id']): files=student_files(task)
-                # Opening a timed syntax item starts its clock before editing.
-                timer_error=None
-                try: check_exam(task)
-                except ValueError as exc: timer_error=str(exc)
                 names=[{'name':name,'category':'contract'} for name in task.get('publicChecks',[])] if task.get('version')==2 else [{'name':t['name'],'category':t['category']} for t in task.get('tests',[])]
-                return self.send_json({'task':public_task(task),'files':files,'revision':revision(files),'history':storage.history(task['id']),'context':{'before':task.get('prefix',''),'after':task.get('suffix','')},'testNames':names,'timerError':timer_error,'syntaxDeadline':syntax_deadline(task)})
+                return self.send_json({'task':public_task(task),'files':files,'revision':revision(files),'history':storage.history(task['id']),'context':{'before':task.get('prefix',''),'after':task.get('suffix','')},'testNames':names,'timerError':None,'syntaxDeadline':None})
             if len(parts)==3 and parts[:2]==['api','snapshot']:
                 value=storage.snapshot(int(parts[2]))
                 return self.send_json(value or {'error':'Попытка не найдена'},200 if value else 404)
@@ -154,19 +157,13 @@ class Handler(BaseHTTPRequestHandler):
             if path=='/api/learning':
                 from .learning import update
                 return self.send_json(update(body))
-            if path=='/api/exam/start':
-                tasks=[t['id'] for t in catalog() if t['day']==5 and t['kind']=='S']
-                random.SystemRandom().shuffle(tasks)
-                timed=bool(body.get('timed',False))
-                with storage.connect() as db:
-                    db.execute('UPDATE exams SET finished=? WHERE finished IS NULL',(time.time(),))
-                    db.execute('INSERT INTO exams(started,duration,timed,tasks) VALUES(?,?,?,?)',(time.time(),6*3600,int(timed),json.dumps(tasks)))
-                return self.send_json(exam_state())
-            if path=='/api/exam/finish':
-                with storage.connect() as db: db.execute('UPDATE exams SET finished=? WHERE finished IS NULL',(time.time(),))
-                return self.send_json(exam_state())
+            if path in ('/api/exam/start','/api/exam/finish'):
+                return self.send_json({'error':'Сессии с таймером удалены. Доступны новые лекции без ограничений времени.'},410)
             parts=path.strip('/').split('/')
             if len(parts)!=3: return self.send_json({'error':'Маршрут не найден'},404)
+            if parts[:2]==['api','lecture-reading']:
+                from .lectures import mark_read
+                return self.send_json({'reading':mark_read(int(parts[2]),body.get('section'),body.get('completed'))})
             if parts[:2]==['api','lecture-read']:
                 from .theory import mark_read
                 return self.send_json({'reading':mark_read(parts[2],body.get('completed'))})
@@ -174,6 +171,11 @@ class Handler(BaseHTTPRequestHandler):
             if not task: return self.send_json({'error':'Задание не найдено'},404)
             action=parts[1]
             with task_lock(task['id']):
+                if action=='lecture-state':
+                    if not task.get('packLecture'):raise ValueError('Задание новой лекции не найдено')
+                    from .lectures import report as pack_report
+                    result=pack_report(task,body,student_files(task))
+                    return self.send_json(storage.record(task['id'],'self-check',result,body))
                 if action=='files':
                     old=student_files(task)
                     if body.get('revision')!=revision(old): return self.send_json({'error':'Файлы изменены вне редактора. Ваш черновик сохранён в браузере; загрузите файлы с диска или скопируйте черновик перед объединением.','conflict':True},409)
@@ -187,20 +189,17 @@ class Handler(BaseHTTPRequestHandler):
                         temp.write_text(value,encoding='utf-8'); os.replace(temp,folder/name)
                     return self.send_json({'revision':revision(incoming)})
                 if action=='hint':
-                    exam=exam_state()
-                    if task['day']==5 and exam and exam['timed'] and not exam['finished']: return self.send_json({'error':'Подсказки отключены в экзаменационной сессии'},403)
                     level=body.get('level',1)
                     if type(level) is not int or level<1 or level>3: raise ValueError('Уровень подсказки: 1–3')
+                    if len(task.get('hints',[]))<level:raise ValueError('Для этого задания готовая подсказка не предусмотрена')
                     storage.hint(task['id'],level)
                     return self.send_json({'text':task['hints'][level-1],'level':level})
                 if action=='answer':
                     if task['kind'] not in ('Q','P'): raise ValueError('Для этого задания используйте самостоятельную проверку')
-                    check_exam(task)
                     result=grade_answer(task,body.get('answer'))
                     if task.get('version')==2:result.update(pointsEarned=1 if result['status']=='PASS' else 0,maxPoints=1)
                     return self.send_json(storage.record(task['id'],'answer',result,{'answer':body['answer']}))
                 if action=='self-check':
-                    check_exam(task)
                     files=student_files(task)
                     result=report(task,body,files)
                     return self.send_json(storage.record(task['id'],'self-check',result,files))

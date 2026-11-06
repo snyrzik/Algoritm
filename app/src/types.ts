@@ -20,6 +20,14 @@ export interface Task {
   section?: "lecture-theory" | "lecture-practice";
   project?: string;
   localMain?: string;
+  localAssessment?: boolean;
+  packLecture?: number;
+  localMains?: {id:string;filename:string;sourcePath:string;expectedOutput:string}[];
+  projectSteps?: string[];
+  reviewRequirements?: string[];
+  continuationOf?: string;
+  archived?: boolean;
+  starterFiles?: Record<string,string>;
   version?: number;
   number?: number;
   group?: "Q" | "S" | "P" | "D" | "A" | "B" | "C";
@@ -132,6 +140,8 @@ export const labels: Record<Kind, string> = {
   C: "Практика",
 };
 export const statusNames: Record<string, string> = {
+  IN_PROGRESS: "В работе",
+  REPEAT_REQUESTED: "Нужно повторить",
   SELF_CHECKED: "Отмечено мной",
   NEEDS_WORK: "Нужна доработка",
   PASS: "Пройдено",

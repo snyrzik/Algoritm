@@ -7,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from backend.catalog import ROOT,catalog
 from backend.self_check import guide
-from backend.compiler import toolchain,run_process
+from tools.cpp_toolchain import toolchain,run_process
 
 PROJECT_CONTRACTS={
  'Matrix2x2.hpp':'''#pragma once
@@ -42,6 +42,7 @@ def main():
     count=0
     with tempfile.TemporaryDirectory(prefix='mastery-main-audit-') as temp:
         for task in catalog(True):
+            if task.get('localAssessment'):continue
             if task['kind']!='C' and task['id']!='l01-v3-c04':continue
             folder=Path(temp)/task['id'];folder.mkdir()
             current=guide(task)

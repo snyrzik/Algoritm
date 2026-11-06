@@ -14,52 +14,26 @@
   },
   {
     "id": 2,
-    "title": "Память и CMyString",
-    "subtitle": "Владение ресурсом и безопасность",
+    "title": "Память, владение ресурсом и исключения",
+    "subtitle": "Восстановленный переходный модуль",
     "topics": [
-      "Dynamic memory",
-      "Copy constructor",
-      "Assignment operator",
-      "Exception safety",
-      "C-строки"
+      "C-строки",
+      "RAII",
+      "Исключения",
+      "Редактирование данных"
     ],
-    "duration": "4–6 часов"
+    "duration": "В своём темпе"
   },
   {
     "id": 3,
-    "title": "Шаблоны функций",
-    "subtitle": "От вывода типа к специализации",
+    "title": "Шаблоны, приведение типов и RTTI",
+    "subtitle": "От шаблонных функций к копируемому стеку",
     "topics": [
-      "Template deduction",
-      "Specialization",
-      "References",
-      "Exception safety"
-    ],
-    "duration": "4–6 часов"
-  },
-  {
-    "id": 4,
-    "title": "Шаблоны классов и RTTI",
-    "subtitle": "Архитектура, полиморфизм и типы",
-    "topics": [
+      "Шаблоны функций",
       "Шаблоны классов",
       "Наследование",
-      "Dynamic memory",
       "RTTI"
     ],
-    "duration": "4–6 часов"
-  },
-  {
-    "id": 5,
-    "title": "Итоговый экзамен",
-    "subtitle": "Собственный контейнер TSequence<T>",
-    "topics": [
-      "Синтаксис",
-      "Проектирование",
-      "Dynamic memory",
-      "Exception safety",
-      "Specialization"
-    ],
-    "duration": "4–6 часов"
+    "duration": "В своём темпе"
   }
 ]

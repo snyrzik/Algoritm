@@ -35,6 +35,9 @@ def cpp_string(value):return json.dumps(value,ensure_ascii=True)
 
 def main_source(task):
     require_program(task)
+    if task.get('localAssessment'):
+        from .lectures import guide as pack_guide
+        return pack_guide(task)['stages'][0]['source']
     if task.get('localMain'):
         from .theory import project_guide
         return project_guide(task)['main']
@@ -91,6 +94,10 @@ def main_source(task):
 
 def guide(task):
     require_program(task)
+    if task.get('localAssessment'):
+        from .lectures import guide as pack_guide
+        current=pack_guide(task);stage=current['stages'][0]
+        return dict(task=task['id'],mode='self-check',localAssessment=True,main=stage['source'],mainFilename=stage['filename'],originalCode='',expectedOutput=stage['expectedOutput'],console=False,assertBased=bool(stage['source']),discussion=not bool(stage['source']),cases=[dict(id=f'case-{i:02}',name=value) for i,value in enumerate(task['reviewRequirements'],1)],extraFiles=[],dependencies=[],guideHash=hashlib.sha256(stage['source'].encode()).hexdigest(),instructions='Проверка выполняется локально. Откройте самостоятельную отметку этапа в лекции.',review=task['reviewRequirements'])
     if task.get('localMain'):
         from .theory import project_guide
         return project_guide(task)
@@ -105,6 +112,7 @@ def guide(task):
 
 def report(task,body,files):
     require_program(task)
+    if task.get('localAssessment'):raise ValueError('Используйте самостоятельную отметку этапа в новой лекции')
     complete=body.get('completed')
     if type(complete) is not bool:raise ValueError('Укажите, совпал ли результат проверки')
     current=guide(task)
@@ -116,6 +124,9 @@ def report(task,body,files):
     return dict(status='SELF_CHECKED' if complete else 'NEEDS_WORK',mode='self-check',score=100 if complete else 0,pointsEarned=maximum if complete else 0,maxPoints=maximum,manual=True,checkedCases=checked,guideHash=current['guideHash'],codeHash=revision(files),message='Вы отметили, что все результаты совпали. Самопроверка сохранена.' if complete else 'Вы отметили расхождения. Задание снова ожидает проверки.')
 
 def bundle(task):
+    if task.get('localAssessment'):
+        from .lectures import bundle as pack_bundle
+        return pack_bundle(task)
     current=guide(task);files=student_files(task);content={name:value for name,value in files.items() if name.endswith(('.hpp','.cpp')) and name!='main.cpp'}
     for item in current['extraFiles']:content.setdefault(item['name'],item['source'])
     for dependency in current['dependencies']:

@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from backend.catalog import DATA
 
-STUDENT_FILES={'solution.hpp','solution.cpp','main.cpp','notes.md','answer.json','test_adapter.hpp','migration.json','Matrix2x2.hpp','Matrix2x2.cpp','Point2D.hpp','CMyString.hpp','CMyString.cpp','DynamicVector.hpp','DynamicVector.cpp'}
+STUDENT_FILES={'solution.hpp','solution.cpp','main.cpp','notes.md','answer.json','test_adapter.hpp','migration.json','Matrix2x2.hpp','Matrix2x2.cpp','Point2D.hpp','CMyString.hpp','CMyString.h','CMyString.cpp','DynamicVector.hpp','DynamicVector.h','DynamicVector.cpp','GenericAlgorithms.h','FixedStack.h','IStack.h','LinkedStack.h','PostfixEvaluator.h','RttiLab.h'}
 
 def reset_workspace(root,*,apply=False,clear_cache=False):
     root=Path(root).resolve()

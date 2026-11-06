@@ -109,10 +109,10 @@ try {
   assert.equal(await page.$eval('h1',e=>e.textContent),'Учитесь в своём темпе');
   assert.ok(!(await page.$eval('.sidebar',e=>e.textContent)).includes('Интенсив'));
   await click('Начать обучение');await page.waitForFunction(()=>location.hash==='#/theory/1/chapter-1');await page.waitForSelector('.theory-article');
-  await visit('module/2');await page.waitForSelector('.platform-task-row');
-  assert.equal((await page.$$('.platform-task-row')).length,20);await click('Показать ещё');assert.equal((await page.$$('.platform-task-row')).length,40);await click('Показать ещё');assert.equal((await page.$$('.platform-task-row')).length,54);
+  await visit('search');await page.waitForSelector('.platform-task-row');
+  assert.equal((await page.$$('.platform-task-row')).length,20);await click('\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0435\u0449\u0451');assert.equal((await page.$$('.platform-task-row')).length,21);
   assert.equal(await page.$('.platform-load-more'),null);
-  await page.select('[aria-label="Тип задания"]','C');assert.equal((await page.$$('.platform-task-row')).length,8);
+  await page.select('[aria-label="Тип задания"]','lecture-practice');assert.equal((await page.$$('.platform-task-row')).length,8);
   await page.select('[aria-label="Состояние задания"]','done');await page.waitForSelector('.platform-empty');
   await click('Сбросить фильтры');await page.waitForSelector('.platform-task-row');
   await page.click('.platform-task-row .bookmark-button');await page.waitForFunction(()=>document.querySelector('.platform-task-row .bookmark-button')?.getAttribute('aria-pressed')==='true');
@@ -120,7 +120,7 @@ try {
   await page.reload({waitUntil:'networkidle0'});await page.waitForSelector('.platform-task-row');assert.equal((await page.$$('.platform-task-row')).length,1);
   await visit('search');await page.waitForSelector('.platform-task-row');
   while(await page.$('.platform-load-more button'))await page.click('.platform-load-more button');
-  assert.equal((await page.$$('.platform-task-row')).length,248);
+  assert.equal((await page.$$('.platform-task-row')).length,21);
   await page.type('[aria-label="Поиск в заданиях"]','Duration');await page.waitForFunction(()=>document.querySelectorAll('.platform-task-row').length<20);
   assert.ok((await page.$$eval('.platform-task-row',rows=>rows.map(e=>e.textContent).join(' '))).includes('Duration'));
   await page.screenshot({path:path.join(output,'platform-search-desktop.png'),fullPage:false});
@@ -133,15 +133,13 @@ try {
   await visit('theory/1/chapter-2');await page.waitForSelector('.theory-article');await new Promise(r=>setTimeout(r,400));await page.evaluate(()=>document.querySelector('.brand').click());await page.waitForSelector('.platform-resume');
   assert.ok((await page.$eval('.platform-resume',e=>e.textContent)).includes('Перегрузка операторов'));
   await visit('task/l01-v3-c01');await page.waitForSelector('.manual-cases');await click('Да, всё совпало');await page.waitForSelector('.manual-saved.done');
-  await visit('report');await page.waitForSelector('.platform-progress-summary');assert.ok((await page.$eval('.platform-progress-summary',e=>e.textContent)).includes('1 из 247'));
+  await visit('report');await page.waitForSelector('.platform-progress-summary');assert.ok((await page.$eval('.platform-progress-summary',e=>e.textContent)).includes('1 из 21'));
   assert.ok((await page.$eval('.platform-module-card',e=>e.textContent)).includes('1 / 8'));
   await visit('task/l01-v3-p01');await page.waitForSelector('.manual-cases');await click('Есть расхождения');await page.waitForSelector('.manual-saved.pending');
   await visit('review');await page.waitForSelector('.platform-task-row');assert.ok((await page.$eval('.platform-task-row',e=>e.textContent)).includes('Matrix2x2'));
   await page.click('.platform-task-open');await page.waitForSelector('.manual-cases');await click('Да, всё совпало');await page.waitForSelector('.manual-saved.done');
   await visit('review');await page.waitForSelector('.platform-empty');assert.ok((await page.$eval('.platform-empty',e=>e.textContent)).includes('Заданий на доработку нет'));
   await click('Повторить выполненное');assert.equal((await page.$$('.platform-task-row')).length,2);
-  await visit('task/d2-q01');await page.waitForSelector('.option');await page.click('.option');await click('Проверить ответ');await page.waitForSelector('.answer-review');
-  await page.reload({waitUntil:'networkidle0'});await page.waitForSelector('.platform-quiz-aside');await click('Посмотреть разбор');await page.waitForSelector('.answer-review');
   await visit('task/l01-v3-p01');await page.waitForSelector('.manual-cases');await click('Ваш черновик решения');await page.waitForSelector('.cm-content');
   await page.click('.cm-content');await page.keyboard.down('Control');await page.keyboard.press('KeyA');await page.keyboard.up('Control');
   await page.keyboard.type('// draft preserved during conflict');
@@ -168,7 +166,7 @@ try {
   await visit('unknown-page');await page.waitForSelector('.platform-empty');assert.ok((await page.$eval('.platform-empty',e=>e.textContent)).includes('Такой страницы нет'));
   await stop();await launch();await visit('saved');await page.waitForSelector('.platform-task-row');assert.equal((await page.$$('.platform-task-row')).length,1);
   assert.ok(!requests.some(url=>url.includes('/api/doctor')||url.includes('/api/run/')));assert.deepEqual(errors,[]);
-  console.log('Platform QA PASS: self-paced home, resume, all 248 searchable tasks, pagination/filters, bookmarks, separate full progress, review, quiz, external-edit conflict recovery, preferences, all mobile pages, navigation, 404, restart; no compiler.');
+  console.log('Platform QA PASS: self-paced home, resume, all active searchable tasks, pagination/filters, bookmarks, separate full progress, review, external-edit conflict recovery, preferences, all mobile pages, navigation, 404, restart; no compiler.');
 } catch(error) {
   console.error('Platform diagnostics:',errors,await page.evaluate(()=>document.body.innerText).catch(()=>''));throw error;
 } finally {

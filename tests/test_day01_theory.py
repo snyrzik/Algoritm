@@ -26,15 +26,15 @@ class LectureContentTests(unittest.TestCase):
         self.assertEqual([s['chapter'] for s in value['sections'] if 'chapter' in s],[1,2,3,4,5])
         for i,task_id in enumerate(CHECK_IDS,1):
             task=get_task(task_id);self.assertIn(task['prompt'],raw.decode());self.assertEqual(task['chapter'],i)
-    def test_other_days_remain_unchanged(self):
+    def test_first_module_and_protected_sources_remain_unchanged(self):
         manifest=json.loads((ROOT/'tests/course_content.sha256.json').read_text(encoding='utf-8'))
-        self.assertEqual(len(manifest),626)
+        self.assertEqual(len(manifest),1)
         for name,digest in manifest.items():
             self.assertEqual(hashlib.sha256((ROOT/name).read_bytes().replace(b'\r\n',b'\n')).hexdigest(),digest,name)
         metadata=json.loads((ROOT/'days/course.json').read_text(encoding='utf-8'))
-        self.assertEqual(hashlib.sha256(json.dumps(metadata[1:],ensure_ascii=False,sort_keys=True).encode()).hexdigest(),'5111a048dd53797fc14f6ea5cc0aad775e2dd1244b4da5a5efadb51124e6aa17')
+        self.assertEqual(hashlib.sha256(json.dumps(metadata[0],ensure_ascii=False,sort_keys=True).encode()).hexdigest(),'78a54cc3055f8ad0ce5941f68ae139c3cdc5b017a337849e530f136654b03aa6')
     def test_old_tasks_are_gone_and_new_projects_are_independent(self):
-        self.assertEqual(len(catalog()),243);self.assertEqual(len(catalog(True)),248)
+        self.assertEqual(len([t for t in catalog() if t['day']==1]),3);self.assertEqual(len([t for t in catalog(True) if t['day']==1]),8)
         self.assertEqual({t['id'] for t in catalog(True) if t['day']==1},set(CHECK_IDS+PROJECT_IDS))
         self.assertIsNone(get_task('d01-v2-a01'));self.assertIsNone(get_task('d1-l1-c04'))
         for task in lecture()['projects']:

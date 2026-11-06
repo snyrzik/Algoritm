@@ -1,0 +1,18 @@
+{
+  "number": 3,
+  "title": "Лекция № 3. Шаблоны, приведение типов и RTTI",
+  "attribution": "Материал по 25 слайдам презентации Е. В. Мясникова «Шаблоны. Приведение типов и RTTI», с пояснениями для C++17. Указание источника сохранено из предоставленного пакета.",
+  "sourceFilename": "LECTURE_03_THEORY.md",
+  "sourceSha256": "fc3d3358a1258c9b26f4a1f1ae14a33067f897126d9a3ba11b5af3b259dd4321",
+  "checkIds": [
+    "l03-local-c01",
+    "l03-local-c02",
+    "l03-local-c03",
+    "l03-local-c04"
+  ],
+  "projectIds": [
+    "l03-local-p01",
+    "l03-local-p02",
+    "l03-local-p03"
+  ]
+}

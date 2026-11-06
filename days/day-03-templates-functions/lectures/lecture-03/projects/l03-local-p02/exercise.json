@@ -1,0 +1,46 @@
+{
+  "id": "l03-local-p02",
+  "day": 3,
+  "lecture": 3,
+  "packLecture": 3,
+  "section": "lecture-practice",
+  "kind": "C",
+  "level": "A",
+  "required": true,
+  "version": 4,
+  "order": 10102,
+  "title": "FixedStack<T, Capacity>",
+  "project": "FixedStack<T, Capacity>",
+  "prompt": "## Проект 2. FixedStack<T, Capacity>\n\nРеализация в `FixedStack.h` целиком видна компилятору. Точный интерфейс:\n\n```cpp\ntemplate <typename T, int Capacity = 256>\nclass FixedStack {\npublic:\n    FixedStack();\n    bool push(const T& value);\n    bool pop(T& out);\n    bool peek(T& out) const;\n    std::size_t size() const;\n    bool empty() const;\n    bool full() const;\n};\n```\n\n- `Capacity > 0` — зафиксированное требование. Можно обеспечить через `static_assert`.\n- Реализация основана на массиве `T data_[Capacity]` и логическом счётчике. Для этой реализации `T` должен быть доступно конструируемым по умолчанию и копируемым/присваиваемым, как требуется методами.\n- При переполнении `push` возвращает `false` и не меняет стек.\n- При пустоте `pop`/`peek` возвращают `false` и не меняют аргумент `out`.\n- При успехе `pop` извлекает вершину и уменьшает размер; `peek` возвращает вершину без удаления.\n- Поведение LIFO обязательно.\n- Минимум **три метода определить вне тела класса**, используя `template <typename T, int Capacity>` и `FixedStack<T, Capacity>::method`. Определения могут оставаться в том же заголовке.\n- При исключении из присваивания `T` сохранять по крайней мере корректный объект без утечек; для `pop` не удалять вершину до успешной передачи значения наружу.\n\nЛокальный проверочный файл — `MAIN_FIXED_STACK.cpp`.",
+  "minutes": 150,
+  "tags": [
+    "Лекция № 3",
+    "Самостоятельный проект"
+  ],
+  "localAssessment": true,
+  "starterFiles": {
+    "FixedStack.h": "// Продолжите собственную реализацию. Готового решения здесь нет.\n"
+  },
+  "filePath": "student/day-03/l03-local-p02/FixedStack.h",
+  "localMains": [
+    {
+      "id": "main_fixed_stack",
+      "filename": "MAIN_FIXED_STACK.cpp",
+      "sourcePath": "lecture-03/MAIN_FIXED_STACK.cpp",
+      "expectedOutput": "Lecture 3: fixed stack checks passed\n"
+    }
+  ],
+  "projectSteps": [
+    "Capacity > 0, массив и логический размер",
+    "LIFO и границы вместимости",
+    "Пустой pop/peek сохраняет out",
+    "Три определения методов вне тела класса",
+    "Исключения присваивания T"
+  ],
+  "reviewRequirements": [
+    "Базовый main запущен со своей реализацией",
+    "Дополнительные пограничные и ошибочные случаи разобраны",
+    "Требования к владению, исключениям и типам проверены"
+  ],
+  "hints": []
+}

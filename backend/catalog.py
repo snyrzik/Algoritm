@@ -42,7 +42,7 @@ def student_dir(task):
 
 def student_files(task):
     folder = student_dir(task)
-    names = ['notes.md'] if task.get('localMain') else (['solution.hpp', 'solution.cpp', 'notes.md'] if task['kind'] in ('S', 'D', 'C') else ['notes.md'])
+    names = ['notes.md'] if task.get('localMain') or task.get('localAssessment') else (['solution.hpp', 'solution.cpp', 'notes.md'] if task['kind'] in ('S', 'D', 'C') else ['notes.md'])
     names += [name for name in task.get('starterFiles', {}) if name not in names]
     files = {}
     for name in names:
@@ -53,6 +53,13 @@ def student_files(task):
             starter = task.get('starter', '// Напишите решение здесь.\n') if name == 'solution.hpp' else '// Дополнительные определения. Подключите solution.hpp, если это необходимо.\n'
             if name == 'notes.md': starter = ''
             if name in task.get('starterFiles', {}): starter = task['starterFiles'][name]
+            inherited=task.get('inheritFiles',{}).get(name)
+            if inherited:
+                previous=get_task(inherited['task'])
+                base=(DATA/'student'/f"day-{previous['day']:02}"/previous['id']/inherited['name']) if previous else None
+                if base and base.exists():
+                    if base.is_symlink() or not base.resolve().is_relative_to((DATA/'student').resolve()):raise ValueError('Недопустимый путь исходного решения')
+                    starter=base.read_text(encoding='utf-8')
             path.write_text(starter, encoding='utf-8')
         files[name] = path.read_text(encoding='utf-8')
     return files

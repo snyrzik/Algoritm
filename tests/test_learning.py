@@ -13,22 +13,22 @@ class LearningApiTests(unittest.TestCase):
     request=platform.ApiTests.request
     def test_bookmarks_and_resume_persist_independently_of_results(self):
         before=storage.history()
-        status,value=self.request('/api/learning',{'bookmarks':['l01-v3-c01','d2-c03'],'lastPath':'theory/1/chapter-3'})
+        status,value=self.request('/api/learning',{'bookmarks':['l01-v3-c01','l02-local-p01'],'lastPath':'theory/1/chapter-3'})
         self.assertEqual(status,200)
         _,loaded=self.request('/api/learning');self.assertEqual(value,loaded)
-        self.request('/api/learning',{'lastPath':'task/d2-c03'})
-        _,loaded=self.request('/api/learning');self.assertEqual(loaded['bookmarks'],['l01-v3-c01','d2-c03'])
-        self.assertEqual(loaded['lastPath'],'task/d2-c03');self.assertEqual(storage.history(),before)
+        self.request('/api/learning',{'lastPath':'task/l02-local-p01'})
+        _,loaded=self.request('/api/learning');self.assertEqual(loaded['bookmarks'],['l01-v3-c01','l02-local-p01'])
+        self.assertEqual(loaded['lastPath'],'task/l02-local-p01');self.assertEqual(storage.history(),before)
         self.request('/api/learning',{'bookmarks':[]})
         _,loaded=self.request('/api/learning');self.assertEqual(loaded['bookmarks'],[])
     def test_invalid_and_cross_origin_updates_are_rejected(self):
-        for body in [{'bookmarks':['unknown']},{'bookmarks':'d2-c01'},{'lastPath':'https://example.com'},{'lastPath':'task/../../secret'},{'lastPath':'theory/2/chapter-1'},{'score':100}]:
+        for body in [{'bookmarks':['unknown']},{'bookmarks':'d2-c01'},{'lastPath':'https://example.com'},{'lastPath':'task/../../secret'},{'lastPath':'theory/2/chapter-5'},{'score':100}]:
             self.assertEqual(self.request('/api/learning',body)[0],400,body)
         self.assertEqual(self.request('/api/learning',{'bookmarks':[]},token=False)[0],403)
         self.assertEqual(self.request('/api/learning',{'lastPath':'module/2'},origin='http://evil.example')[0],403)
     def test_course_includes_every_lecture_check_and_progress_keeps_reading_separate(self):
         _,course=self.request('/api/course');ids={task['id'] for task in course['tasks']}
-        self.assertEqual(len(ids),248)
+        self.assertEqual(len(ids),21)
         self.assertTrue(all(f'l01-v3-c{i:02}' in ids for i in range(1,6)))
         _,progress=self.request('/api/progress');self.assertIn('reading',progress)
         self.assertIsInstance(progress['reading'],list)

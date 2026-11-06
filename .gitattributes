@@ -1,2 +1,3 @@
 * text=auto eol=lf
 days/day-01-operators/theory/lecture-01/theory.md -text whitespace=-blank-at-eol
+content/lectures-02-03/** -text whitespace=-blank-at-eol
