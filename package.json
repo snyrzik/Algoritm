@@ -18,7 +18,9 @@
     "test:platform-browser": "node tools/browser_platform_check.mjs",
     "test:lectures-browser": "node tools/browser_lectures_check.mjs",
     "test:theory-browser": "node tools/browser_check.mjs",
-    "test:day01-browser": "node tools/browser_check.mjs"
+    "test:day01-browser": "node tools/browser_check.mjs",
+    "prepare:lecture04": "node tools/python.mjs tools/prepare_lecture04.py",
+    "test:lecture04-browser": "node tools/browser_lecture04_check.mjs"
   },
   "dependencies": {
     "@codemirror/commands": "^6.8.1",

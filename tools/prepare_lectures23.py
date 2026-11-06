@@ -101,13 +101,17 @@ def main():
                 task['continuationOf']=project['base'];task['inheritFiles']={name:dict(task=project['base'],name=name) for name in project['inherit']}
             write(task,folder/'projects'/task_id);manifest['projectIds'].append(task_id)
         (folder/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
-    (ROOT/'app/src/lectures/catalog.json').write_text(json.dumps(navigation,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+    nav_path=ROOT/'app/src/lectures/catalog.json'
+    previous=json.loads(nav_path.read_text(encoding='utf-8')) if nav_path.exists() else []
+    navigation+=[item for item in previous if item['number'] not in DEFINITIONS]
+    nav_path.write_text(json.dumps(sorted(navigation,key=lambda item:item['number']),ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     course_path=ROOT/'days/course.json'
-    first=json.loads(course_path.read_text(encoding='utf-8'))[0]
+    previous=json.loads(course_path.read_text(encoding='utf-8'));first=previous[0]
     course=[first,
             dict(id=2,title='Память, владение ресурсом и исключения',subtitle='Восстановленный переходный модуль',topics=['C-строки','RAII','Исключения','Редактирование данных'],duration='В своём темпе'),
             dict(id=3,title='Шаблоны, приведение типов и RTTI',subtitle='От шаблонных функций к копируемому стеку',topics=['Шаблоны функций','Шаблоны классов','Наследование','RTTI'],duration='В своём темпе')]
-    course_path.write_text(json.dumps(course,ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
+    course+=[item for item in previous if item['id'] not in (1,2,3)]
+    course_path.write_text(json.dumps(sorted(course,key=lambda item:item['id']),ensure_ascii=False,indent=2)+'\n',encoding='utf-8',newline='\n')
     print('Lectures 2 and 3 added: eight checks, five projects, seven unmodified local mains. Existing files preserved.')
 
 if __name__=='__main__':main()

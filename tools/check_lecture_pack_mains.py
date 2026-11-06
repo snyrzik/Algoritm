@@ -54,8 +54,14 @@ def main():
     with tempfile.TemporaryDirectory(prefix='mastery-lecture-pack-api-') as temp:
         folder=Path(temp)
         for name,text in DECLARATIONS.items():(folder/name).write_text(text,encoding='utf-8')
+        from tools.prepare_lecture04 import SOURCE as FOURTH
+        import re
+        instructions=(FOURTH/'CODEX_INSTRUCTIONS.md').read_text(encoding='utf-8')
+        contracts=re.findall(r'```cpp\n(.*?)\n```',instructions,re.S)
+        for name,contract in zip(('forward_chain.hpp','bidirectional_list.hpp','collection_operations.hpp'),contracts,strict=True):
+            (folder/name).write_text(contract,encoding='utf-8')
         count=0
-        for source in sorted(SOURCE.glob('lecture-*/MAIN_*.cpp')):
+        for source in sorted([*SOURCE.glob('lecture-*/MAIN_*.cpp'),*FOURTH.glob('MAIN_*.cpp')]):
             args=[tc['exe'],'/nologo','/std:c++17','/EHsc','/utf-8','/W4','/Zs',f'/I{folder}',source] if tc['kind']=='msvc' else [tc['exe'],'-std=c++17','-Wall','-Wextra','-Wconversion','-Wpedantic','-fsyntax-only','-I',folder,source]
             value=run_process(args,folder,tc['env'],30)
             if value['code']:raise AssertionError((source.name,value['output']))

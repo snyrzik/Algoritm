@@ -1,0 +1,55 @@
+{
+  "id": "l04-local-p02",
+  "day": 4,
+  "lecture": 4,
+  "packLecture": 4,
+  "section": "lecture-practice",
+  "kind": "C",
+  "level": "A",
+  "required": true,
+  "version": 4,
+  "order": 10102,
+  "title": "BidirectionalList<T>",
+  "project": "BidirectionalList<T>",
+  "prompt": "## Проект 2. `BidirectionalList<T>` — двусвязный список\n\n**Цель:** научиться поддерживать взаимные ссылки, оба конца и размер списка при любой последовательности операций.\n\n### Обязательный интерфейс\n\n```cpp\n#include <cstddef>\n\ntemplate <typename T>\nclass BidirectionalList {\npublic:\n    BidirectionalList();\n    BidirectionalList(const BidirectionalList& other);\n    BidirectionalList& operator=(const BidirectionalList& other);\n    ~BidirectionalList();\n\n    bool empty() const;\n    std::size_t size() const;\n    const T& front() const;\n    const T& back() const;\n    T& at(std::size_t index);\n    const T& at(std::size_t index) const;\n    const T& at_from_back(std::size_t offset) const;\n\n    void push_front(const T& value);\n    void push_back(const T& value);\n    T pop_front();\n    T pop_back();\n    void insert_before(std::size_t index, const T& value);\n    void erase_at(std::size_t index);\n    void clear();\n};\n```\n\n### Семантика\n\n- В пустом списке и `head`, и `tail` равны `nullptr`.\n- `front`/`back`, `pop_front`/`pop_back` для пустого списка бросают `std::out_of_range`.\n- `at(index)` допустим для `0 <= index < size()`; иначе `std::out_of_range`.\n- `at_from_back(0)` — последний элемент; `at_from_back(size()-1)` — первый.\n- `push_front`, `push_back`, `pop_front`, `pop_back` должны быть `O(1)` по числу изменяемых связей (без учёта стоимости создания/копирования `T`).\n- `insert_before(index, value)` допустим для `0 <= index <= size()`. При `index == size()` добавить в конец. В противном случае вставить перед элементом с индексом `index`.\n- `erase_at(index)` удаляет элемент с индексом `index`; индекс за диапазоном вызывает исключение.\n- `at` и `insert_before` по индексу обычно требуют `O(N)` из-за поиска позиции, даже если изменение связей `O(1)`.\n- Копирование глубокое, порядок сохраняется; самоприсваивание корректно.\n- После каждого изменения соблюдены взаимные связи `next`/`prev`, состояние `head/tail`, корректный размер.\n\n### Этапы\n\n1. Пустой список и одноэлементное состояние.\n2. Вставка в оба конца и удаление с обоих концов.\n3. Чтение по прямому и обратному индексам.\n4. Вставка перед произвольной позицией, включая обе границы.\n5. Удаление начала, середины и конца.\n6. Копирование, присваивание и очистка.\n7. Анализ ошибок указателей, собственные тесты, объяснение сложности.\n\n### Обязательные проверки\n\nПроверить последовательность из разных вставок и удалений, а не отдельные изолированные вызовы; после каждого изменения сверить `front`, `back`, `at`, `at_from_back`, `size`, `empty`. Отдельно — пустой, единственный узел, копия, самоприсваивание и `std::string`.\n\n### Вопросы для защиты\n\nПочему одного обновления `next` недостаточно? Зачем `tail`? В чём различие между «вставить при известном адресе узла» и «вставить по индексу»? Почему после удаления головы нужно исправить `prev` у новой головы?\n\n---\n\n### Самостоятельная реализация\n\nПервые два проекта — собственные узлы без STL-контейнеров. CollectionLab специально учит применять vector, list и deque; запрет из ЛР № 1 на него не переносится.",
+  "minutes": 150,
+  "tags": [
+    "Лекция № 4",
+    "Самостоятельный проект",
+    "Сложность операций"
+  ],
+  "localAssessment": true,
+  "starterFiles": {
+    "bidirectional_list.hpp": "// Реализуйте интерфейс самостоятельно. Определения шаблонов доступны в заголовке.\n"
+  },
+  "filePath": "student/day-04/l04-local-p02/bidirectional_list.hpp",
+  "projectSteps": [
+    "Пустой список и одноэлементное состояние.",
+    "Вставка в оба конца и удаление с обоих концов.",
+    "Чтение по прямому и обратному индексам.",
+    "Вставка перед произвольной позицией, включая обе границы.",
+    "Удаление начала, середины и конца.",
+    "Копирование, присваивание и очистка.",
+    "Анализ ошибок указателей, собственные тесты, объяснение сложности."
+  ],
+  "reviewRequirements": [
+    "Авторский main запущен со своей реализацией",
+    "Собственные узлы и согласованные prev/next, head/tail",
+    "Смешанная последовательность вставок и удалений; оба конца",
+    "Пустой, единственный узел, начало, середина и конец",
+    "Индексы на обеих границах и за диапазоном, прямой и обратный доступ",
+    "Глубокие копии и std::string, порядок, самоприсваивание и очистка",
+    "После каждого изменения сверены size/empty/front/back/at/at_from_back",
+    "Записано собственное обоснование сложности"
+  ],
+  "requiresComplexity": true,
+  "trackImplementation": true,
+  "localMains": [
+    {
+      "id": "main_bidirectional_list",
+      "filename": "MAIN_BIDIRECTIONAL_LIST.cpp",
+      "sourcePath": "lecture-04/MAIN_BIDIRECTIONAL_LIST.cpp",
+      "expectedOutput": "BidirectionalList: basic checks passed\n"
+    }
+  ]
+}

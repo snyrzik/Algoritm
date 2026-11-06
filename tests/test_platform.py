@@ -14,11 +14,11 @@ from backend.answers import revision
 from backend import storage,server
 
 class ContentTests(unittest.TestCase):
-    def test_current_program_has_only_three_new_lectures(self):
-        items=catalog(True);self.assertEqual(len(items),21);self.assertEqual(len({t['id'] for t in items}),21)
-        self.assertEqual({n:sum(t['day']==n for t in items) for n in (1,2,3)},{1:8,2:6,3:7})
+    def test_current_program_has_four_new_lectures(self):
+        items=catalog(True);self.assertEqual(len(items),28);self.assertEqual(len({t['id'] for t in items}),28)
+        self.assertEqual({n:sum(t['day']==n for t in items) for n in (1,2,3,4)},{1:8,2:6,3:7,4:7})
         self.assertTrue(all(t['required'] for t in items))
-        self.assertTrue(all(t['id'].startswith(('l01-v3-','l02-local-','l03-local-')) for t in items))
+        self.assertTrue(all(t['id'].startswith(('l01-v3-','l02-local-','l03-local-','l04-local-')) for t in items))
     def test_public_catalog_has_conditions_and_no_answer_keys(self):
         for task in catalog(True):
             self.assertGreater(len(task['prompt']),20)
@@ -42,7 +42,7 @@ class ApiTests(unittest.TestCase):
         response=client.getresponse();status=response.status;data=json.loads(response.read());client.close();return status,data
     def test_local_session_and_current_catalog(self):
         status,value=self.request('/api/session');self.assertEqual(status,200);self.assertEqual(value['token'],server.TOKEN)
-        _,value=self.request('/api/course');self.assertEqual(len(value['tasks']),21);self.assertEqual([m['id'] for m in value['days']],[1,2,3])
+        _,value=self.request('/api/course');self.assertEqual(len(value['tasks']),28);self.assertEqual([m['id'] for m in value['days']],[1,2,3,4])
     def test_cross_origin_and_missing_token_rejected(self):
         body={'stage':'reflection','status':'SELF_CHECKED'}
         self.assertEqual(self.request('/api/lecture-state/l02-local-c03',body,token=False)[0],403)

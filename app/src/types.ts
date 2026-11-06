@@ -24,6 +24,8 @@ export interface Task {
   packLecture?: number;
   localMains?: {id:string;filename:string;sourcePath:string;expectedOutput:string}[];
   projectSteps?: string[];
+  requiresComplexity?: boolean;
+  trackImplementation?: boolean;
   reviewRequirements?: string[];
   continuationOf?: string;
   archived?: boolean;

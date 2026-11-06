@@ -9,9 +9,16 @@ from . import storage
 
 SOURCE=ROOT/'content/lectures-02-03'
 
+def available():
+    return sorted(int(path.parent.name.removeprefix('lecture-')) for path in (ROOT/'days').glob('day-*/lectures/lecture-*/manifest.json'))
+
+def source_folder(data):
+    return ROOT/data.get('sourceRoot','content/lectures-02-03')/f'lecture-{data["number"]:02}'
+
 def manifest(number):
-    if number not in (2,3):raise ValueError('Лекция не найдена')
-    path=ROOT/'days'/f'day-{number:02}-{DAY_NAMES[number-1]}'/'lectures'/f'lecture-{number:02}'/'manifest.json'
+    paths=list((ROOT/'days').glob(f'day-{number:02}-*/lectures/lecture-{number:02}/manifest.json'))
+    if len(paths)!=1:raise ValueError('Лекция не найдена')
+    path=paths[0]
     return json.loads(path.read_text(encoding='utf-8'))
 
 def reading(number=None):
@@ -29,22 +36,26 @@ def mark_read(number,section,completed):
     return reading(number)
 
 def lecture(number):
-    data=manifest(number);raw=(SOURCE/f'lecture-{number:02}'/data['sourceFilename']).read_bytes();text=raw.decode('utf-8')
-    points=list(re.finditer(r'^# (?:Глава [1-4]\..+|Выводы из лекции.+|Заключение и маршрут к лабораторной)\r?$',text,re.M))
+    data=manifest(number);source=source_folder(data);raw=(source/data['sourceFilename']).read_bytes();text=raw.decode('utf-8')
+    summary=re.escape(data['summaryHeading']) if data.get('summaryHeading') else r'Выводы из лекции.+|Заключение и маршрут к лабораторной'
+    points=list(re.finditer(r'^# (?:Глава [1-4]\..+|'+summary+r')\r?$',text,re.M))
     if len(points)!=5:raise ValueError('Ожидаются четыре главы и итоги')
     sections=[dict(id='overview',title='Обзор и маршрут',markdown=text[:points[0].start()])]
     for i,match in enumerate(points):
         section=dict(id=f'chapter-{i+1}' if i<4 else 'summary',title=match[0][2:].strip(),markdown=text[match.start():points[i+1].start() if i+1<len(points) else len(text)])
         if i<4:section.update(chapter=i+1,checkId=data['checkIds'][i])
         sections.append(section)
-    instructions=(SOURCE/f'lecture-{number:02}'/'CODEX_INSTRUCTIONS.md').read_bytes().decode('utf-8')
-    start='## Компиляция только на компьютере ученика' if number==2 else '## Компиляция только локально'
-    local=instructions.split(start,1)[1].split('\n## ',1)[0]
-    return {**data,'sections':sections,'checks':[public_task(get_task(key)) for key in data['checkIds']],'projects':[public_task(get_task(key)) for key in data['projectIds']],'reading':reading(number),'localInstructions':start+local,'sourceSha256':hashlib.sha256(raw).hexdigest()}
+    if data.get('localInstructionsFilename'):
+        local=(source/data['localInstructionsFilename']).read_bytes().decode('utf-8')
+    else:
+        instructions=(source/'CODEX_INSTRUCTIONS.md').read_bytes().decode('utf-8')
+        start='## Компиляция только на компьютере ученика' if number==2 else '## Компиляция только локально'
+        local=start+instructions.split(start,1)[1].split('\n## ',1)[0]
+    return {**data,'sections':sections,'checks':[public_task(get_task(key)) for key in data['checkIds']],'projects':[public_task(get_task(key)) for key in data['projectIds']],'reading':reading(number),'localInstructions':local,'sourceSha256':hashlib.sha256(raw).hexdigest()}
 
 def overview():
     result=[]
-    for number in (2,3):
+    for number in available():
         data=lecture(number)
         result.append({k:data[k] for k in ('number','title','attribution','checkIds','projectIds')}|{'chapters':[dict(id=s['id'],title=s['title'],chapter=s['chapter']) for s in data['sections'] if 'chapter' in s]})
     return result
@@ -53,7 +64,7 @@ def main_bytes(number,filename):
     data=manifest(number)
     names={main['filename'] for key in data['checkIds']+data['projectIds'] for main in get_task(key)['localMains']}
     if filename not in names:raise ValueError('Проверочный файл не найден')
-    return (SOURCE/f'lecture-{number:02}'/filename).read_bytes()
+    return (source_folder(data)/filename).read_bytes()
 
 def guide(task):
     stages=[]
@@ -65,17 +76,27 @@ def guide(task):
 
 def report(task,body,files):
     current=guide(task);stage=body.get('stage');status=body.get('status')
-    if stage not in {s['id'] for s in current['stages']} or status not in ('SELF_CHECKED','NEEDS_WORK','REPEAT_REQUESTED'):raise ValueError('Укажите этап и результат самостоятельной проверки')
+    statuses=('SELF_CHECKED','NEEDS_WORK','REPEAT_REQUESTED','IN_PROGRESS') if task.get('packLecture')==4 else ('SELF_CHECKED','NEEDS_WORK','REPEAT_REQUESTED')
+    if stage not in {s['id'] for s in current['stages']} or status not in statuses:raise ValueError('Укажите этап и результат самостоятельной проверки')
     confirmed=body.get('confirmed',[])
     if not isinstance(confirmed,list) or any(type(i) is not int or i<0 or i>=len(current['requirements']) for i in confirmed):raise ValueError('Неизвестный критерий проверки')
     if status=='SELF_CHECKED' and set(confirmed)!=set(range(len(current['requirements']))):raise ValueError('Проверьте все критерии перед положительной отметкой')
     details={key:body.get(key,'') for key in ('errorNotes','explanation','hints')}
+    if task.get('packLecture')==4:
+        details.update({key:body.get(key,'') for key in ('compileNotes','reviewNotes','complexityNotes')})
     if any(not isinstance(value,str) or len(value)>8000 for value in details.values()):raise ValueError('Текст отметки должен содержать не более 8000 символов')
     memory=body.get('memory','not_checked')
-    if memory not in ('not_checked','reviewed','errors','not_required'):raise ValueError('Неизвестная отметка проверки памяти')
+    if memory not in ('not_checked','reviewed','errors','not_required') and not (task.get('packLecture')==4 and memory=='sanitized'):raise ValueError('Неизвестная отметка проверки памяти')
     if status=='SELF_CHECKED' and memory=='errors':raise ValueError('Сначала исправьте отмеченные ошибки памяти')
     if task['section']=='lecture-theory' and status=='SELF_CHECKED' and not details['explanation'].strip():raise ValueError('Добавьте своё объяснение: оно является частью закрепления')
-    reports={**current['reports'],stage:dict(status=status,confirmed=confirmed,memory=memory,**details)}
+    extra={}
+    if task.get('trackImplementation'):
+        steps=body.get('implementation',[])
+        if not isinstance(steps,list) or any(type(i) is not int or i<0 or i>=len(task['projectSteps']) for i in steps):raise ValueError('Неизвестный этап реализации')
+        if status=='SELF_CHECKED' and set(steps)!=set(range(len(task['projectSteps']))):raise ValueError('Завершите все этапы реализации перед итоговой отметкой')
+        extra['implementation']=steps
+    if task.get('requiresComplexity') and status=='SELF_CHECKED' and not details['complexityNotes'].strip():raise ValueError('Обоснуйте сложность своей реализации')
+    reports={**current['reports'],stage:dict(status=status,confirmed=confirmed,memory=memory,**details,**extra)}
     states=[reports.get(s['id'],{}).get('status') for s in current['stages']]
     overall='SELF_CHECKED' if all(s=='SELF_CHECKED' for s in states) else 'NEEDS_WORK' if 'NEEDS_WORK' in states else 'REPEAT_REQUESTED' if 'REPEAT_REQUESTED' in states else 'IN_PROGRESS'
     return dict(status=overall,mode='self-check',score=100 if overall=='SELF_CHECKED' else 0,manual=True,stageReports=reports,codeHash=hashlib.sha256(json.dumps(files,sort_keys=True).encode()).hexdigest(),message='Ваша отметка сохранена. Сайт не выполнял C++ и не подтверждает автоматическое прохождение тестов.')

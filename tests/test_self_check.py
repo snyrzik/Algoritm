@@ -12,7 +12,7 @@ from backend import storage
 
 class SelfCheckContentTests(unittest.TestCase):
     def test_all_programming_tasks_have_main_cases_and_expected_output(self):
-        tasks=[t for t in catalog(True) if t['kind'] in ('S','D','C')];self.assertEqual(len(tasks),21)
+        tasks=[t for t in catalog(True) if t['kind'] in ('S','D','C')];self.assertEqual(len(tasks),28)
         for task in tasks:
             if task.get('localAssessment'):continue
             current=guide(task);self.assertIn('int main()',current['main'],task['id']);self.assertTrue(current['cases'])

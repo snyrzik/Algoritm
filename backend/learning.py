@@ -22,8 +22,10 @@ def update(body):
         path=body['lastPath']
         if not isinstance(path,str) or len(path)>500:raise ValueError('Недопустимый учебный маршрут')
         task_path=path.startswith('task/') and path[5:] in valid
-        lecture_path=bool(re.fullmatch(r'theory/1/(?:overview|chapter-[1-5]|summary|practice|local-checks)(?:/[\w%.-]+)?',path)) or bool(re.fullmatch(r'theory/[23]/(?:overview|chapter-[1-4]|summary|practice|local-checks|progress)(?:/[\w%.-]+)?',path))
-        module_path=bool(re.fullmatch(r'module/[1-3]',path))
+        from .lectures import available
+        pack_match=re.fullmatch(r'theory/(\d+)/(?:overview|chapter-[1-4]|summary|practice|local-checks|progress)(?:/[\w%.-]+)?',path)
+        lecture_path=bool(re.fullmatch(r'theory/1/(?:overview|chapter-[1-5]|summary|practice|local-checks)(?:/[\w%.-]+)?',path)) or bool(pack_match and int(pack_match[1]) in available())
+        module_path=path in {f'module/{n}' for n in [1,*available()]}
         if path and not (task_path or lecture_path or module_path):raise ValueError('Учебная страница не найдена')
     with storage.connect() as db:
         db.execute('CREATE TABLE IF NOT EXISTS learner_state (key TEXT PRIMARY KEY, value TEXT NOT NULL)')

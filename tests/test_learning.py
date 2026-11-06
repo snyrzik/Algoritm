@@ -28,7 +28,7 @@ class LearningApiTests(unittest.TestCase):
         self.assertEqual(self.request('/api/learning',{'lastPath':'module/2'},origin='http://evil.example')[0],403)
     def test_course_includes_every_lecture_check_and_progress_keeps_reading_separate(self):
         _,course=self.request('/api/course');ids={task['id'] for task in course['tasks']}
-        self.assertEqual(len(ids),21)
+        self.assertEqual(len(ids),28)
         self.assertTrue(all(f'l01-v3-c{i:02}' in ids for i in range(1,6)))
         _,progress=self.request('/api/progress');self.assertIn('reading',progress)
         self.assertIsInstance(progress['reading'],list)

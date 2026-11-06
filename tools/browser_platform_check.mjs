@@ -110,9 +110,9 @@ try {
   assert.ok(!(await page.$eval('.sidebar',e=>e.textContent)).includes('Интенсив'));
   await click('Начать обучение');await page.waitForFunction(()=>location.hash==='#/theory/1/chapter-1');await page.waitForSelector('.theory-article');
   await visit('search');await page.waitForSelector('.platform-task-row');
-  assert.equal((await page.$$('.platform-task-row')).length,20);await click('\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0435\u0449\u0451');assert.equal((await page.$$('.platform-task-row')).length,21);
+  assert.equal((await page.$$('.platform-task-row')).length,20);await click('\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u0435\u0449\u0451');assert.equal((await page.$$('.platform-task-row')).length,28);
   assert.equal(await page.$('.platform-load-more'),null);
-  await page.select('[aria-label="Тип задания"]','lecture-practice');assert.equal((await page.$$('.platform-task-row')).length,8);
+  await page.select('[aria-label="Тип задания"]','lecture-practice');assert.equal((await page.$$('.platform-task-row')).length,11);
   await page.select('[aria-label="Состояние задания"]','done');await page.waitForSelector('.platform-empty');
   await click('Сбросить фильтры');await page.waitForSelector('.platform-task-row');
   await page.click('.platform-task-row .bookmark-button');await page.waitForFunction(()=>document.querySelector('.platform-task-row .bookmark-button')?.getAttribute('aria-pressed')==='true');
@@ -120,7 +120,7 @@ try {
   await page.reload({waitUntil:'networkidle0'});await page.waitForSelector('.platform-task-row');assert.equal((await page.$$('.platform-task-row')).length,1);
   await visit('search');await page.waitForSelector('.platform-task-row');
   while(await page.$('.platform-load-more button'))await page.click('.platform-load-more button');
-  assert.equal((await page.$$('.platform-task-row')).length,21);
+  assert.equal((await page.$$('.platform-task-row')).length,28);
   await page.type('[aria-label="Поиск в заданиях"]','Duration');await page.waitForFunction(()=>document.querySelectorAll('.platform-task-row').length<20);
   assert.ok((await page.$$eval('.platform-task-row',rows=>rows.map(e=>e.textContent).join(' '))).includes('Duration'));
   await page.screenshot({path:path.join(output,'platform-search-desktop.png'),fullPage:false});
@@ -133,7 +133,7 @@ try {
   await visit('theory/1/chapter-2');await page.waitForSelector('.theory-article');await new Promise(r=>setTimeout(r,400));await page.evaluate(()=>document.querySelector('.brand').click());await page.waitForSelector('.platform-resume');
   assert.ok((await page.$eval('.platform-resume',e=>e.textContent)).includes('Перегрузка операторов'));
   await visit('task/l01-v3-c01');await page.waitForSelector('.manual-cases');await click('Да, всё совпало');await page.waitForSelector('.manual-saved.done');
-  await visit('report');await page.waitForSelector('.platform-progress-summary');assert.ok((await page.$eval('.platform-progress-summary',e=>e.textContent)).includes('1 из 21'));
+  await visit('report');await page.waitForSelector('.platform-progress-summary');assert.ok((await page.$eval('.platform-progress-summary',e=>e.textContent)).includes('1 из 28'));
   assert.ok((await page.$eval('.platform-module-card',e=>e.textContent)).includes('1 / 8'));
   await visit('task/l01-v3-p01');await page.waitForSelector('.manual-cases');await click('Есть расхождения');await page.waitForSelector('.manual-saved.pending');
   await visit('review');await page.waitForSelector('.platform-task-row');assert.ok((await page.$eval('.platform-task-row',e=>e.textContent)).includes('Matrix2x2'));

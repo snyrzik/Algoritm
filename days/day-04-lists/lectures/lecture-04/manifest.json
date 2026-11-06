@@ -1,0 +1,22 @@
+{
+  "number": 4,
+  "title": "Лекция № 4. Списки, STL-контейнеры и сложность",
+  "attribution": "Материал по презентации Е. В. Мясникова «Списки», 49 слайдов. Указание источника сохранено из предоставленного пакета.",
+  "sourceRoot": "content/lecture-04",
+  "sourceFilename": "LECTURE_04_THEORY.md",
+  "sourceSha256": "f3e0dcb598375177757922d36f603dbf8683ff58b932ea5f75d3e7b968e39505",
+  "localInstructionsFilename": "MAIN_SYNTAX_CHECK.md",
+  "summaryHeading": "Основная самостоятельная практика лекции № 4",
+  "practiceIntro": "Первые два проекта — собственные узлы без STL-контейнеров. CollectionLab специально учит применять vector, list и deque; запрет из ЛР № 1 на него не переносится.",
+  "checkIds": [
+    "l04-local-c01",
+    "l04-local-c02",
+    "l04-local-c03",
+    "l04-local-c04"
+  ],
+  "projectIds": [
+    "l04-local-p01",
+    "l04-local-p02",
+    "l04-local-p03"
+  ]
+}

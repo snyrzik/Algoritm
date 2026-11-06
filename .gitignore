@@ -15,5 +15,6 @@ student/**/answer.json
 student/day-01/l01-v3-*/**
 student/day-02/l02-local-*/**
 student/day-03/l03-local-*/**
+student/day-04/l04-local-*/**
 !student/**/.gitkeep
 test-results/
