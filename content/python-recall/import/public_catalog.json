@@ -1,0 +1,2060 @@
+{
+  "schema_version": "1.0",
+  "language": "ru",
+  "course": "Python Recall",
+  "weeks": [
+    {
+      "week": 1,
+      "title": "Основы Python",
+      "reference": "Лекции 1–2"
+    },
+    {
+      "week": 2,
+      "title": "Коллекции, функции и исключения",
+      "reference": "Лекция 2"
+    },
+    {
+      "week": 3,
+      "title": "Файлы и модули",
+      "reference": "Лекции 3–4"
+    },
+    {
+      "week": 4,
+      "title": "ООП и смешанное повторение",
+      "reference": "Лекция 5"
+    },
+    {
+      "week": 5,
+      "title": "Регулярные выражения и база",
+      "reference": "Лабораторная 1"
+    },
+    {
+      "week": 6,
+      "title": "HTML, итераторы и закрепление",
+      "reference": "Лекция 7 / лабораторная 2"
+    },
+    {
+      "week": 7,
+      "title": "NumPy и Pandas",
+      "reference": "Лабораторные 3–4"
+    },
+    {
+      "week": 8,
+      "title": "GUI и итоговое закрепление",
+      "reference": "Лабораторная 5 + повторение"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "py-01",
+      "number": 1,
+      "week": 1,
+      "day": 1,
+      "week_title": "Основы Python",
+      "title": "Учёт покупок",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "строки",
+        "split",
+        "словари",
+        "условия"
+      ],
+      "signature": "process_commands(commands: list[str]) -> dict[str, int]",
+      "description": "Обработай команды BUY товар количество и SELL товар количество. Покупка увеличивает остаток, продажа уменьшает, но только если остатка достаточно. Названия товаров чувствительны к регистру.",
+      "rules": "Команда имеет ровно 3 части; количество — положительное целое; испорченную/неизвестную команду пропускай. Товары с нулевым остатком остаются в словаре.",
+      "example": "[\"BUY apple 5\", \"BUY banana 3\", \"SELL apple 2\", \"SELL banana 10\", \"BUY apple 1\"] => {\"apple\": 4, \"banana\": 3}",
+      "edges": "Пустой список => {}; продажа отсутствующего товара игнорируется; 0 и отрицательные значения не принимаются.",
+      "hint": "dict.get(key, 0), split(), isdigit()",
+      "bonus": "Верни также название товара с максимальным остатком (при равенстве — алфавитно).",
+      "sources_labels": [
+        "Лекция 1: знакомство с Python",
+        "Лекция 2: коллекции и функции"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-1/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 1 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_01/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def process_commands(commands: list[str]) -> dict[str, int]:\n    pass\n",
+      "starter_files": {
+        "day_01.py": "def process_commands(commands: list[str]) -> dict[str, int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_01.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-02",
+      "number": 2,
+      "week": 1,
+      "day": 2,
+      "week_title": "Основы Python",
+      "title": "Очистка имён",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "строки",
+        "strip",
+        "split",
+        "join",
+        "множества"
+      ],
+      "signature": "clean_names(names: list[str]) -> list[str]",
+      "description": "Нормализуй имена: убери начальные/конечные и повторные внутренние пробелы, переведи каждое слово в формат Имя, удали дубликаты без потери порядка.",
+      "rules": "Пустые после очистки строки пропускай. Для сравнения дубликатов используй уже нормализованное имя.",
+      "example": "[\"  aLICE   smith  \", \"Bob\", \"alice smith\", \"  \"] => [\"Alice Smith\", \"Bob\"]",
+      "edges": "Пустой список и строки из пробелов.",
+      "hint": "\" \".join(text.split()).title(), множество seen",
+      "bonus": "Верни отдельно количество удалённых повторов.",
+      "sources_labels": [
+        "Лекция 1: знакомство с Python",
+        "Лекция 2: коллекции и функции"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-1/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 1 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_01/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def clean_names(names: list[str]) -> list[str]:\n    pass\n",
+      "starter_files": {
+        "day_02.py": "def clean_names(names: list[str]) -> list[str]:\n    pass\n"
+      },
+      "starter_file": "starters/day_02.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-03",
+      "number": 3,
+      "week": 1,
+      "day": 3,
+      "week_title": "Основы Python",
+      "title": "Самый длинный рост",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "списки",
+        "enumerate",
+        "сравнение"
+      ],
+      "signature": "longest_increasing_run(values: list[int]) -> list[int]",
+      "description": "Найди самый длинный непрерывный строго возрастающий фрагмент числового списка.",
+      "rules": "Если несколько фрагментов одинаковой длины, верни первый; для пустого списка верни []. Одинаковые соседние числа разрывают рост.",
+      "example": "[1, 2, 5, 3, 4, 6, 1] => [1, 2, 5]",
+      "edges": "Один элемент, убывающий список, равные элементы.",
+      "hint": "Отслеживай начало текущего и лучшего участка.",
+      "bonus": "Верни также индексы лучшего участка.",
+      "sources_labels": [
+        "Лекция 1: знакомство с Python",
+        "Лекция 2: коллекции и функции"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-1/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 1 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_01/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def longest_increasing_run(values: list[int]) -> list[int]:\n    pass\n",
+      "starter_files": {
+        "day_03.py": "def longest_increasing_run(values: list[int]) -> list[int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_03.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-04",
+      "number": 4,
+      "week": 1,
+      "day": 4,
+      "week_title": "Основы Python",
+      "title": "Мини-касса",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "циклы",
+        "функции",
+        "арифметика"
+      ],
+      "signature": "checkout(items: list[tuple[int, int]], threshold: int, discount_percent: int) -> int",
+      "description": "Сложи стоимость корзины, где (цена, количество) — целые неотрицательные числа. Если сумма не меньше threshold, примени процентную скидку.",
+      "rules": "Сумма — целое число денежных единиц; округляй итог вниз через //; скидка от 0 до 100 включительно; некорректные элементы не включаются. Порог неотрицателен.",
+      "example": "[(100, 2), (50, 1)], threshold=200, discount_percent=10 => 225",
+      "edges": "Пустая корзина; сумма точно равна порогу; цена или количество отрицательные.",
+      "hint": "total = sum(...), затем total * (100 - discount) // 100",
+      "bonus": "Добавь поддержку товара с дополнительной фиксированной скидкой.",
+      "sources_labels": [
+        "Лекция 1: знакомство с Python",
+        "Лекция 2: коллекции и функции"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-1/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 1 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_01/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def checkout(items: list[tuple[int, int]], threshold: int, discount_percent: int) -> int:\n    pass\n",
+      "starter_files": {
+        "day_04.py": "def checkout(items: list[tuple[int, int]], threshold: int, discount_percent: int) -> int:\n    pass\n"
+      },
+      "starter_file": "starters/day_04.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-05",
+      "number": 5,
+      "week": 1,
+      "day": 5,
+      "week_title": "Основы Python",
+      "title": "Сжатие последовательности",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "циклы",
+        "кортежи",
+        "списки"
+      ],
+      "signature": "run_length_encode(values: list[int]) -> list[tuple[int, int]]",
+      "description": "Сожми подряд идущие одинаковые числа в пары (значение, количество повторов).",
+      "rules": "Считать только соседние равные элементы: [1,2,1] нельзя объединять в одну группу.",
+      "example": "[1, 1, 1, 2, 2, 3] => [(1, 3), (2, 2), (3, 1)]",
+      "edges": "[] => []; один элемент.",
+      "hint": "Храни текущий элемент и счётчик.",
+      "bonus": "Напиши обратную функцию распаковки.",
+      "sources_labels": [
+        "Лекция 1: знакомство с Python",
+        "Лекция 2: коллекции и функции"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-1/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 1 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_01/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def run_length_encode(values: list[int]) -> list[tuple[int, int]]:\n    pass\n",
+      "starter_files": {
+        "day_05.py": "def run_length_encode(values: list[int]) -> list[tuple[int, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_05.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-06",
+      "number": 6,
+      "week": 2,
+      "day": 1,
+      "week_title": "Коллекции, функции и исключения",
+      "title": "Частотный словарь",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "словари",
+        "re",
+        "сортировка"
+      ],
+      "signature": "top_words(text: str, limit: int = 3) -> list[tuple[str, int]]",
+      "description": "Найди самые частые слова в тексте. Слова — последовательности русских или английских букв; числа разделяют слова. Игнорируй регистр.",
+      "rules": "Сортировка: частота по убыванию, при равенстве слово по алфавиту; limit <= 0 => [].",
+      "example": "\"Кот, кот! Дом. дом кот\" => [(\"кот\", 3), (\"дом\", 2)]",
+      "edges": "Пустой текст, только знаки препинания, равная частота.",
+      "hint": "re.findall(r\"[a-zа-яё]+\", text.lower())",
+      "bonus": "Сделай параметр минимальной длины слова.",
+      "sources_labels": [
+        "Лекция 2: коллекции, функции и исключения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 2 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_02/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef top_words(text: str, limit: int=3) -> list[tuple[str, int]]:\n    pass\n",
+      "starter_files": {
+        "day_06.py": "import re\n\ndef top_words(text: str, limit: int=3) -> list[tuple[str, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_06.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-07",
+      "number": 7,
+      "week": 2,
+      "day": 2,
+      "week_title": "Коллекции, функции и исключения",
+      "title": "Рейтинг студентов",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "словари",
+        "списки",
+        "sorted",
+        "lambda"
+      ],
+      "signature": "student_rating(grades: dict[str, list[int]]) -> list[tuple[str, float]]",
+      "description": "Вычисли средний балл каждого студента и верни рейтинг.",
+      "rules": "Студентов без оценок пропусти. По убыванию среднего, при равенстве по имени по возрастанию. Средние не округляй.",
+      "example": "{\"Аня\": [5, 4], \"Борис\": [3, 3], \"Вера\": []} => [(\"Аня\", 4.5), (\"Борис\", 3.0)]",
+      "edges": "Пустой словарь, одно значение, равные средние.",
+      "hint": "sum(scores) / len(scores), sorted(key=...)",
+      "bonus": "Верни только студентов со средним >= заданного порога.",
+      "sources_labels": [
+        "Лекция 2: коллекции, функции и исключения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 2 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_02/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def student_rating(grades: dict[str, list[int]]) -> list[tuple[str, float]]:\n    pass\n",
+      "starter_files": {
+        "day_07.py": "def student_rating(grades: dict[str, list[int]]) -> list[tuple[str, float]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_07.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-08",
+      "number": 8,
+      "week": 2,
+      "day": 3,
+      "week_title": "Коллекции, функции и исключения",
+      "title": "Парсер команд",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "исключения",
+        "строки",
+        "список"
+      ],
+      "signature": "parse_numbers(commands: list[str]) -> list[int]",
+      "description": "Реализуй калькулятор состояния: команда ADD N прибавляет N, REMOVE N вычитает N, SHOW добавляет текущее значение в список результатов.",
+      "rules": "Первоначальное значение 0. Для ADD и REMOVE требуется ровно один целый аргумент (включая отрицательный); ошибочные команды пропускай. SHOW без аргументов.",
+      "example": "[\"ADD 5\", \"ADD abc\", \"REMOVE 2\", \"SHOW\", \"ADD -4\", \"SHOW\"] => [3, -1]",
+      "edges": "Неизвестная команда, пустая строка, SHOW до операций.",
+      "hint": "try: int(...); except ValueError",
+      "bonus": "Добавь команду RESET без аргументов.",
+      "sources_labels": [
+        "Лекция 2: коллекции, функции и исключения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 2 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_02/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def parse_numbers(commands: list[str]) -> list[int]:\n    pass\n",
+      "starter_files": {
+        "day_08.py": "def parse_numbers(commands: list[str]) -> list[int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_08.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-09",
+      "number": 9,
+      "week": 2,
+      "day": 4,
+      "week_title": "Коллекции, функции и исключения",
+      "title": "Пересечение расписаний",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "множества",
+        "sorted"
+      ],
+      "signature": "common_hours(first: list[int], second: list[int]) -> list[int]",
+      "description": "Два человека указали свободные часы суток целыми числами. Верни общие часы в порядке возрастания.",
+      "rules": "Допустимы только часы от 0 до 23; дубликаты убрать. Некорректные часы исключить.",
+      "example": "[9, 11, 11, 25, 15], [11, 15, 17] => [11, 15]",
+      "edges": "Нет совпадений; все часы вне диапазона.",
+      "hint": "set(first) & set(second)",
+      "bonus": "Верни также интервалы подряд идущих общих часов.",
+      "sources_labels": [
+        "Лекция 2: коллекции, функции и исключения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 2 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_02/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def common_hours(first: list[int], second: list[int]) -> list[int]:\n    pass\n",
+      "starter_files": {
+        "day_09.py": "def common_hours(first: list[int], second: list[int]) -> list[int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_09.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-10",
+      "number": 10,
+      "week": 2,
+      "day": 5,
+      "week_title": "Коллекции, функции и исключения",
+      "title": "Таблица результатов",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "zip",
+        "sorted",
+        "enumerate"
+      ],
+      "signature": "score_table(names: list[str], scores: list[int]) -> list[tuple[int, str, int]]",
+      "description": "Объедини имена и баллы, отсортируй по убыванию балла и по имени при равенстве. Присвой порядковые места начиная с 1.",
+      "rules": "Если длины списков отличаются, учитывай только полные пары (поведение zip).",
+      "example": "[\"Аня\", \"Борис\", \"Вера\"], [80, 90, 90] => [(1, \"Борис\", 90), (2, \"Вера\", 90), (3, \"Аня\", 80)]",
+      "edges": "Пустые списки; равные баллы.",
+      "hint": "enumerate(sorted(zip(...), key=...), start=1)",
+      "bonus": "Реализуй спортивное ранжирование с одинаковым местом при равных баллах.",
+      "sources_labels": [
+        "Лекция 2: коллекции, функции и исключения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-2/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%202.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 2 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_02/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def score_table(names: list[str], scores: list[int]) -> list[tuple[int, str, int]]:\n    pass\n",
+      "starter_files": {
+        "day_10.py": "def score_table(names: list[str], scores: list[int]) -> list[tuple[int, str, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_10.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-11",
+      "number": 11,
+      "week": 3,
+      "day": 1,
+      "week_title": "Файлы и модули",
+      "title": "Анализ текстового файла",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "with",
+        "open",
+        "Counter",
+        "строки"
+      ],
+      "signature": "file_stats(path: str) -> dict[str, object]",
+      "description": "Прочитай UTF-8 файл и верни словарь с количеством непустых строк, количеством слов и самым частым словом.",
+      "rules": "Слова определяются так же, как в задаче 6 (русские/английские буквы). При равенстве частот выбери алфавитно первое; если слов нет, top_word = None.",
+      "example": "Файл с текстом \"Кот кот\\n\\nДом!\" => {\"nonempty_lines\": 2, \"words\": 3, \"top_word\": \"кот\"}",
+      "edges": "Пустой файл; отсутствующий файл вызывает FileNotFoundError.",
+      "hint": "with open(path, encoding=\"utf-8\")",
+      "bonus": "Добавь топ-5 слов.",
+      "sources_labels": [
+        "Лекция 3: файлы и модули",
+        "Лекция 4: модули и пакеты"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-3/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%203.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-4/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%204.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "files",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 3 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_03/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef file_stats(path: str) -> dict[str, object]:\n    pass\n",
+      "starter_files": {
+        "day_11.py": "import re\n\ndef file_stats(path: str) -> dict[str, object]:\n    pass\n"
+      },
+      "starter_file": "starters/day_11.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-12",
+      "number": 12,
+      "week": 3,
+      "day": 2,
+      "week_title": "Файлы и модули",
+      "title": "CSV-бюджет",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "csv",
+        "словари",
+        "файлы"
+      ],
+      "signature": "expense_totals(path: str) -> dict[str, int]",
+      "description": "Прочитай CSV файл с заголовками category,amount, где amount — целое число расходов, и посчитай сумму по каждой категории.",
+      "rules": "Пустую категорию и нецелое/отрицательное amount пропускай. Разделитель — запятая, кодировка UTF-8.",
+      "example": "CSV: category,amount\\nfood,100\\ntaxi,30\\nfood,50 => {\"food\": 150, \"taxi\": 30}",
+      "edges": "Только заголовок; неверные числа; пропуски столбцов.",
+      "hint": "csv.DictReader, try/except ValueError",
+      "bonus": "Сохрани результат во второй CSV.",
+      "sources_labels": [
+        "Лекция 3: файлы и модули",
+        "Лекция 4: модули и пакеты"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-3/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%203.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-4/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%204.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "files",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 3 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_03/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import csv\n\ndef expense_totals(path: str) -> dict[str, int]:\n    pass\n",
+      "starter_files": {
+        "day_12.py": "import csv\n\ndef expense_totals(path: str) -> dict[str, int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_12.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-13",
+      "number": 13,
+      "week": 3,
+      "day": 3,
+      "week_title": "Файлы и модули",
+      "title": "Безопасное чтение чисел",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "try/except",
+        "списки",
+        "файлы"
+      ],
+      "signature": "read_integers(path: str) -> list[int]",
+      "description": "Из UTF-8 текстового файла, где одна запись на строку, прочитай только корректные целые числа.",
+      "rules": "Пробелы вокруг числа можно удалять; отрицательные числа допустимы; остальные строки пропускай. Порядок сохранить.",
+      "example": "Файл: \"12\\nabc\\n -7 \\n3.5\\n\" => [12, -7]",
+      "edges": "Пустой файл; пустая строка; FileNotFoundError не подавлять.",
+      "hint": "try: int(line.strip()); except ValueError: continue",
+      "bonus": "Считай число пропущенных строк.",
+      "sources_labels": [
+        "Лекция 3: файлы и модули",
+        "Лекция 4: модули и пакеты"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-3/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%203.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-4/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%204.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "files",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 3 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_03/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def read_integers(path: str) -> list[int]:\n    pass\n",
+      "starter_files": {
+        "day_13.py": "def read_integers(path: str) -> list[int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_13.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-14",
+      "number": 14,
+      "week": 3,
+      "day": 4,
+      "week_title": "Файлы и модули",
+      "title": "Собственный модуль",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "import",
+        "функции",
+        "пакеты"
+      ],
+      "signature": "normalize_title(text: str) -> str; make_slug(text: str) -> str; initials(text: str) -> str",
+      "description": "Создай два файла: utils.py с тремя функциями и main.py, который импортирует и демонстрирует их. normalize_title убирает лишние пробелы и делает слова с большой буквы; make_slug превращает слова в нижний регистр и соединяет дефисом; initials берёт первые буквы слов.",
+      "rules": "Для make_slug допускаются только латинские буквы и цифры, прочие символы разделяют слова; для остальных функций пробел — разделитель.",
+      "example": "\"  Hello   WORLD \" => normalize_title: \"Hello World\", make_slug: \"hello-world\", initials: \"HW\"",
+      "edges": "Пустая строка; одинарное слово; знаки препинания в slug.",
+      "hint": "def в utils.py, from utils import ...",
+      "bonus": "Добавь пакет вместо отдельного модуля.",
+      "sources_labels": [
+        "Лекция 3: файлы и модули",
+        "Лекция 4: модули и пакеты"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-3/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%203.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-4/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%204.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "module",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 3 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_03/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_files": {
+        "utils.py": "import re\n\ndef normalize_title(text: str) -> str:\n    pass\n\ndef make_slug(text: str) -> str:\n    pass\n\ndef initials(text: str) -> str:\n    pass\n",
+        "main.py": "from utils import initials, make_slug, normalize_title\n\ndef main() -> None:\n    pass\n"
+      },
+      "starter_code": "import re\n\ndef normalize_title(text: str) -> str:\n    pass\n\ndef make_slug(text: str) -> str:\n    pass\n\ndef initials(text: str) -> str:\n    pass\n",
+      "starter_file": "starters/day_14/utils.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-15",
+      "number": 15,
+      "week": 3,
+      "day": 5,
+      "week_title": "Файлы и модули",
+      "title": "CLI-статистика",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "argparse",
+        "файлы",
+        "функции"
+      ],
+      "signature": "count_nonempty_lines(path: str) -> int; main(argv: list[str] | None = None) -> int",
+      "description": "Сделай консольную программу, которая принимает путь к UTF-8 файлу и необязательный аргумент --top N, после чего выводит первые N непустых строк и их общее количество.",
+      "rules": "По умолчанию N=3; N >= 0, при отрицательном N argparse выдаёт ошибку; строки печатай без завершающего переноса из файла; main возвращает общее количество непустых строк.",
+      "example": "Файл: \"a\\n\\nb\\nc\\n\", вызов --top 2 => печать a, b, Total: 3; main возвращает 3",
+      "edges": "Пустой файл, --top 0, отсутствующий путь (возникает FileNotFoundError).",
+      "hint": "argparse.ArgumentParser, parser.parse_args(argv)",
+      "bonus": "Добавь флаг --reverse.",
+      "sources_labels": [
+        "Лекция 3: файлы и модули",
+        "Лекция 4: модули и пакеты"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-3/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%203.ipynb",
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-4/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%204.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "files",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 3 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_03/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import argparse\n\ndef count_nonempty_lines(path: str) -> int:\n    pass\n\ndef nonnegative(text: str) -> int:\n    pass\n\ndef main(argv: list[str] | None=None) -> int:\n    pass\n",
+      "starter_files": {
+        "day_15.py": "import argparse\n\ndef count_nonempty_lines(path: str) -> int:\n    pass\n\ndef nonnegative(text: str) -> int:\n    pass\n\ndef main(argv: list[str] | None=None) -> int:\n    pass\n"
+      },
+      "starter_file": "starters/day_15.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-16",
+      "number": 16,
+      "week": 4,
+      "day": 1,
+      "week_title": "ООП и смешанное повторение",
+      "title": "Банковский счёт",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "class",
+        "self",
+        "методы"
+      ],
+      "signature": "class BankAccount: deposit(amount), withdraw(amount), balance",
+      "description": "Класс BankAccount хранит целочисленный остаток. deposit пополняет, withdraw снимает средства и возвращает True при успехе, False при нехватке.",
+      "rules": "Начальный баланс >= 0. Любое amount <= 0 вызывает ValueError. Свойство balance доступно только для чтения.",
+      "example": "BankAccount(100), deposit(50), withdraw(70) => balance == 80",
+      "edges": "Недостаточно денег; снятие нуля; отрицательный первоначальный баланс.",
+      "hint": "__init__, @property",
+      "bonus": "Добавь историю успешных операций.",
+      "sources_labels": [
+        "Лекция 5: ООП"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-5/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%205.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "oop",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 4 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_04/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "class BankAccount:\n\n    def __init__(self, balance: int=0):\n        pass\n\n    @property\n    def balance(self) -> int:\n        pass\n\n    def deposit(self, amount: int) -> None:\n        pass\n\n    def withdraw(self, amount: int) -> bool:\n        pass\n",
+      "starter_files": {
+        "day_16.py": "class BankAccount:\n\n    def __init__(self, balance: int=0):\n        pass\n\n    @property\n    def balance(self) -> int:\n        pass\n\n    def deposit(self, amount: int) -> None:\n        pass\n\n    def withdraw(self, amount: int) -> bool:\n        pass\n"
+      },
+      "starter_file": "starters/day_16.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-17",
+      "number": 17,
+      "week": 4,
+      "day": 2,
+      "week_title": "ООП и смешанное повторение",
+      "title": "Инвентарь",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "ООП",
+        "словари"
+      ],
+      "signature": "class Inventory: add(name, count), remove(name, count), get(name), items()",
+      "description": "Храни количество товаров в классе Inventory. add добавляет, remove списывает и возвращает True/False, get возвращает остаток, items возвращает копию словаря.",
+      "rules": "Количество должно быть положительным целым; при недостаточном остатке ничего не менять. После списания до нуля ключ можно оставить со значением 0.",
+      "example": "add(\"pen\", 4), remove(\"pen\", 2), get(\"pen\") => 2",
+      "edges": "Неизвестный товар, 0, недостаточный запас, защита от изменения внутреннего словаря через items().",
+      "hint": "self._stock, dict(...)",
+      "bonus": "Сделай метод total_items().",
+      "sources_labels": [
+        "Лекция 5: ООП"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-5/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%205.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "oop",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 4 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_04/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "class Inventory:\n\n    def __init__(self):\n        pass\n\n    def add(self, name: str, count: int) -> None:\n        pass\n\n    def remove(self, name: str, count: int) -> bool:\n        pass\n\n    def get(self, name: str) -> int:\n        pass\n\n    def items(self) -> dict[str, int]:\n        pass\n",
+      "starter_files": {
+        "day_17.py": "class Inventory:\n\n    def __init__(self):\n        pass\n\n    def add(self, name: str, count: int) -> None:\n        pass\n\n    def remove(self, name: str, count: int) -> bool:\n        pass\n\n    def get(self, name: str) -> int:\n        pass\n\n    def items(self) -> dict[str, int]:\n        pass\n"
+      },
+      "starter_file": "starters/day_17.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-18",
+      "number": 18,
+      "week": 4,
+      "day": 3,
+      "week_title": "ООП и смешанное повторение",
+      "title": "Фигуры",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "наследование",
+        "методы"
+      ],
+      "signature": "class Shape; class Rectangle(Shape); class Circle(Shape)",
+      "description": "Создай базовый класс Shape с методом area(), который выбрасывает NotImplementedError. Rectangle(width,height) и Circle(radius) переопределяют area.",
+      "rules": "Размеры строго положительные; используй math.pi.",
+      "example": "Rectangle(2,3).area() => 6; Circle(1).area() => pi",
+      "edges": "Нулевые и отрицательные размеры вызывают ValueError.",
+      "hint": "super не обязателен; переопредели area в подклассах.",
+      "bonus": "Добавь Square через наследование.",
+      "sources_labels": [
+        "Лекция 5: ООП"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-5/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%205.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "oop",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 4 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_04/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import math\n\nclass Shape:\n\n    def area(self) -> float:\n        pass\n\nclass Rectangle(Shape):\n\n    def __init__(self, width: float, height: float):\n        pass\n\n    def area(self) -> float:\n        pass\n\nclass Circle(Shape):\n\n    def __init__(self, radius: float):\n        pass\n\n    def area(self) -> float:\n        pass\n",
+      "starter_files": {
+        "day_18.py": "import math\n\nclass Shape:\n\n    def area(self) -> float:\n        pass\n\nclass Rectangle(Shape):\n\n    def __init__(self, width: float, height: float):\n        pass\n\n    def area(self) -> float:\n        pass\n\nclass Circle(Shape):\n\n    def __init__(self, radius: float):\n        pass\n\n    def area(self) -> float:\n        pass\n"
+      },
+      "starter_file": "starters/day_18.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-19",
+      "number": 19,
+      "week": 4,
+      "day": 4,
+      "week_title": "ООП и смешанное повторение",
+      "title": "Свой итератор",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "__iter__",
+        "__next__",
+        "StopIteration"
+      ],
+      "signature": "class Countdown(start: int)",
+      "description": "Создай итератор, который выдаёт числа start,start-1,...,0, затем прекращает работу.",
+      "rules": "start >= 0; __iter__ возвращает self; каждое значение выдаётся ровно один раз.",
+      "example": "list(Countdown(3)) => [3,2,1,0]",
+      "edges": "start=0; повторный list по тому же экземпляру пуст; start<0 вызывает ValueError.",
+      "hint": "__iter__, __next__, raise StopIteration",
+      "bonus": "Сделай шаг -2 с параметром step.",
+      "sources_labels": [
+        "Лекция 5: ООП"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-5/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%205.ipynb"
+      ],
+      "dependencies": [],
+      "kind": "oop",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 4 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_04/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "class Countdown:\n\n    def __init__(self, start: int):\n        pass\n\n    def __iter__(self):\n        pass\n\n    def __next__(self) -> int:\n        pass\n",
+      "starter_files": {
+        "day_19.py": "class Countdown:\n\n    def __init__(self, start: int):\n        pass\n\n    def __iter__(self):\n        pass\n\n    def __next__(self) -> int:\n        pass\n"
+      },
+      "starter_file": "starters/day_19.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-20",
+      "number": 20,
+      "week": 4,
+      "day": 5,
+      "week_title": "ООП и смешанное повторение",
+      "title": "Рейтинг объектов",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "словарь",
+        "sorted",
+        "lambda"
+      ],
+      "signature": "rank_items(items: list[dict[str, object]]) -> list[str]",
+      "description": "Каждый объект содержит name (str), priority (int) и score (int). Верни имена, отсортированные по убыванию priority, затем по убыванию score и по возрастанию name.",
+      "rules": "Поля гарантированно присутствуют и имеют верный тип. Повторяющиеся имена разрешены.",
+      "example": "[{\"name\":\"B\",\"priority\":1,\"score\":5},{\"name\":\"A\",\"priority\":2,\"score\":1}] => [\"A\",\"B\"]",
+      "edges": "Пустой список; равные значения; входной список не изменяется.",
+      "hint": "sorted(items, key=lambda x: (-x[\"priority\"], -x[\"score\"], x[\"name\"]))",
+      "bonus": "Добавь выбор только первых k имён.",
+      "sources_labels": [
+        "Повторение лекций 1–2"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 4 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_04/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def rank_items(items: list[dict[str, object]]) -> list[str]:\n    pass\n",
+      "starter_files": {
+        "day_20.py": "def rank_items(items: list[dict[str, object]]) -> list[str]:\n    pass\n"
+      },
+      "starter_file": "starters/day_20.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-21",
+      "number": 21,
+      "week": 5,
+      "day": 1,
+      "week_title": "Регулярные выражения и база",
+      "title": "Поиск TASK-идентификаторов",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "re",
+        "findall",
+        "границы слова"
+      ],
+      "signature": "find_task_ids(text: str) -> list[str]",
+      "description": "Найди в тексте уникальные идентификаторы строго вида TASK-YYYY-NNN, где Y и N — цифры. Верни в порядке первого появления.",
+      "rules": "Не допускай идентификатор как часть более длинного буквенно-цифрового слова. Регистр только верхний.",
+      "example": "\"TASK-2026-042 и TASK-2026-042, TASK-2025-001\" => [\"TASK-2026-042\", \"TASK-2025-001\"]",
+      "edges": "TASK-2026-42, XTASK-2026-042, TASK-2026-0421 не засчитывать.",
+      "hint": "re.findall с lookaround",
+      "bonus": "Добавь разбор года в отдельное поле.",
+      "sources_labels": [
+        "Лабораторная 1: регулярные выражения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab1.md"
+      ],
+      "dependencies": [],
+      "kind": "regex",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 5 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_05/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef find_task_ids(text: str) -> list[str]:\n    pass\n",
+      "starter_files": {
+        "day_21.py": "import re\n\ndef find_task_ids(text: str) -> list[str]:\n    pass\n"
+      },
+      "starter_file": "starters/day_21.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-22",
+      "number": 22,
+      "week": 5,
+      "day": 2,
+      "week_title": "Регулярные выражения и база",
+      "title": "Нормализация телефонов",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "re",
+        "строки",
+        "множества"
+      ],
+      "signature": "normalize_phones(texts: list[str]) -> list[str]",
+      "description": "Из строк с российскими телефонами сделай список уникальных канонических номеров вида +7XXXXXXXXXX.",
+      "rules": "Принимаются номера из 11 цифр, начинающиеся на 7 или 8, либо +7 и ещё 10 цифр; разрешены пробелы, скобки, дефисы. Любые буквы или другие символы делают строку невалидной. Сохраняй порядок первого появления.",
+      "example": "[\"8 (999) 123-45-67\", \"+7 999 123 45 67\", \"89991112233\"] => [\"+79991234567\", \"+79991112233\"]",
+      "edges": "Короткие номера, +8, буквы, пустые значения.",
+      "hint": "re.fullmatch на допустимые символы, re.sub для цифр",
+      "bonus": "Верни количество невалидных строк.",
+      "sources_labels": [
+        "Лабораторная 1: регулярные выражения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab1.md"
+      ],
+      "dependencies": [],
+      "kind": "regex",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 5 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_05/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef normalize_phones(texts: list[str]) -> list[str]:\n    pass\n",
+      "starter_files": {
+        "day_22.py": "import re\n\ndef normalize_phones(texts: list[str]) -> list[str]:\n    pass\n"
+      },
+      "starter_file": "starters/day_22.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-23",
+      "number": 23,
+      "week": 5,
+      "day": 3,
+      "week_title": "Регулярные выражения и база",
+      "title": "Анализ логов",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "re",
+        "Counter"
+      ],
+      "signature": "count_log_levels(lines: list[str]) -> dict[str, int]",
+      "description": "Посчитай строки, начинающиеся с одного из уровней INFO, WARNING, ERROR, за которым идёт двоеточие и любое сообщение.",
+      "rules": "Пробелы в начале строки допускаются, регистр строго верхний. Верни словарь со всеми тремя ключами, даже если значение 0.",
+      "example": "[\"INFO: start\", \" ERROR: stop\", \"DEBUG: hi\", \"WARNING: slow\"] => {\"INFO\": 1, \"WARNING\": 1, \"ERROR\": 1}",
+      "edges": "INFOO:, ERROR без двоеточия не учитывать.",
+      "hint": "re.match(r\"^\\s*(INFO|WARNING|ERROR):\", ...)",
+      "bonus": "Разбей статистику по датам, если строки начинаются с YYYY-MM-DD.",
+      "sources_labels": [
+        "Лабораторная 1: регулярные выражения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab1.md"
+      ],
+      "dependencies": [],
+      "kind": "regex",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 5 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_05/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef count_log_levels(lines: list[str]) -> dict[str, int]:\n    pass\n",
+      "starter_files": {
+        "day_23.py": "import re\n\ndef count_log_levels(lines: list[str]) -> dict[str, int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_23.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-24",
+      "number": 24,
+      "week": 5,
+      "day": 4,
+      "week_title": "Регулярные выражения и база",
+      "title": "Серия одинаковых чисел",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "списки",
+        "индексы"
+      ],
+      "signature": "longest_equal_run(values: list[int]) -> tuple[int, int] | None",
+      "description": "Найди самую длинную подряд идущую группу одинаковых чисел и верни (начальный индекс, длина).",
+      "rules": "При равной длине выбирай первую группу. Для пустого списка верни None.",
+      "example": "[1, 1, 2, 2, 2, 3] => (2, 3)",
+      "edges": "Пустой список; один элемент; все одинаковые.",
+      "hint": "Перебирай индексы и меняй текущую группу при смене значения.",
+      "bonus": "Верни ещё само число.",
+      "sources_labels": [
+        "Лабораторная 1: регулярные выражения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab1.md"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 5 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_05/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def longest_equal_run(values: list[int]) -> tuple[int, int] | None:\n    pass\n",
+      "starter_files": {
+        "day_24.py": "def longest_equal_run(values: list[int]) -> tuple[int, int] | None:\n    pass\n"
+      },
+      "starter_file": "starters/day_24.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-25",
+      "number": 25,
+      "week": 5,
+      "day": 5,
+      "week_title": "Регулярные выражения и база",
+      "title": "Маскировка email",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "re.sub",
+        "группы"
+      ],
+      "signature": "mask_emails(text: str) -> str",
+      "description": "Замени все email по упрощённой модели на [EMAIL]: латинские буквы, цифры, точки, подчёркивания, плюсы и дефисы до @; после @ — доменное имя с точками и буквенным TLD длиной >=2.",
+      "rules": "Соседний текст должен сохраняться. Это учебный шаблон, не полная проверка стандарта email.",
+      "example": "\"Пиши на a.b+1@mail.ru и test@example.com!\" => \"Пиши на [EMAIL] и [EMAIL]!\"",
+      "edges": "Не маскируй строку без @ или без доменной зоны.",
+      "hint": "re.sub(pattern, \"[EMAIL]\", text)",
+      "bonus": "Верни отдельно число замен через re.subn.",
+      "sources_labels": [
+        "Лабораторная 1: регулярные выражения"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab1.md"
+      ],
+      "dependencies": [],
+      "kind": "regex",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 5 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_05/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef mask_emails(text: str) -> str:\n    pass\n",
+      "starter_files": {
+        "day_25.py": "import re\n\ndef mask_emails(text: str) -> str:\n    pass\n"
+      },
+      "starter_file": "starters/day_25.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-26",
+      "number": 26,
+      "week": 6,
+      "day": 1,
+      "week_title": "HTML, итераторы и закрепление",
+      "title": "HTML-каталог",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "BeautifulSoup",
+        "списки",
+        "атрибуты"
+      ],
+      "signature": "parse_catalog(html: str) -> list[tuple[str, int]]",
+      "description": "В локальной HTML-строке найди все элементы <article class=\"product\">, у каждого прочти текст <h2> и атрибут data-price (целое число).",
+      "rules": "Пропусти карточки без заголовка, с пустым названием или без положительной цены; никаких сетевых запросов.",
+      "example": "\"<article class=\"product\" data-price=\"120\"><h2>Чай</h2></article>\" => [(\"Чай\",120)]",
+      "edges": "Нет карточек, отсутствует price, мусорная цена.",
+      "hint": "BeautifulSoup(html,\"html.parser\"), select(...), get(...).",
+      "bonus": "Отсортируй товары по цене.",
+      "sources_labels": [
+        "Лекция 7: Web scraping",
+        "Лабораторная 2: Web scraping и итераторы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-7/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F_7_web_scraping.ipynb",
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab2.md"
+      ],
+      "dependencies": [
+        "beautifulsoup4"
+      ],
+      "kind": "html",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 6 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_06/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "from bs4 import BeautifulSoup\n\ndef parse_catalog(html: str) -> list[tuple[str, int]]:\n    pass\n",
+      "starter_files": {
+        "day_26.py": "from bs4 import BeautifulSoup\n\ndef parse_catalog(html: str) -> list[tuple[str, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_26.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-27",
+      "number": 27,
+      "week": 6,
+      "day": 2,
+      "week_title": "HTML, итераторы и закрепление",
+      "title": "Абсолютные ссылки",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "BeautifulSoup",
+        "urlparse",
+        "set"
+      ],
+      "signature": "absolute_links(html: str) -> list[str]",
+      "description": "Найди все адреса из href локального HTML и верни уникальные абсолютные ссылки http и https в порядке появления.",
+      "rules": "Адрес должен иметь схему http/https и непустой netloc. Пробелы вокруг href убирай; относительные ссылки и mailto пропускай.",
+      "example": "\"<a href=\"https://a.ru\">A</a><a href=\"/x\">X</a>\" => [\"https://a.ru\"]",
+      "edges": "Повторы, пустой href, https без домена.",
+      "hint": "urllib.parse.urlparse, soup.find_all(\"a\")",
+      "bonus": "Отбрасывай якоря #fragment, считая ссылки с разными якорями одной.",
+      "sources_labels": [
+        "Лекция 7: Web scraping",
+        "Лабораторная 2: Web scraping и итераторы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-7/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F_7_web_scraping.ipynb",
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab2.md"
+      ],
+      "dependencies": [
+        "beautifulsoup4"
+      ],
+      "kind": "html",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 6 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_06/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "from urllib.parse import urlparse\nfrom bs4 import BeautifulSoup\n\ndef absolute_links(html: str) -> list[str]:\n    pass\n",
+      "starter_files": {
+        "day_27.py": "from urllib.parse import urlparse\nfrom bs4 import BeautifulSoup\n\ndef absolute_links(html: str) -> list[str]:\n    pass\n"
+      },
+      "starter_file": "starters/day_27.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-28",
+      "number": 28,
+      "week": 6,
+      "day": 3,
+      "week_title": "HTML, итераторы и закрепление",
+      "title": "HTML → CSV",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "BeautifulSoup",
+        "csv",
+        "io"
+      ],
+      "signature": "html_table_to_csv(html: str) -> str",
+      "description": "Прочитай первую HTML-таблицу: каждая строка tr содержит ячейки th/td. Верни содержимое как CSV-текст.",
+      "rules": "Пустые строки без ячеек игнорируй; пробелы по краям текста ячеек убрать; все столбцы сохранять, включая пустые ячейки. CSV писать через csv.writer с lineterminator=\"\\n\".",
+      "example": "\"<table><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></table>\" => \"A,B\\n1,2\\n\"",
+      "edges": "Нет таблицы => пустая строка; текст с запятой должен корректно экранироваться.",
+      "hint": "io.StringIO, csv.writer",
+      "bonus": "Добавь возможность выбрать таблицу по индексу.",
+      "sources_labels": [
+        "Лекция 7: Web scraping",
+        "Лабораторная 2: Web scraping и итераторы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-7/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F_7_web_scraping.ipynb",
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab2.md"
+      ],
+      "dependencies": [
+        "beautifulsoup4"
+      ],
+      "kind": "html",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 6 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_06/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import csv\nimport io\nfrom bs4 import BeautifulSoup\n\ndef html_table_to_csv(html: str) -> str:\n    pass\n",
+      "starter_files": {
+        "day_28.py": "import csv\nimport io\nfrom bs4 import BeautifulSoup\n\ndef html_table_to_csv(html: str) -> str:\n    pass\n"
+      },
+      "starter_file": "starters/day_28.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-29",
+      "number": 29,
+      "week": 6,
+      "day": 4,
+      "week_title": "HTML, итераторы и закрепление",
+      "title": "Генератор пакетов",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "yield",
+        "range",
+        "срезы"
+      ],
+      "signature": "chunks(items: list[object], size: int)",
+      "description": "Напиши генератор, выдающий последовательные подсписки длиной не больше size.",
+      "rules": "При size <= 0 выбрасывай ValueError во время перебора генератора.",
+      "example": "list(chunks([1,2,3,4,5], 2)) => [[1,2],[3,4],[5]]",
+      "edges": "Пустые items; size больше длины; size=0.",
+      "hint": "for start in range(0, len(items), size): yield items[start:start+size]",
+      "bonus": "Поддержи произвольный iterable вместо списка.",
+      "sources_labels": [
+        "Лекция 7: Web scraping",
+        "Лабораторная 2: Web scraping и итераторы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-7/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F_7_web_scraping.ipynb",
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab2.md"
+      ],
+      "dependencies": [],
+      "kind": "html",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 6 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_06/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def chunks(items: list[object], size: int):\n    pass\n",
+      "starter_files": {
+        "day_29.py": "def chunks(items: list[object], size: int):\n    pass\n"
+      },
+      "starter_file": "starters/day_29.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-30",
+      "number": 30,
+      "week": 6,
+      "day": 5,
+      "week_title": "HTML, итераторы и закрепление",
+      "title": "Рейтинг слов — повторение",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "словари",
+        "sorted",
+        "функции"
+      ],
+      "signature": "rank_words(words: list[str]) -> list[tuple[str, int]]",
+      "description": "Получи список слов, удали пробелы по краям, нормализуй регистр и посчитай повторы.",
+      "rules": "Пустые слова пропускай. Сортируй по убыванию частоты, при равенстве — по алфавиту.",
+      "example": "[\" Cat \", \"dog\", \"cat\", \"DOG\", \"fox\"] => [(\"cat\",2),(\"dog\",2),(\"fox\",1)]",
+      "edges": "Пустой список; только пробелы; регистр.",
+      "hint": "dict.get(word, 0), sorted",
+      "bonus": "Верни только слова, встречающиеся больше одного раза.",
+      "sources_labels": [
+        "Лекция 7: Web scraping",
+        "Лабораторная 2: Web scraping и итераторы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025/blob/main/lection-7/%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F_7_web_scraping.ipynb",
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab2.md"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 6 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_06/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def rank_words(words: list[str]) -> list[tuple[str, int]]:\n    pass\n",
+      "starter_files": {
+        "day_30.py": "def rank_words(words: list[str]) -> list[tuple[str, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_30.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-31",
+      "number": 31,
+      "week": 7,
+      "day": 1,
+      "week_title": "NumPy и Pandas",
+      "title": "NumPy-матрица",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "numpy",
+        "axis",
+        "ndarray"
+      ],
+      "signature": "matrix_stats(matrix: list[list[int]]) -> tuple[list[int], list[int], float]",
+      "description": "Преобразуй прямоугольную непустую матрицу в numpy.ndarray и найди суммы строк, максимумы столбцов и среднее всех элементов.",
+      "rules": "Матрица непустая и прямоугольная, типы — числа; результаты отдай как обычные Python list, list, float.",
+      "example": "[[1,2,3],[4,5,6]] => ([6,15], [4,5,6], 3.5)",
+      "edges": "Матрица 1x1, отрицательные числа.",
+      "hint": "np.array(...), np.sum(axis=1), np.max(axis=0), np.mean()",
+      "bonus": "Добавь минимумы строк.",
+      "sources_labels": [
+        "Лабораторная 3: многомерные массивы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab3.md"
+      ],
+      "dependencies": [
+        "numpy"
+      ],
+      "kind": "numpy",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 7 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_07/day_01.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import numpy as np\n\ndef matrix_stats(matrix: list[list[int]]) -> tuple[list[int], list[int], float]:\n    pass\n",
+      "starter_files": {
+        "day_31.py": "import numpy as np\n\ndef matrix_stats(matrix: list[list[int]]) -> tuple[list[int], list[int], float]:\n    pass\n"
+      },
+      "starter_file": "starters/day_31.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-32",
+      "number": 32,
+      "week": 7,
+      "day": 2,
+      "week_title": "NumPy и Pandas",
+      "title": "Коррекция яркости",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "numpy",
+        "clip",
+        "astype"
+      ],
+      "signature": "adjust_brightness(pixels: list[list[int]], delta: int) -> list[list[int]]",
+      "description": "Получив 2D-матрицу пикселей (0–255), прибавь delta, обрезая значения до границ 0–255.",
+      "rules": "Используй numpy и знаковый целочисленный тип перед сложением, чтобы не было переполнения uint8. Верни вложенные обычные списки.",
+      "example": "[[0, 100], [250, 255]], delta=10 => [[10,110],[255,255]]",
+      "edges": "delta отрицателен, матрица 1x1. Вход всегда непустой и прямоугольный.",
+      "hint": "np.array(...,dtype=int), np.clip(...,0,255)",
+      "bonus": "Сделай отрицание цветов 255 - x.",
+      "sources_labels": [
+        "Лабораторная 3: многомерные массивы"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab3.md"
+      ],
+      "dependencies": [
+        "numpy"
+      ],
+      "kind": "numpy",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 7 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_07/day_02.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import numpy as np\n\ndef adjust_brightness(pixels: list[list[int]], delta: int) -> list[list[int]]:\n    pass\n",
+      "starter_files": {
+        "day_32.py": "import numpy as np\n\ndef adjust_brightness(pixels: list[list[int]], delta: int) -> list[list[int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_32.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-33",
+      "number": 33,
+      "week": 7,
+      "day": 3,
+      "week_title": "NumPy и Pandas",
+      "title": "Фильтрация Pandas",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "pandas",
+        "DataFrame",
+        "boolean mask"
+      ],
+      "signature": "filter_people(rows: list[dict[str, object]], min_age: int, city: str) -> list[str]",
+      "description": "На основе списка записей с полями name, age, city создай DataFrame, оставь людей возраста >= min_age из заданного города.",
+      "rules": "Верни имена по алфавиту. Для пустого списка сразу верни []. Поля гарантированно присутствуют.",
+      "example": "[{\"name\":\"Аня\",\"age\":20,\"city\":\"СПб\"},{\"name\":\"Олег\",\"age\":17,\"city\":\"СПб\"}], 18, \"СПб\" => [\"Аня\"]",
+      "edges": "Никто не подходит; пустые данные.",
+      "hint": "df[(df[\"age\"] >= min_age) & (df[\"city\"] == city)]",
+      "bonus": "Добавь сортировку по возрасту, затем имени.",
+      "sources_labels": [
+        "Лабораторная 4: Pandas"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab4.md"
+      ],
+      "dependencies": [
+        "pandas",
+        "numpy"
+      ],
+      "kind": "pandas",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 7 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_07/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import pandas as pd\n\ndef filter_people(rows: list[dict[str, object]], min_age: int, city: str) -> list[str]:\n    pass\n",
+      "starter_files": {
+        "day_33.py": "import pandas as pd\n\ndef filter_people(rows: list[dict[str, object]], min_age: int, city: str) -> list[str]:\n    pass\n"
+      },
+      "starter_file": "starters/day_33.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-34",
+      "number": 34,
+      "week": 7,
+      "day": 4,
+      "week_title": "NumPy и Pandas",
+      "title": "Продажи по категориям",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "pandas",
+        "groupby",
+        "sum"
+      ],
+      "signature": "category_revenue(rows: list[dict[str, object]]) -> dict[str, int]",
+      "description": "Из строк с полями category, price, qty построй DataFrame и вычисли суммарную выручку price * qty по категориям.",
+      "rules": "price и qty — неотрицательные целые; пустой вход возвращает {}; порядок ключей не имеет значения.",
+      "example": "[{\"category\":\"food\",\"price\":10,\"qty\":3},{\"category\":\"food\",\"price\":5,\"qty\":2}] => {\"food\":40}",
+      "edges": "Пустые данные; несколько категорий.",
+      "hint": "df[\"revenue\"] = df[\"price\"] * df[\"qty\"]; groupby(\"category\").sum()",
+      "bonus": "Отсортируй категории по выручке.",
+      "sources_labels": [
+        "Лабораторная 4: Pandas"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab4.md"
+      ],
+      "dependencies": [
+        "pandas",
+        "numpy"
+      ],
+      "kind": "pandas",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 7 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_07/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import pandas as pd\n\ndef category_revenue(rows: list[dict[str, object]]) -> dict[str, int]:\n    pass\n",
+      "starter_files": {
+        "day_34.py": "import pandas as pd\n\ndef category_revenue(rows: list[dict[str, object]]) -> dict[str, int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_34.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-35",
+      "number": 35,
+      "week": 7,
+      "day": 5,
+      "week_title": "NumPy и Pandas",
+      "title": "Дубликаты без библиотек",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "списки",
+        "словари"
+      ],
+      "signature": "duplicates(values: list[int]) -> dict[int, int]",
+      "description": "Верни словарь только тех целых чисел, которые встречаются в списке минимум дважды, со значениями — количества появлений.",
+      "rules": "Не применяй Counter и сторонние библиотеки.",
+      "example": "[1,2,1,3,2,2] => {1:2,2:3}",
+      "edges": "Пустой список, все уникальны.",
+      "hint": "counts[value] = counts.get(value,0) + 1",
+      "bonus": "Верни дубликаты в порядке второго появления.",
+      "sources_labels": [
+        "Повторение лекции 2"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 7 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_07/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "def duplicates(values: list[int]) -> dict[int, int]:\n    pass\n",
+      "starter_files": {
+        "day_35.py": "def duplicates(values: list[int]) -> dict[int, int]:\n    pass\n"
+      },
+      "starter_file": "starters/day_35.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-36",
+      "number": 36,
+      "week": 8,
+      "day": 1,
+      "week_title": "GUI и итоговое закрепление",
+      "title": "GUI-счётчик",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "PyQt5",
+        "QLabel",
+        "QPushButton",
+        "signals"
+      ],
+      "signature": "class CounterWindow(QWidget)",
+      "description": "Сделай окно PyQt5 с QLabel, тремя QPushButton: +, -, Сброс. На старте 0, метка отображает число.",
+      "rules": "Кнопки работают через clicked.connect. Класс должен иметь атрибут value (int), метод update_label и методы обработчиков.",
+      "example": "Открыли окно -> метка 0; нажали +,+,- -> 1; сброс -> 0",
+      "edges": "Для запуска нужен GUI и PyQt5; браузерный интерпретатор без Qt не сможет показать окно.",
+      "hint": "QVBoxLayout, QPushButton.clicked.connect",
+      "bonus": "Добавь запрет отрицательных значений.",
+      "sources_labels": [
+        "Лабораторная 5: PyQt"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab5.md"
+      ],
+      "dependencies": [
+        "PyQt5"
+      ],
+      "kind": "gui",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 8 · День 1",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_08/day_01.md",
+      "test_mode": "manual_gui",
+      "starter_code": "import sys\nfrom PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget\n\nclass CounterWindow(QWidget):\n\n    def __init__(self):\n        pass\n\n    def update_label(self) -> None:\n        pass\n\n    def increase(self) -> None:\n        pass\n\n    def decrease(self) -> None:\n        pass\n\n    def reset(self) -> None:\n        pass\n",
+      "starter_files": {
+        "day_36.py": "import sys\nfrom PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QWidget\n\nclass CounterWindow(QWidget):\n\n    def __init__(self):\n        pass\n\n    def update_label(self) -> None:\n        pass\n\n    def increase(self) -> None:\n        pass\n\n    def decrease(self) -> None:\n        pass\n\n    def reset(self) -> None:\n        pass\n"
+      },
+      "starter_file": "starters/day_36.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-37",
+      "number": 37,
+      "week": 8,
+      "day": 2,
+      "week_title": "GUI и итоговое закрепление",
+      "title": "GUI-проверка строки",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "PyQt5",
+        "QLineEdit",
+        "QLabel",
+        "signals"
+      ],
+      "signature": "class CheckWindow(QWidget)",
+      "description": "Сделай окно с QLineEdit, кнопкой Проверить и меткой результата. При нажатии проверь, является ли введённая строка палиндромом.",
+      "rules": "Игнорируй пробелы и регистр; пустую/пробельную строку считай невалидной. Показывай \"Палиндром\", \"Не палиндром\" либо \"Введите текст\".",
+      "example": "\"А роза упала на лапу Азора\" -> \"Палиндром\"",
+      "edges": "Для запуска нужен GUI и PyQt5. Знаки препинания НЕ игнорируй.",
+      "hint": "text.casefold(), replace(\" \", \"\"), [::-1]",
+      "bonus": "Вынеси логику в функцию и напиши тест.",
+      "sources_labels": [
+        "Лабораторная 5: PyQt"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-labs/blob/main/lab5.md"
+      ],
+      "dependencies": [
+        "PyQt5"
+      ],
+      "kind": "gui",
+      "optional_topic": true,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 8 · День 2",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_08/day_02.md",
+      "test_mode": "manual_gui",
+      "starter_code": "import sys\nfrom PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget\n\ndef check_palindrome(text: str) -> str:\n    pass\n\nclass CheckWindow(QWidget):\n\n    def __init__(self):\n        pass\n\n    def check(self) -> None:\n        pass\n",
+      "starter_files": {
+        "day_37.py": "import sys\nfrom PyQt5.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget\n\ndef check_palindrome(text: str) -> str:\n    pass\n\nclass CheckWindow(QWidget):\n\n    def __init__(self):\n        pass\n\n    def check(self) -> None:\n        pass\n"
+      },
+      "starter_file": "starters/day_37.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-38",
+      "number": 38,
+      "week": 8,
+      "day": 3,
+      "week_title": "GUI и итоговое закрепление",
+      "title": "Статистика событий",
+      "difficulty": 2,
+      "minutes": 20,
+      "skills": [
+        "словари",
+        "split",
+        "сортировка"
+      ],
+      "signature": "event_counts(lines: list[str]) -> dict[str, dict[str, int]]",
+      "description": "Разбери события формата YYYY-MM-DD TYPE (дата и тип, разделённые пробелами); составь вложенный словарь дата -> тип -> количество.",
+      "rules": "Дата проверяется только по шаблону 4 цифры-2 цифры-2 цифры, без календарной валидации. TYPE состоит из латинских букв в верхнем регистре. Неверные строки пропускай.",
+      "example": "[\"2026-01-01 LOGIN\", \"2026-01-01 LOGIN\", \"2026-01-02 LOGOUT\"] => {\"2026-01-01\":{\"LOGIN\":2}, \"2026-01-02\":{\"LOGOUT\":1}}",
+      "edges": "Пустые строки, неверный регистр типа, лишние части.",
+      "hint": "re.fullmatch, dict.setdefault",
+      "bonus": "Верни дату с максимальным числом событий.",
+      "sources_labels": [
+        "Смешанное повторение лекций 1–5"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 8 · День 3",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_08/day_03.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef event_counts(lines: list[str]) -> dict[str, dict[str, int]]:\n    pass\n",
+      "starter_files": {
+        "day_38.py": "import re\n\ndef event_counts(lines: list[str]) -> dict[str, dict[str, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_38.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-39",
+      "number": 39,
+      "week": 8,
+      "day": 4,
+      "week_title": "GUI и итоговое закрепление",
+      "title": "Учёт расходов",
+      "difficulty": 2,
+      "minutes": 25,
+      "skills": [
+        "class",
+        "csv",
+        "словари"
+      ],
+      "signature": "class ExpenseTracker: add(category, amount), total(category=None), save(path), load(path)",
+      "description": "Напиши класс, который хранит расходы как пары (категория, сумма), добавляет записи, вычисляет сумму по всем категориям или выбранной категории и сохраняет/читает CSV.",
+      "rules": "Суммы — положительные целые, категория непустая после strip. CSV имеет заголовки category,amount; load заменяет существующие записи и пропускает испорченные строки.",
+      "example": "add(\"food\", 100), add(\"taxi\", 50), total() => 150; total(\"food\") => 100",
+      "edges": "Пустой трекер, повреждённый CSV, пустые категории.",
+      "hint": "csv.DictReader/DictWriter, self._entries",
+      "bonus": "Сделай отчёт по категориям.",
+      "sources_labels": [
+        "Смешанное повторение лекций 1–5"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025"
+      ],
+      "dependencies": [],
+      "kind": "files",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 8 · День 4",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_08/day_04.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import csv\n\nclass ExpenseTracker:\n\n    def __init__(self):\n        pass\n\n    def add(self, category: str, amount: int) -> None:\n        pass\n\n    def total(self, category: str | None=None) -> int:\n        pass\n\n    def save(self, path: str) -> None:\n        pass\n\n    def load(self, path: str) -> None:\n        pass\n",
+      "starter_files": {
+        "day_39.py": "import csv\n\nclass ExpenseTracker:\n\n    def __init__(self):\n        pass\n\n    def add(self, category: str, amount: int) -> None:\n        pass\n\n    def total(self, category: str | None=None) -> int:\n        pass\n\n    def save(self, path: str) -> None:\n        pass\n\n    def load(self, path: str) -> None:\n        pass\n"
+      },
+      "starter_file": "starters/day_39.py",
+      "solution_languages": [
+        "python"
+      ]
+    },
+    {
+      "id": "py-40",
+      "number": 40,
+      "week": 8,
+      "day": 5,
+      "week_title": "GUI и итоговое закрепление",
+      "title": "Контрольная разминка",
+      "difficulty": 1,
+      "minutes": 20,
+      "skills": [
+        "срезы",
+        "словари",
+        "сортировка"
+      ],
+      "signature": "two_warmups(values: list[int], text: str) -> tuple[list[int], dict[str, int]]",
+      "description": "Реши две независимые части: (1) верни список уникальных чисел в порядке первого появления; (2) подсчитай слова текста без учёта регистра.",
+      "rules": "Слова — последовательности русских/латинских букв, как в задаче 6. Ответ — кортеж (список чисел, словарь частот).",
+      "example": "([2,1,2,3], \"Кот кот пес\") => ([2,1,3], {\"кот\":2,\"пес\":1})",
+      "edges": "Пустые входы; повторяющиеся значения.",
+      "hint": "seen=set(); re.findall(...)",
+      "bonus": "Напиши решение второй части без regex, для текста только на английском.",
+      "sources_labels": [
+        "Смешанное повторение лекций 1–5"
+      ],
+      "source_urls": [
+        "https://github.com/itsecd/application-programming-2025"
+      ],
+      "dependencies": [],
+      "kind": "core",
+      "optional_topic": false,
+      "solution_visibility": "locked_by_default",
+      "week_day_label": "Неделя 8 · День 5",
+      "recommended_minutes_min": 15,
+      "recommended_minutes_max": 25,
+      "is_repeat_only": true,
+      "status_default": "not_started",
+      "hint_reveal": "on_click",
+      "solution_reveal": "after_attempt_or_manual_confirm",
+      "task_md_file": "tasks/week_08/day_05.md",
+      "test_mode": "python_function_or_cli",
+      "starter_code": "import re\n\ndef two_warmups(values: list[int], text: str) -> tuple[list[int], dict[str, int]]:\n    pass\n",
+      "starter_files": {
+        "day_40.py": "import re\n\ndef two_warmups(values: list[int], text: str) -> tuple[list[int], dict[str, int]]:\n    pass\n"
+      },
+      "starter_file": "starters/day_40.py",
+      "solution_languages": [
+        "python"
+      ]
+    }
+  ]
+}

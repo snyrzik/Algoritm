@@ -18,3 +18,5 @@ student/day-03/l03-local-*/**
 student/day-04/l04-local-*/**
 !student/**/.gitkeep
 test-results/
+.private/
+student/python/

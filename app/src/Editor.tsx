@@ -15,6 +15,7 @@ import {
   indentWithTab,
 } from "@codemirror/commands";
 import { cpp } from "@codemirror/lang-cpp";
+import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
 import {
   bracketMatching,
@@ -57,7 +58,7 @@ export function Editor({
           bracketMatching(),
           highlightActiveLine(),
           keymap.of([indentWithTab, ...defaultKeymap, ...historyKeymap]),
-          ...(filename.endsWith(".md") ? [] : [cpp()]),
+          ...(filename.endsWith(".md") ? [] : [filename.endsWith('.py')?python():cpp()]),
           ...(theme === "dark"
             ? [oneDark]
             : [syntaxHighlighting(defaultHighlightStyle)]),

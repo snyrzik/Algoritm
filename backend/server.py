@@ -58,6 +58,22 @@ class Handler(BaseHTTPRequestHandler):
             path=urlparse(self.path).path
             parts=path.strip('/').split('/')
             if path=='/api/session': return self.send_json({'token':TOKEN,'profileId':storage.profile_id()})
+            if path.startswith('/api/python/'):
+                from . import python_recall as py
+                if parts[2]=='course' and len(parts)==3:
+                    return self.send_json({'course':py.catalog()['course'],'weeks':py.catalog()['weeks'],'tasks':[py.public_task(t) for t in py.catalog()['tasks']]})
+                if parts[2]=='progress' and len(parts)==3:return self.send_json(py.progress())
+                if len(parts)!=4:return self.send_json({'error':'Страница Python не найдена'},404)
+                value=py.task(parts[3])
+                with task_lock('python/'+value['id']):
+                    if parts[2]=='task':return self.send_json(py.detail(value))
+                    if parts[2]=='hint':return self.send_json({'text':value['hint']})
+                    if parts[2]=='solution':
+                        result=py.solution(value)
+                        return self.send_json(result if result is not None else {'error':'Эталон доступен после сохранённой самостоятельной попытки'},200 if result is not None else 403)
+                    if parts[2]=='bundle':
+                        payload=py.bundle(value);self.send_response(200);self.send_header('Content-Type','application/zip');self.send_header('Content-Disposition',f'attachment; filename="{value["id"]}-my-work.zip"');self.send_header('Content-Length',str(len(payload)));self.end_headers();self.wfile.write(payload);return
+                return self.send_json({'error':'Страница Python не найдена'},404)
             if path=='/api/day01/summary':
                 from .theory import summary
                 return self.send_json(summary())
@@ -154,6 +170,18 @@ class Handler(BaseHTTPRequestHandler):
             if 'application/json' not in self.headers.get('Content-Type',''): return self.send_json({'error':'Ожидается JSON'},415)
             body=json.loads(self.rfile.read(length) or '{}')
             path=urlparse(self.path).path
+            if path.startswith('/api/python/'):
+                from . import python_recall as py
+                parts=path.strip('/').split('/')
+                if len(parts)==3 and parts[2]=='learning':return self.send_json(py.learning(body))
+                if len(parts)!=4:return self.send_json({'error':'Маршрут Python не найден'},404)
+                value=py.task(parts[3])
+                with task_lock('python/'+value['id']):
+                    if parts[2]=='files':
+                        result=py.save_files(value,body)
+                        return self.send_json(result if result else {'error':'Файл изменён в IDE. Скачайте свой черновик перед загрузкой версии с диска.','conflict':True},200 if result else 409)
+                    if parts[2]=='state':return self.send_json(py.mark(value,body))
+                return self.send_json({'error':'Маршрут Python не найден'},404)
             if path=='/api/learning':
                 from .learning import update
                 return self.send_json(update(body))

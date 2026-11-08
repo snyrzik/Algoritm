@@ -1,0 +1,674 @@
+{
+  "AGENT_INTEGRATION.md": {
+    "sha256": "1650c32fb7f1aaf821214321e21508f79e64dda6884942cdbd52aa8df345dbc5",
+    "private": false
+  },
+  "README.md": {
+    "sha256": "370630a973ffa7ab577ccb52977ffdd60a1fc9af46fa219f0451583770387eaf",
+    "private": false
+  },
+  "explanations/day_01.md": {
+    "sha256": "ee37a936e1cb2f1bfb33709acdfdc4cacbc46e314df5f99d892073afebdd5d5f",
+    "private": true
+  },
+  "explanations/day_02.md": {
+    "sha256": "70f98fb7e86a7584c5bca598a981a318057d7ea35fc1bd88b6ad32bab58c770a",
+    "private": true
+  },
+  "explanations/day_03.md": {
+    "sha256": "f3662b8e37385c1620a276fe97cc8541802fb4ca9e40a4891ff365c238f2f9af",
+    "private": true
+  },
+  "explanations/day_04.md": {
+    "sha256": "e211f2a8cbf2448042459eacfed1974bed1a9e206ba944176d98884e36d430e9",
+    "private": true
+  },
+  "explanations/day_05.md": {
+    "sha256": "e00f4ee4352ea24f2b35ddc944f10e6aa91457801cb89608f8e85f3727f6b7af",
+    "private": true
+  },
+  "explanations/day_06.md": {
+    "sha256": "0fd74bd20b87f39f3ba89ef7b2cb7a2b68184986f62340155ac9db42c9df9f02",
+    "private": true
+  },
+  "explanations/day_07.md": {
+    "sha256": "9eaf8d3d2d0adc2ab34c5fb0604be1ab808d9887a8fb8cf961b8dec213334ea7",
+    "private": true
+  },
+  "explanations/day_08.md": {
+    "sha256": "0320723193338f0a6f974012214273a09df1d6837f208dd2af9da03409213918",
+    "private": true
+  },
+  "explanations/day_09.md": {
+    "sha256": "39c525eb0d79d7a568e514e600afb77bb3ca714321f79f89fae81522be4494aa",
+    "private": true
+  },
+  "explanations/day_10.md": {
+    "sha256": "c0527cbac3fc78540be04a875a4858e2e34402a447c964a1fe689832a69d9b5e",
+    "private": true
+  },
+  "explanations/day_11.md": {
+    "sha256": "deafdd7f36e147312cc3d230cca84b9c1f4f07dc388535d1daf0f3dd902b2c49",
+    "private": true
+  },
+  "explanations/day_12.md": {
+    "sha256": "7dac85a6715f74c27a4b664a1bed708ed3969c852aca39bc29f6c719ec150490",
+    "private": true
+  },
+  "explanations/day_13.md": {
+    "sha256": "3bf5d7d079011de322832b116039006f344f07834e6ab44d3c39fe5dfdf1b9e4",
+    "private": true
+  },
+  "explanations/day_14.md": {
+    "sha256": "09a73b52d9757942b1a7e6dc3b4e3e54e7d0df4a57cc6cb6eef64fb3bf40aa0e",
+    "private": true
+  },
+  "explanations/day_15.md": {
+    "sha256": "dc1120e68f641f87231218cc7a76e500b418098cf383cf555f8c933b71e6abf6",
+    "private": true
+  },
+  "explanations/day_16.md": {
+    "sha256": "65c855cc7c80a543b99abf99464aea381cbc719e8c7cf236a65a34fd4db131b2",
+    "private": true
+  },
+  "explanations/day_17.md": {
+    "sha256": "9d1f5e32b53378e6aaa866a82cb04cef38c6fc7868d814e2bb958069ee583e62",
+    "private": true
+  },
+  "explanations/day_18.md": {
+    "sha256": "9c796831081bf0f6c81a2bb08e75c7f2e84bdc9ec24c3c38ea295bd968291da5",
+    "private": true
+  },
+  "explanations/day_19.md": {
+    "sha256": "483201e3bfc307ea3d45540abace589d011a58ce5601b74e0c42ea80fd4868d2",
+    "private": true
+  },
+  "explanations/day_20.md": {
+    "sha256": "ff9ea87897f731a02dc897035391d61e6973d9d60afeb77db081dfc6ee81d06e",
+    "private": true
+  },
+  "explanations/day_21.md": {
+    "sha256": "29284a74081c5344339159e72c064d010ff241529d2446fd4253ed2b4accffb2",
+    "private": true
+  },
+  "explanations/day_22.md": {
+    "sha256": "620329c6c861fe55051a3fa5a8678664cc4173cebd195f922a7af43ca03d9128",
+    "private": true
+  },
+  "explanations/day_23.md": {
+    "sha256": "2c20040c58654b4bf4e13c646af32fe1f9aac062818612734500723d670db216",
+    "private": true
+  },
+  "explanations/day_24.md": {
+    "sha256": "08ee183f4bace4ff4d4b6dd3bd6812036c01d12e07e0370cd79d07de0bb62acf",
+    "private": true
+  },
+  "explanations/day_25.md": {
+    "sha256": "c3c8088d7903a70ebb4955c0273db8dd820f114e580e5682e3ee4e1b9c834d94",
+    "private": true
+  },
+  "explanations/day_26.md": {
+    "sha256": "0ddad44c65ed1e1359332cf153f2c1c054c5c2c94fe2e508524ab52902a502b5",
+    "private": true
+  },
+  "explanations/day_27.md": {
+    "sha256": "7081db697fa0b7cb13841303714862c1a475df2f4801dba6331f1cc57e6cf456",
+    "private": true
+  },
+  "explanations/day_28.md": {
+    "sha256": "4c523d1db2973e2db0732bfebae6e0463a613b9a04e5a700b10e632013e80bc7",
+    "private": true
+  },
+  "explanations/day_29.md": {
+    "sha256": "fca17cf00d5914e946523955f839e05baa1e69498809f39c64534f392725840e",
+    "private": true
+  },
+  "explanations/day_30.md": {
+    "sha256": "359c17c0dac0248b5321ac70e09d9b9f3c95f15c8b735fb87a04881e0a02ec5f",
+    "private": true
+  },
+  "explanations/day_31.md": {
+    "sha256": "71be41279c5949726f484fee19662e2a02bfa21c30e3fb3fd96cf3542de6a7cc",
+    "private": true
+  },
+  "explanations/day_32.md": {
+    "sha256": "422b33c282a1adc0179f544eb10b0ee6427aa96604f7b68e7ccf8b83778f6404",
+    "private": true
+  },
+  "explanations/day_33.md": {
+    "sha256": "8f2e5a115ef2a3c0e1e23d375463b189546cb7051338863bd1aab76e97fda801",
+    "private": true
+  },
+  "explanations/day_34.md": {
+    "sha256": "8eaf6cd37a1235e7df55c28272acbe2b8b7fc032cbcb6bbb23ccc41f3cc5255e",
+    "private": true
+  },
+  "explanations/day_35.md": {
+    "sha256": "85980983d49d4434c9844829e4772829919bf6b38882412976d45f438c94441d",
+    "private": true
+  },
+  "explanations/day_36.md": {
+    "sha256": "607bb089736c5e1bb545466e99d34bea48ce798da27081ac585286affb9585f4",
+    "private": true
+  },
+  "explanations/day_37.md": {
+    "sha256": "4decd77df0ece3ac6253b140a2ebf6d07fff46cc05a920873759a2213b6e0592",
+    "private": true
+  },
+  "explanations/day_38.md": {
+    "sha256": "f69a4f35184c5f715890182f535d6e8425345fd768e361d087ac0158a497dfaf",
+    "private": true
+  },
+  "explanations/day_39.md": {
+    "sha256": "cb0506b6c560b8b0e608b485e153a7f1fcded432d49f1182a2bb4c6e4c908640",
+    "private": true
+  },
+  "explanations/day_40.md": {
+    "sha256": "729cdf16a674c2c232b5b2e7add5cb4f01c35818c136065cb72a9e707d122c77",
+    "private": true
+  },
+  "import/private_solutions.json": {
+    "sha256": "7c79f2866de059d110a2b8025e570a1d23bdb11d1f860286e372407c6f96cbd0",
+    "private": true
+  },
+  "import/public_catalog.json": {
+    "sha256": "31707ab295a0228c9896eb9e434ecac626293c85762ecf13907dfc76e69e2fb1",
+    "private": false
+  },
+  "requirements.txt": {
+    "sha256": "6b611ded237617bf9f8d0849eec93b29e934adb63a2efa06f06d523226a1be00",
+    "private": false
+  },
+  "solutions/day_01.py": {
+    "sha256": "de85ec407b26cf405b941e0b1b351ee334905a4eabe9a9237d5318c222e8f00d",
+    "private": true
+  },
+  "solutions/day_02.py": {
+    "sha256": "f2cd8db1a0af1921e49abf631a3cef43d46ba09e79c80797e44fc3aa10641002",
+    "private": true
+  },
+  "solutions/day_03.py": {
+    "sha256": "2693e7b0a836e51a409ac3feed3a03e52dc610e2088ca944742e68dcd001bfb2",
+    "private": true
+  },
+  "solutions/day_04.py": {
+    "sha256": "22102303246d79f649ae961a6f603a5e93bf9a2de3f44dc39c0e834f9640270f",
+    "private": true
+  },
+  "solutions/day_05.py": {
+    "sha256": "47d0af340c40c1f927ea520128128fa8e9971442b4dd2f33818489ff30505eb5",
+    "private": true
+  },
+  "solutions/day_06.py": {
+    "sha256": "e5aa6cfcaf24d7dcab249ef173c06644eeeba69a486603f1d04f563f27792de1",
+    "private": true
+  },
+  "solutions/day_07.py": {
+    "sha256": "150a813be1ada8db5b39e70d2b4249cf6444eaf85594ebaf24d043755a3a98e3",
+    "private": true
+  },
+  "solutions/day_08.py": {
+    "sha256": "130dd0e7801ca268930982cbe68765e10641687d45af76426521769360e2f047",
+    "private": true
+  },
+  "solutions/day_09.py": {
+    "sha256": "df80de292af217089ab78e59e0803fac75baa1bed3f88652f23af54ab10c4575",
+    "private": true
+  },
+  "solutions/day_10.py": {
+    "sha256": "8423d55d3b5133e8ed80b16634521089c6070633e7f6d5cb9dbe85b9255d3028",
+    "private": true
+  },
+  "solutions/day_11.py": {
+    "sha256": "1771316b911b991df3f3f3b1af43b272dcc7407ea3d0230dfe8c049436980fd9",
+    "private": true
+  },
+  "solutions/day_12.py": {
+    "sha256": "784e95fa9ad3eb299581193e3965fc1e0496c91d289b667769266295c17802e4",
+    "private": true
+  },
+  "solutions/day_13.py": {
+    "sha256": "52dd09a0b8df969c65c5b249f90b251245f763be42f7ac5ff82a7449f4d37825",
+    "private": true
+  },
+  "solutions/day_14/main.py": {
+    "sha256": "02d8819b2642b10a91b327ceb3eb1ea28bb87102ec8345f80cdc5fb5a9de2dcc",
+    "private": true
+  },
+  "solutions/day_14/utils.py": {
+    "sha256": "507b2b911db4e17d2eba743862fd14d4bd6137490981aa2a4dfa934db1a7228b",
+    "private": true
+  },
+  "solutions/day_15.py": {
+    "sha256": "c0a6eb05d55fce9b2ddb60ef9a8f71fac0917dc3c1a4678d0bc6ac1a00c2050e",
+    "private": true
+  },
+  "solutions/day_16.py": {
+    "sha256": "8b454561ea60138fce2f6ca43fbbadebfb4f6d6985d1e609d5fb075cad2c523e",
+    "private": true
+  },
+  "solutions/day_17.py": {
+    "sha256": "43df63c07f0884b8e78b804ac0c786c98f0051902fdab1c4c523be24c522ebef",
+    "private": true
+  },
+  "solutions/day_18.py": {
+    "sha256": "a733e5e207a1324ed834d2002f21cc5804193f9f0c2ed59290bd50509398cb06",
+    "private": true
+  },
+  "solutions/day_19.py": {
+    "sha256": "3a15ae37c8f2bd0bf7cf05eb7240ad86dad950298bd83b94655152bcfdf20fc5",
+    "private": true
+  },
+  "solutions/day_20.py": {
+    "sha256": "30bf83606343146bff4237573dfd24d4ca0b49adee42a67ce9bbf20de03a906a",
+    "private": true
+  },
+  "solutions/day_21.py": {
+    "sha256": "e3fc4a0399b270e9760bbc4aa49adc91a443f21a15669da25bca2a3576082877",
+    "private": true
+  },
+  "solutions/day_22.py": {
+    "sha256": "94563ae4aa8fd8279cafe2dad508b0a05d059eee6a884a79cb733d3d6fe9a6fe",
+    "private": true
+  },
+  "solutions/day_23.py": {
+    "sha256": "283824b2c1131945c95ee8ac4435809c992d8fa0a3a9b3fc73372b9b3a218ac4",
+    "private": true
+  },
+  "solutions/day_24.py": {
+    "sha256": "d87d38d02e408c715f5fef093580d877af7bee7e223d35ff98d9bba94038c2be",
+    "private": true
+  },
+  "solutions/day_25.py": {
+    "sha256": "1f1155e5a0ca3a34aac9deee829562182ed25260e6eca5fae139af4c24b0d95a",
+    "private": true
+  },
+  "solutions/day_26.py": {
+    "sha256": "57764354eab7443450afd61f619f2248d940f02fc8106752ae2f00d41d89faae",
+    "private": true
+  },
+  "solutions/day_27.py": {
+    "sha256": "6ee243ebc1cbe48db0b5c8e83fc66d568a0df3f78c8f07c52641f8509065bb24",
+    "private": true
+  },
+  "solutions/day_28.py": {
+    "sha256": "063475d1fa62314de9927e31b5115c72cd239e60b4a7e55410449b057d06d73d",
+    "private": true
+  },
+  "solutions/day_29.py": {
+    "sha256": "9b0341e661aaa3bc696734972ef1e6d78674873f37b811a3d0f8fe6c7fd0e925",
+    "private": true
+  },
+  "solutions/day_30.py": {
+    "sha256": "59ab54567cd47e89f61219f3515fe37fbab404dd81e295df66e2dec05e79e860",
+    "private": true
+  },
+  "solutions/day_31.py": {
+    "sha256": "31a2ec97ff0050809ee48baf1abfc5cc5f71e4747f58cb9fccff242f77d85730",
+    "private": true
+  },
+  "solutions/day_32.py": {
+    "sha256": "49a3fbf797ffc8e79e47cda04f89179d9dcd2df02cb9dd9ee0ec6f3af659914a",
+    "private": true
+  },
+  "solutions/day_33.py": {
+    "sha256": "c220091116831b190aeeaca4a6f806a85e928db372c30b81081decf0d7bc9c10",
+    "private": true
+  },
+  "solutions/day_34.py": {
+    "sha256": "6291763fa0f6144b4a3f4f0c236704829d123b675ddd8bff0fbaf8d31fc01950",
+    "private": true
+  },
+  "solutions/day_35.py": {
+    "sha256": "638c490f6e3980a88f4622a0545eb1bdf9fc2c776be11f7a5977b5f4433796d9",
+    "private": true
+  },
+  "solutions/day_36.py": {
+    "sha256": "87da1b753e32dc1c348ff4681de044c925f7978de66c53f7d307660a60e33bc8",
+    "private": true
+  },
+  "solutions/day_37.py": {
+    "sha256": "8c3ab199bd6bb798a0ea65e4e25d6710dd28ec7a2b2ff1ef0b52304b5bc5f81f",
+    "private": true
+  },
+  "solutions/day_38.py": {
+    "sha256": "5cb2e11ffbac97b9d5db50a59db7275dd4bfafcea324dc5a4e3f7f63bccc32ad",
+    "private": true
+  },
+  "solutions/day_39.py": {
+    "sha256": "d8c376b4f454f5fc5d7ac4e2555c983ce1e524363d92af167173941e27fcdaae",
+    "private": true
+  },
+  "solutions/day_40.py": {
+    "sha256": "6c3214502f883aecb0be2743ca00dd034d498689c81955f70001932683d387a0",
+    "private": true
+  },
+  "starters/day_01.py": {
+    "sha256": "477c02b9eca9208685491df32f18d103a9a411f545abc022c8b3fe363c29e498",
+    "private": false
+  },
+  "starters/day_02.py": {
+    "sha256": "d4d2e9206091a357a5a3addd36e1e3171ddeab2c431f8e9fc97820fed2cdd6aa",
+    "private": false
+  },
+  "starters/day_03.py": {
+    "sha256": "849d3dd75f5947b86dd50f09f5c210b064dd472eef1e6ad61d3cb45292fccaf3",
+    "private": false
+  },
+  "starters/day_04.py": {
+    "sha256": "84dcf6cf3ed6a7d49f35cc4505e0971166335aa09c6ff47414330ea89e2c01ce",
+    "private": false
+  },
+  "starters/day_05.py": {
+    "sha256": "77533e693478fca9e536aee3051df7b3d43346054c00db3909d8fed8edb996b6",
+    "private": false
+  },
+  "starters/day_06.py": {
+    "sha256": "1f6fd9e78b5c9d7d6677defad6252be8f3abbbfcabe9b562ca3731c0836623cf",
+    "private": false
+  },
+  "starters/day_07.py": {
+    "sha256": "6ffbe91860b80ca530541649a2436cbe9d6ec46e87c3d252e6afb2aad8c621a3",
+    "private": false
+  },
+  "starters/day_08.py": {
+    "sha256": "fe09151b436955e2b6668338e4a0cc9e8b6cf94811072653e9b1b8b58f335ad0",
+    "private": false
+  },
+  "starters/day_09.py": {
+    "sha256": "885371b56663208aaab14fcd46386f6d1900d0bb059adf5e5c340e5ef686c5a3",
+    "private": false
+  },
+  "starters/day_10.py": {
+    "sha256": "01e2e77f8e3bff04367487e1665807d4338701d8c4bbb4507c0910e62a048451",
+    "private": false
+  },
+  "starters/day_11.py": {
+    "sha256": "6a43e40c3cd203779f41ca9d56c80b924d8fef4067e40255e580ac579b4a9412",
+    "private": false
+  },
+  "starters/day_12.py": {
+    "sha256": "1e634eba0399d21eab9d8fc80e668a4d4b71be2e06339c400122ba367f5d7980",
+    "private": false
+  },
+  "starters/day_13.py": {
+    "sha256": "12e6a2fc0c5dc93f4c077fb624f8dd70da2642011af856e0055649693d4b3aad",
+    "private": false
+  },
+  "starters/day_14/main.py": {
+    "sha256": "3b1ce849271aa3586f2f01195ab8875d21aa2724167fd34fc4c15cd7ba65e3a1",
+    "private": false
+  },
+  "starters/day_14/utils.py": {
+    "sha256": "defec499144fc1c9b52529b0ae6ed5af9b7edabf1ac5016b0e9502b882d42ca7",
+    "private": false
+  },
+  "starters/day_15.py": {
+    "sha256": "20cb86d2e2155b463c68656dd3ee39f0542703007cbdb4e388e92394303c9896",
+    "private": false
+  },
+  "starters/day_16.py": {
+    "sha256": "296c79746e0f6cd0b7e4051688374bb8be76cccc7bf8ca6842236bd5d5e57f4a",
+    "private": false
+  },
+  "starters/day_17.py": {
+    "sha256": "1b005534045dbf6072cde497849cdbd9e84b85fea859a27f2968893e539af95d",
+    "private": false
+  },
+  "starters/day_18.py": {
+    "sha256": "5e32b9c41cceeb2cfdcfc6c6cd2cc3e225d1c6b789b45a453f4dc2b54873dcd9",
+    "private": false
+  },
+  "starters/day_19.py": {
+    "sha256": "a559bf2ac2fdc66ffbe064b9cb2a45f56c194d9698e2cf87517db89ba30cf06a",
+    "private": false
+  },
+  "starters/day_20.py": {
+    "sha256": "e68fbd6545ef6a19336ac64b7c835a29de56ce8b95960e8138f4862023f324d5",
+    "private": false
+  },
+  "starters/day_21.py": {
+    "sha256": "b10ab97d98e3d373fe187a380f80b77f757f05cea2489f45d55f2ad8473ad60a",
+    "private": false
+  },
+  "starters/day_22.py": {
+    "sha256": "d1cd02d1a5ca63b7c5e6c482d210b2c29e1dce3696067fc76d9ea26c70189a02",
+    "private": false
+  },
+  "starters/day_23.py": {
+    "sha256": "2effaf4f272bf9765352931b4244993873cc39a47e979d19a41d7690c5910573",
+    "private": false
+  },
+  "starters/day_24.py": {
+    "sha256": "d0b7d124a130e49ae45166d809dad5c46c31c023aa8d5961fb4deaf30f49b585",
+    "private": false
+  },
+  "starters/day_25.py": {
+    "sha256": "4b7e5bc945052bd7604eeb6c9cbca5aa1467e44ea1b9a1d49acb3433ca41e0b5",
+    "private": false
+  },
+  "starters/day_26.py": {
+    "sha256": "5d45b8872f07a1886032c2dd9188576202e4b538ba786ad7e069b2dbac8a05fc",
+    "private": false
+  },
+  "starters/day_27.py": {
+    "sha256": "666b46bec67972c82c1a92a258faacbd2cce7ec77c20c050103cc340370e29b9",
+    "private": false
+  },
+  "starters/day_28.py": {
+    "sha256": "22d897769af36e8e5d7ae8c44470bdd961d4eb91087df40c4332daf68f1b1108",
+    "private": false
+  },
+  "starters/day_29.py": {
+    "sha256": "c50e1c4ed554f83c36f7f670085856d37e11e23aa7e809af66db85fecbc72b45",
+    "private": false
+  },
+  "starters/day_30.py": {
+    "sha256": "1d8761d338269c505ed785e92cbd4e449edc2232d44c5a82a2672f9d25b2dbc9",
+    "private": false
+  },
+  "starters/day_31.py": {
+    "sha256": "a5052a3e1d55d8dc5afab4c4477df69c9a7b5398117f4e748e2fb23a5d699911",
+    "private": false
+  },
+  "starters/day_32.py": {
+    "sha256": "f7737adff7a8a9f4176a18dd9892946ed610980e0ecf2f69d51c095fa76e6738",
+    "private": false
+  },
+  "starters/day_33.py": {
+    "sha256": "26689eb24f0bfe7f82c3932f3b3d3f719b1f44c298fa437db0285ee801d22840",
+    "private": false
+  },
+  "starters/day_34.py": {
+    "sha256": "db426ac32739d9957d92db4e103cba5718f276413fbb3939c55fdc731ed100a5",
+    "private": false
+  },
+  "starters/day_35.py": {
+    "sha256": "73ea77c0b6d26a2259a34dddcca577b9ff587b4eed218aa7cb19cca25e7a249a",
+    "private": false
+  },
+  "starters/day_36.py": {
+    "sha256": "e6f8502254e8d5b8c53e92454bad3b22986906053c3250352b47e94727f3fb50",
+    "private": false
+  },
+  "starters/day_37.py": {
+    "sha256": "cab8bf15bdd91d6b6bc1b3758c276968f9217d3607272e962d752700884f89f0",
+    "private": false
+  },
+  "starters/day_38.py": {
+    "sha256": "a913e77ac8ff15c028e680b65afa92e5c2417e247fc2173128f8699f05b929d7",
+    "private": false
+  },
+  "starters/day_39.py": {
+    "sha256": "720e3eb76aad693c7522a73351ad54169cd6921c9d74d98b65acae316faf546c",
+    "private": false
+  },
+  "starters/day_40.py": {
+    "sha256": "614548ff8feaef2ca99049bad992e4992ba6fc4971374203da89b912466fe2a5",
+    "private": false
+  },
+  "tasks/week_01/day_01.md": {
+    "sha256": "43c2cc4f2587813fc0b3b2d5630bacee3201a0231ed9c088958ee0c10413ed34",
+    "private": false
+  },
+  "tasks/week_01/day_02.md": {
+    "sha256": "dfeccc77fe8f5c097cb839e433d8f53ad4866c9f058837fcbd5ce0373391364c",
+    "private": false
+  },
+  "tasks/week_01/day_03.md": {
+    "sha256": "cacc18265584130a11bffe35f4b23525c7c0f0b6f9929dd2cce765a3308dc70a",
+    "private": false
+  },
+  "tasks/week_01/day_04.md": {
+    "sha256": "19dfee27641fb2d3408c82d898270dcfa5fe98e98e17071ce0175cb07c352282",
+    "private": false
+  },
+  "tasks/week_01/day_05.md": {
+    "sha256": "d3f9e0cfcd4d3bedb5d7fae79550478f5bbba4435afc6acddd7384fdad73f848",
+    "private": false
+  },
+  "tasks/week_02/day_01.md": {
+    "sha256": "c33faa402d13c6cde219ef243c099f6e299ca7aee0d66bd635b7cbfd6ff45ace",
+    "private": false
+  },
+  "tasks/week_02/day_02.md": {
+    "sha256": "cca195e8bd79e2ddc238026dc1ec9e09d9b7aefea4e24f5b0bb85c758d342e7d",
+    "private": false
+  },
+  "tasks/week_02/day_03.md": {
+    "sha256": "40c5a68be9f24aea349cfa675f907bf69ab212a459b673550c5e1bad2d97290c",
+    "private": false
+  },
+  "tasks/week_02/day_04.md": {
+    "sha256": "8b0e6564699b15251f87790e0e1702243883ddfe598cc498dd2c7180ce03811a",
+    "private": false
+  },
+  "tasks/week_02/day_05.md": {
+    "sha256": "c353cb5e82272956ed834003ecc3be96993fa17b33aa4d45755ce9bf2e9805e5",
+    "private": false
+  },
+  "tasks/week_03/day_01.md": {
+    "sha256": "7c556923216a0b07d5ab4024d845099789433da0ff3183bf1e6dabd025c3ebce",
+    "private": false
+  },
+  "tasks/week_03/day_02.md": {
+    "sha256": "d55f749f55230d6a81129748a91c1c5bd53597c6938928bbd794ea113c80fbb7",
+    "private": false
+  },
+  "tasks/week_03/day_03.md": {
+    "sha256": "804ac2d567b19e22d221554f09d8a3468da4a2a683b87fce4e9b8bd32d28080f",
+    "private": false
+  },
+  "tasks/week_03/day_04.md": {
+    "sha256": "fd8e62b5ee8144f1ec403eee6d62ec282b945c327c65d5e53ebcc7b88102924e",
+    "private": false
+  },
+  "tasks/week_03/day_05.md": {
+    "sha256": "45271820b83c3ed3646c996940a013710325fc057c51f4a006d337f75e26d93a",
+    "private": false
+  },
+  "tasks/week_04/day_01.md": {
+    "sha256": "ce1b9dd6414d95e2541b2390cba943723c06a01deaa9887d6ea6301774ef71af",
+    "private": false
+  },
+  "tasks/week_04/day_02.md": {
+    "sha256": "af9670bc97299b22b5099b313932bf6e2e0943d99b98b4e069b441c0ac23c34f",
+    "private": false
+  },
+  "tasks/week_04/day_03.md": {
+    "sha256": "1b606e2eab51e79a3d4e8e14e1265f12797c4de8385d612710dde04358fe569a",
+    "private": false
+  },
+  "tasks/week_04/day_04.md": {
+    "sha256": "50bdef436931108374d641c20ac5cb7f41152a885d0874b9874df0fe3f13662a",
+    "private": false
+  },
+  "tasks/week_04/day_05.md": {
+    "sha256": "58f8f4d5dff7929ce6c437bdfe2ca2954ff937c3323371225f1fb2bc7b5ddeea",
+    "private": false
+  },
+  "tasks/week_05/day_01.md": {
+    "sha256": "d96cb6796aeaea650f1699aced4db23259bd8756849aa7266ea81d8585261f95",
+    "private": false
+  },
+  "tasks/week_05/day_02.md": {
+    "sha256": "87c6278acd2272cd473ab1228a9ec170cd39ad44cacafc8bea7fa4b1cebcf30c",
+    "private": false
+  },
+  "tasks/week_05/day_03.md": {
+    "sha256": "69e426be6e0b9ba23cc53baebfd2f4b5f63e2113fa86269aade1417641ba8705",
+    "private": false
+  },
+  "tasks/week_05/day_04.md": {
+    "sha256": "566319ed51efe9fd6f2def00bf113d1d13869a23f24d0cf99e3b74b0d163102f",
+    "private": false
+  },
+  "tasks/week_05/day_05.md": {
+    "sha256": "0d9d0118fb518df29ef51b02a0090f6ae59a081b8768ab033bd1ed1e36f48e8f",
+    "private": false
+  },
+  "tasks/week_06/day_01.md": {
+    "sha256": "8f8cf2113eab4da5fbae58f22015b352d231a62740876c4cd028dc519017aad5",
+    "private": false
+  },
+  "tasks/week_06/day_02.md": {
+    "sha256": "eb85024a7565700cab15f16b512b913144a09e59c77682fa57404196f79fb579",
+    "private": false
+  },
+  "tasks/week_06/day_03.md": {
+    "sha256": "a9cdcf53deb8d79610e8a0a3bacf2e5a045dad18bbaa4597caed136930b2c3ef",
+    "private": false
+  },
+  "tasks/week_06/day_04.md": {
+    "sha256": "22134bb3cb5a4c5d52646e75f32adbde42a426b52bda1603025e1a1571dccafe",
+    "private": false
+  },
+  "tasks/week_06/day_05.md": {
+    "sha256": "c44fc2ee05d4c36547f4117638e56b44d65937ced293a4cb31e11e5f5cc3b687",
+    "private": false
+  },
+  "tasks/week_07/day_01.md": {
+    "sha256": "c74b8506d0728a98f6db53f7dfda5c76965b6622b2eab636ea93df858fda2c51",
+    "private": false
+  },
+  "tasks/week_07/day_02.md": {
+    "sha256": "2a9f1ef1a911ecac152274e6c4ba85e7c6e1c9223539f89e505ebb09c87e2b87",
+    "private": false
+  },
+  "tasks/week_07/day_03.md": {
+    "sha256": "7fbf8ab7ef5ea88737f78a0e0ecfe52812a0dc7bd974b2d75771f986be8d696f",
+    "private": false
+  },
+  "tasks/week_07/day_04.md": {
+    "sha256": "400c354b94e5b0ca2c62c3de5a8040814f6b6878231945fa3a8a160eaf4154a2",
+    "private": false
+  },
+  "tasks/week_07/day_05.md": {
+    "sha256": "6f4c838b7d20eeebd6c8423285fbf4cff52bccc19856dd6839871807ae5e30fa",
+    "private": false
+  },
+  "tasks/week_08/day_01.md": {
+    "sha256": "a4950b2beee14103365166c81b1687a89a0f8d5f0e25ed4b8175507c867d6a1a",
+    "private": false
+  },
+  "tasks/week_08/day_02.md": {
+    "sha256": "d45f7ecadc3758916ec86f356abf32265e1ff2fe5033e708ec56c8c72e3291bf",
+    "private": false
+  },
+  "tasks/week_08/day_03.md": {
+    "sha256": "3a49758b47f3cfe9809b2cd0784ee3875a406b8b6414995e57d79a1f854ebed4",
+    "private": false
+  },
+  "tasks/week_08/day_04.md": {
+    "sha256": "40c805db3072a414c21980d7cdbbf4a8a40533a19c20abb43c9bbce7cbb3a73f",
+    "private": false
+  },
+  "tasks/week_08/day_05.md": {
+    "sha256": "74d4b51ccf66e402723532aea9ec8862d18be54224e86757667b1aeccb3fa716",
+    "private": false
+  },
+  "tests/test_solutions.py": {
+    "sha256": "415c5e8bac12e2e00368d69a352d6ef7c09eaef5aecd45dfe5c816d400405743",
+    "private": true
+  }
+}

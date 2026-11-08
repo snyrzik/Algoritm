@@ -21,7 +21,8 @@ def reset_workspace(root,*,apply=False,clear_cache=False):
             if path.is_dir():directories.append(path);continue
             if area=='student' and path==base/'README.md':continue
             if area=='progress' and path==base/'.gitkeep':continue
-            if area=='student' and path.name not in STUDENT_FILES and path.name!='.gitkeep':raise ValueError('Unexpected learner file: '+str(path.relative_to(root)))
+            python_source=area=='student' and len(path.relative_to(base).parts)==3 and path.relative_to(base).parts[0]=='python' and re.fullmatch(r'py-(?:0[1-9]|[1-3][0-9]|40)',path.parent.name) and re.fullmatch(r'(?:day_(?:0[1-9]|[1-3][0-9]|40)|main|utils)\.py',path.name)
+            if area=='student' and path.name not in STUDENT_FILES and path.name!='.gitkeep' and not python_source:raise ValueError('Unexpected learner file: '+str(path.relative_to(root)))
             if area=='progress' and not re.fullmatch(r'.+\.sqlite3(?:-wal|-shm)?|workspace-id',path.name):raise ValueError('Unexpected progress file: '+str(path.relative_to(root)))
             files.append(path)
     # All paths and filenames are checked before removing any file. No recursive
